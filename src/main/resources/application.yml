@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:flowable;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+flowable:
+  check-process-definitions: true
+
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    org.flowable: DEBUG

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             targetNamespace="Examples">
+
+    <process id="loanApproval" name="Loan Approval" isExecutable="true">
+        <startEvent id="start" name="Start"/>
+        <userTask id="checkApplication" name="Check Application"/>
+        <exclusiveGateway id="decision" name="Approved?"/>
+        <userTask id="approveLoan" name="Approve Loan"/>
+        <userTask id="rejectLoan" name="Reject Loan"/>
+        <endEvent id="end"/>
+
+        <sequenceFlow sourceRef="start" targetRef="checkApplication"/>
+        <sequenceFlow sourceRef="checkApplication" targetRef="decision"/>
+        <sequenceFlow sourceRef="decision" targetRef="approveLoan">
+            <conditionExpression xsi:type="tFormalExpression">${approved}</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="decision" targetRef="rejectLoan">
+            <conditionExpression xsi:type="tFormalExpression">${!approved}</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="approveLoan" targetRef="end"/>
+        <sequenceFlow sourceRef="rejectLoan" targetRef="end"/>
+    </process>
+</definitions>
+

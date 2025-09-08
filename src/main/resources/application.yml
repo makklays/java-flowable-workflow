@@ -11,7 +11,16 @@ spring:
     show-sql: true
 
 flowable:
+  rest:
+    app:
+      enabled: true
   check-process-definitions: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
 server:
   port: 8081

@@ -1,0 +1,22 @@
+
+Самый быстрый — через Docker:
+docker run -p 8080:8080 flowable/flowable-ui
+
+После этого открой браузер:
+http://localhost:8080/flowable-ui
+
+Внутри будет Modeler, Task app, Admin, IDM.
+Можно сразу рисовать BPMN, сохранять и запускать процессы через REST.
+
+----------------------
+http://localhost:8081/actuator/health
+{
+  "status": "UP"
+}
+
+----------------------
+http://localhost:8081/flowable-rest/service/repository/process-definitions
+http://localhost:8081/flowable-rest/service/runtime/process-instances
+
+----------------------
+

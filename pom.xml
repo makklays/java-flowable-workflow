@@ -36,6 +36,20 @@
             <version>${flowable.version}</version>
         </dependency>
 
+        <!-- CMMN -->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-cmmn</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+
+        <!-- DMN -->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-dmn</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+
         <!-- Flowable REST API -->
         <dependency>
             <groupId>org.flowable</groupId>

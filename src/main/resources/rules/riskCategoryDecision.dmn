@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:feel="http://www.omg.org/spec/FEEL/20140401"
+             id="definitions"
+             name="Risk Category Decision"
+             namespace="http://flowable.org/dmn">
+
+    <decision id="riskCategoryDecision" name="Risk Category Decision">
+        <decisionTable id="decisionTable1" hitPolicy="FIRST">
+            <input id="input1" label="Age">
+                <inputExpression id="inputExpression1" typeRef="integer">
+                    <text>age</text>
+                </inputExpression>
+            </input>
+            <input id="input2" label="Income">
+                <inputExpression id="inputExpression2" typeRef="integer">
+                    <text>income</text>
+                </inputExpression>
+            </input>
+            <output id="output1" label="RiskCategory" name="RiskCategory" typeRef="string"/>
+
+            <rule>
+                <inputEntry><text>&lt;25</text></inputEntry>
+                <inputEntry><text>&lt;3000</text></inputEntry>
+                <outputEntry><text>High</text></outputEntry>
+            </rule>
+            <rule>
+                <inputEntry><text>&gt;=25</text></inputEntry>
+                <inputEntry><text>&gt;=3000</text></inputEntry>
+                <outputEntry><text>Low</text></outputEntry>
+            </rule>
+        </decisionTable>
+    </decision>
+</definitions>
+

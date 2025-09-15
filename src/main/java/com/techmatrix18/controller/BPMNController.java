@@ -16,11 +16,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/process")
-public class ProcessController {
+public class BPMNController {
 
     private final RuntimeService runtimeService;
 
-    public ProcessController(RuntimeService runtimeService) {
+    public BPMNController(RuntimeService runtimeService) {
         this.runtimeService = runtimeService;
     }
 

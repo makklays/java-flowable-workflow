@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhone(String phone);
 
     @Query("SELECT u FROM User u WHERE u.phone LIKE %:phone%")
-    List<User> findByPartMob(@Param("phone") String phone);
+    List<User> findByPartPhone(@Param("phone") String phone);
 
     @Query("SELECT u FROM User u WHERE u.email LIKE %:email%")
     List<User> findByPartEmail(@Param("email") String email);

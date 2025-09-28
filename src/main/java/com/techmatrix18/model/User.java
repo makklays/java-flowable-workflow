@@ -10,6 +10,7 @@ import java.util.Objects;
 /**
  * @author Alexander Kuziv
  * @since 28.09.2025
+ * @company TechMatrix18
  * @version 0.0.1
  */
 

@@ -1,14 +1,32 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:flowable;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
+    generate-unique-name: false
+    url: jdbc:mysql://localhost:3306/flowable_db
+    username: admin
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database: default
+    generate-ddl: false
+    properties:
+      connection:
+        charSet: utf-8
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        ddl-auto: none
+        show_sql: true
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baselineOnMigrate: true
+    validateOnMigrate: true
+    url: jdbc:mysql://localhost:3306/flowable_db
+    user: admin
+    password: admin
+    out-of-order: true
 
 flowable:
   rest:

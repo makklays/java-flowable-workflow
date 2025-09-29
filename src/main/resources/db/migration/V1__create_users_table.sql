@@ -14,7 +14,7 @@ CREATE TABLE users
     email       varchar(200) not null,
     phone       varchar(255) null,
 
-    is_man      TINYINT(1) NOT NULL DEFAULT 0;
+    is_man      TINYINT(1) NOT NULL DEFAULT 0,
     age         varchar(255) null,
 
     password    varchar(255) null,
@@ -29,5 +29,5 @@ CREATE TABLE users
 CREATE INDEX idx_users_email ON users(email);
 
 -- Adding index for fast searching by mobile
-CREATE INDEX idx_users_mob ON users(mob);
+CREATE INDEX idx_users_phone ON users(phone);
 

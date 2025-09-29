@@ -33,6 +33,16 @@ flowable:
     app:
       enabled: true
   check-process-definitions: true
+  cmmn:
+    enabled: true
+  dmn:
+    enabled: true
+  form:
+    enabled: true
+  content:
+    enabled: true
+  idm:
+    enabled: true # Identity обычно нужен для пользователей
 
 management:
   endpoints:

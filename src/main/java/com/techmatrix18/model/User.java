@@ -34,6 +34,9 @@ public class User {
     @JoinColumn(name = "position_id")  // внешний ключ
     private Position position;
 
+    @Column(name = "tenant_id")
+    private String tenantId; // позже добавить таблицу 'tenants'
+
     @Column(name = "username")
     private String username;
 
@@ -42,6 +45,9 @@ public class User {
 
     @Column(name = "lastname")
     private String lastname;
+
+    @Column(name = "display_name")
+    private String displayname;
 
     @Column(name = "email")
     private String email;
@@ -54,6 +60,9 @@ public class User {
 
     @Column(name = "is_man")
     private Boolean isMan;
+
+    @Column(name = "is_picture_set")
+    private Boolean isPictureSet; // показывать аватар или нет
 
     @Column(name = "address")
     private String address;
@@ -82,136 +91,88 @@ public class User {
         this.id = id;
     }
 
-    public Role getRole() {
-        return role;
-    }
+    public Role getRole() { return role; }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+    public void setRole(Role role) { this.role = role; }
 
-    public Department getDepartment() {
-        return department;
-    }
+    public Department getDepartment() { return department; }
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
+    public void setDepartment(Department department) { this.department = department; }
 
-    public Position getPosition() {
-        return position;
-    }
+    public Position getPosition() { return position; }
 
-    public void setPosition(Position position) {
-        this.position = position;
-    }
+    public void setPosition(Position position) { this.position = position; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getTenantId() { return tenantId; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setTenantId(String tenantId) { this.tenantId = tenantId; }
 
-    public String getFirstname() {
-        return firstname;
-    }
+    public String getUsername() { return username; }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getLastname() {
-        return lastname;
-    }
+    public String getFirstname() { return firstname; }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
+    public void setFirstname(String firstname) { this.firstname = firstname; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getLastname() { return lastname; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setLastname(String lastname) { this.lastname = lastname; }
 
-    public String getPhone() {
-        return phone;
-    }
+    public String getDisplayname() { return displayname; }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    public void setDisplayname(String displayname) { this.displayname = displayname; }
 
-    public String getAge() {
-        return age;
-    }
+    public String getEmail() { return email; }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
+    public void setEmail(String email) { this.email = email; }
 
-    public Boolean getMan() {
-        return isMan;
-    }
+    public String getPhone() { return phone; }
 
-    public void setMan(Boolean man) {
-        isMan = man;
-    }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public String getAddress() {
-        return address;
-    }
+    public String getAge() { return age; }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public void setAge(String age) { this.age = age; }
 
-    public String getPassword() {
-        return password;
-    }
+    public Boolean getMan() { return isMan; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setMan(Boolean man) { isMan = man; }
 
-    public LocalDate getStartWorkAt() {
-        return startWorkAt;
-    }
+    public Boolean getPictureSet() { return isPictureSet; }
 
-    public void setStartWorkAt(LocalDate startWorkAt) {
-        this.startWorkAt = startWorkAt;
-    }
+    public void setPictureSet(Boolean pictureSet) { isPictureSet = pictureSet; }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public String getAddress() { return address; }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public void setAddress(String address) { this.address = address; }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public String getPassword() { return password; }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public void setPassword(String password) { this.password = password; }
+
+    public LocalDate getStartWorkAt() { return startWorkAt; }
+
+    public void setStartWorkAt(LocalDate startWorkAt) { this.startWorkAt = startWorkAt; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return getId().equals(user.getId()) && getRole().equals(user.getRole()) && getDepartment().equals(user.getDepartment()) && getPosition().equals(user.getPosition()) && getUsername().equals(user.getUsername()) && getFirstname().equals(user.getFirstname()) && getLastname().equals(user.getLastname()) && getEmail().equals(user.getEmail()) && getPhone().equals(user.getPhone()) && getAge().equals(user.getAge()) && isMan.equals(user.isMan) && getAddress().equals(user.getAddress()) && getPassword().equals(user.getPassword()) && getStartWorkAt().equals(user.getStartWorkAt()) && getCreatedAt().equals(user.getCreatedAt()) && getUpdatedAt().equals(user.getUpdatedAt());
+        return getId().equals(user.getId()) && getRole().equals(user.getRole()) && getDepartment().equals(user.getDepartment()) && getPosition().equals(user.getPosition()) && getTenantId().equals(user.getTenantId()) && getUsername().equals(user.getUsername()) && getFirstname().equals(user.getFirstname()) && getLastname().equals(user.getLastname()) && getDisplayname().equals(user.getDisplayname()) && getEmail().equals(user.getEmail()) && getPhone().equals(user.getPhone()) && getAge().equals(user.getAge()) && isMan.equals(user.isMan) && isPictureSet.equals(user.isPictureSet) && getAddress().equals(user.getAddress()) && getPassword().equals(user.getPassword()) && getStartWorkAt().equals(user.getStartWorkAt()) && getCreatedAt().equals(user.getCreatedAt()) && getUpdatedAt().equals(user.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getRole(), getDepartment(), getPosition(), getUsername(), getFirstname(), getLastname(), getEmail(), getPhone(), getAge(), isMan, getAddress(), getPassword(), getStartWorkAt(), getCreatedAt(), getUpdatedAt());
+        return Objects.hash(getId(), getRole(), getDepartment(), getPosition(), getTenantId(), getUsername(), getFirstname(), getLastname(), getDisplayname(), getEmail(), getPhone(), getAge(), isMan, isPictureSet, getAddress(), getPassword(), getStartWorkAt(), getCreatedAt(), getUpdatedAt());
     }
 
     @Override
@@ -221,13 +182,16 @@ public class User {
                 ", role=" + role +
                 ", department=" + department +
                 ", position=" + position +
+                ", tenantId='" + tenantId + '\'' +
                 ", username='" + username + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", displayname='" + displayname + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", age='" + age + '\'' +
                 ", isMan=" + isMan +
+                ", isPictureSet=" + isPictureSet +
                 ", address='" + address + '\'' +
                 ", password='" + password + '\'' +
                 ", startWorkAt=" + startWorkAt +

@@ -22,8 +22,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // автоинкремент
     private Long id;
 
-    @Column(name = "role_id")
-    private Long roleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")  // внешний ключ
+    private Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")  // внешний ключ
+    private Department department;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")  // внешний ключ
+    private Position position;
 
     @Column(name = "username")
     private String username;
@@ -73,12 +82,28 @@ public class User {
         this.id = id;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public String getUsername() {
@@ -181,19 +206,21 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return getId().equals(user.getId()) && getRoleId().equals(user.getRoleId()) && getUsername().equals(user.getUsername()) && getFirstname().equals(user.getFirstname()) && getLastname().equals(user.getLastname()) && getEmail().equals(user.getEmail()) && getPhone().equals(user.getPhone()) && getAge().equals(user.getAge()) && isMan.equals(user.isMan) && getAddress().equals(user.getAddress()) && getPassword().equals(user.getPassword()) && getStartWorkAt().equals(user.getStartWorkAt()) && getCreatedAt().equals(user.getCreatedAt()) && getUpdatedAt().equals(user.getUpdatedAt());
+        return getId().equals(user.getId()) && getRole().equals(user.getRole()) && getDepartment().equals(user.getDepartment()) && getPosition().equals(user.getPosition()) && getUsername().equals(user.getUsername()) && getFirstname().equals(user.getFirstname()) && getLastname().equals(user.getLastname()) && getEmail().equals(user.getEmail()) && getPhone().equals(user.getPhone()) && getAge().equals(user.getAge()) && isMan.equals(user.isMan) && getAddress().equals(user.getAddress()) && getPassword().equals(user.getPassword()) && getStartWorkAt().equals(user.getStartWorkAt()) && getCreatedAt().equals(user.getCreatedAt()) && getUpdatedAt().equals(user.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getRoleId(), getUsername(), getFirstname(), getLastname(), getEmail(), getPhone(), getAge(), isMan, getAddress(), getPassword(), getStartWorkAt(), getCreatedAt(), getUpdatedAt());
+        return Objects.hash(getId(), getRole(), getDepartment(), getPosition(), getUsername(), getFirstname(), getLastname(), getEmail(), getPhone(), getAge(), isMan, getAddress(), getPassword(), getStartWorkAt(), getCreatedAt(), getUpdatedAt());
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", roleId=" + roleId +
+                ", role=" + role +
+                ", department=" + department +
+                ", position=" + position +
                 ", username='" + username + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +

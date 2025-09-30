@@ -81,6 +81,19 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt; // автоматически при обновлении
 
+    // constructs
+
+    public User() { } // обязателен для JPA
+
+    public User(String username) {
+        this.username = username;
+    }
+
+    public User(Long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
     // getters and setters
 
     public Long getId() {

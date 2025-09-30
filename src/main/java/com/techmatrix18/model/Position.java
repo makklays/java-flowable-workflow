@@ -29,6 +29,19 @@ public class Position {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // constructs
+
+    public Position() { } // обязателен для JPA
+
+    public Position(String title) {
+        this.title = title;
+    }
+
+    public Position(Long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     // getters and setters
 
     public Long getId() {

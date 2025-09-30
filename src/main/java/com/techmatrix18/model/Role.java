@@ -35,6 +35,19 @@ public class Role {
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
+    // constructs
+
+    public Role() { } // обязателен для JPA
+
+    public Role(String title) {
+        this.title = title;
+    }
+
+    public Role(Long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     // getters and setters
 
     public Long getId() {

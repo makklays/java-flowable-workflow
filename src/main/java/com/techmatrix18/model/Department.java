@@ -31,6 +31,19 @@ public class Department {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // constructs
+
+    public Department() { } // обязателен для JPA
+
+    public Department(String title) {
+        this.title = title;
+    }
+
+    public Department(Long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     // getters and setters
 
     public Long getId() {

@@ -16,7 +16,7 @@ CREATE TABLE activities
     date_time     datetime(6)  null,
     owner_id      bigint not null,
 
-    status        varchar(50) not null
+    status        varchar(50) not null,
 
     created_at    datetime(6)  null,
     updated_at    datetime(6)  null

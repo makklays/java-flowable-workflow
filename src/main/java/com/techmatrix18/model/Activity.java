@@ -21,12 +21,12 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Клиент, к которому относится активность
+    // The client to which the activity belongs
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
 
-    // Контактное лицо (опционально, может быть null)
+    // Contact person (optional, can be null)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id")
     private Contact contact;

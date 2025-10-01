@@ -33,7 +33,7 @@ public class Department {
 
     // constructs
 
-    public Department() { } // обязателен для JPA
+    public Department() { } // required for JPA
 
     public Department(String title) {
         this.title = title;

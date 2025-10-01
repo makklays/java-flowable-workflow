@@ -4,7 +4,6 @@ import com.techmatrix18.enums.ClientType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author Alexander Kuziv

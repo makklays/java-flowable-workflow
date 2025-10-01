@@ -2,7 +2,6 @@ package com.techmatrix18.repository;
 
 import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Deal;
-import com.techmatrix18.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,14 +30,14 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByPhone(String phone);
 
     @Query("SELECT c FROM Client c WHERE c.phone LIKE %:phone%")
-    List<User> findByPartPhone(@Param("phone") String phone);
+    List<Client> findByPartPhone(@Param("phone") String phone);
 
     @Query("SELECT c FROM Client c WHERE u.email LIKE %:email%")
-    List<User> findByPartEmail(@Param("email") String email);
+    List<Client> findByPartEmail(@Param("email") String email);
 
     @Query("SELECT c FROM Client c WHERE c.lastname LIKE %:lastname%")
-    List<User> findByPartLastname(@Param("lastname") String lastname);
+    List<Client> findByPartLastname(@Param("lastname") String lastname);
 
-    List<Deal> findByOwnerId(Long ownerId);
+    List<Client> findByOwnerId(Long ownerId);
 }
 

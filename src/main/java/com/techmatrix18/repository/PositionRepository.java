@@ -27,6 +27,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     Optional<Position> findByTitle(String title);
 
     @Query("SELECT p FROM Position p WHERE p.title LIKE %:title%")
-    List<User> findByPartTitle(@Param("title") String title);
+    List<Position> findByPartTitle(@Param("title") String title);
 }
 

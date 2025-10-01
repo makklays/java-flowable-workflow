@@ -27,6 +27,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByTitle(String title);
 
     @Query("SELECT r FROM Role r WHERE r.title LIKE %:title%")
-    List<User> findByPartTitle(@Param("title") String title);
+    List<Role> findByPartTitle(@Param("title") String title);
 }
 

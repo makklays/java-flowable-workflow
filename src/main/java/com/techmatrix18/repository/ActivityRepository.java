@@ -29,7 +29,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query("SELECT a FROM Activity a WHERE a.title LIKE %:title%")
     List<Activity> findByPartTitle(@Param("title") String title);
 
-    List<Deal> findByOwnerId(Long ownerId);
+    List<Activity> findByOwnerId(Long ownerId);
 
     List<Activity> findByClientIdAndStatus(Long clientId, ActivityStatus status);
 }

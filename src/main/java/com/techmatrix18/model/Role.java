@@ -37,7 +37,7 @@ public class Role {
 
     // constructs
 
-    public Role() { } // обязателен для JPA
+    public Role() { } // required for JPA
 
     public Role(String title) {
         this.title = title;

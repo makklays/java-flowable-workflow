@@ -31,7 +31,7 @@ public class Position {
 
     // constructs
 
-    public Position() { } // обязателен для JPA
+    public Position() { } // Required for JPA
 
     public Position(String title) {
         this.title = title;

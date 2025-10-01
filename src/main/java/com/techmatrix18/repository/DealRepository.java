@@ -37,31 +37,31 @@ public interface DealRepository extends JpaRepository<Deal, Long> {
 
     List<Deal> findByAmountBetween(BigDecimal min, BigDecimal max);
 
-    // поиск по конкретной дате начала
+    // search by a specific start date
     List<Deal> findByStartDate(LocalDate startDate);
 
-    // поиск по конкретной дате закрытия
+    // search by a specific closing date
     List<Deal> findByCloseDate(LocalDate closeDate);
 
-    // все сделки, начатые после определённой даты
+    // all transactions started after a certain date
     List<Deal> findByStartDateAfter(LocalDate date);
 
-    // все сделки, начатые до определённой даты
+    // all transactions started before a certain date
     List<Deal> findByStartDateBefore(LocalDate date);
 
-    // сделки, закрытые в определённом диапазоне
+    // trades closed within a certain range
     List<Deal> findByCloseDateBetween(LocalDate start, LocalDate end);
 
-    // сделки, у которых дата закрытия отсутствует (ещё активные)
+    // transactions that do not have a closing date (still active)
     List<Deal> findByCloseDateIsNull();
 
-    // сделки, у которых дата закрытия есть (завершённые)
+    // transactions that have a closing date (completed)
     List<Deal> findByCloseDateIsNotNull();
 
     List<Deal> findByOwnerId(Long ownerId);
 
     List<Deal> findByOwnerIdAndStage(Long ownerId, DealStage stage);
 
-    List<Deal> findByOwnerIdAndCloseDateIsNull(Long ownerId); // активные сделки
+    List<Deal> findByOwnerIdAndCloseDateIsNull(Long ownerId); // active transactions
 }
 

@@ -26,6 +26,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     Optional<Department> findByTitle(String title);
 
     @Query("SELECT d FROM Department d WHERE d.title LIKE %:title%")
-    List<User> findByPartTitle(@Param("title") String title);
+    List<Department> findByPartTitle(@Param("title") String title);
 }
 

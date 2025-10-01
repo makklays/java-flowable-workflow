@@ -1,7 +1,6 @@
 package com.techmatrix18.repository;
 
 import com.techmatrix18.model.Contact;
-import com.techmatrix18.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,15 +31,15 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     Optional<Contact> findByPhone(String phone);
 
     @Query("SELECT c FROM Contact c WHERE c.phone LIKE %:phone%")
-    List<User> findByPartPhone(@Param("phone") String phone);
+    List<Contact> findByPartPhone(@Param("phone") String phone);
 
     @Query("SELECT c FROM Contact c WHERE u.email LIKE %:email%")
-    List<User> findByPartEmail(@Param("email") String email);
+    List<Contact> findByPartEmail(@Param("email") String email);
 
     @Query("SELECT c FROM Contact c WHERE c.firstname LIKE %:firstname%")
-    List<User> findByPartFirstname(@Param("firstname") String firstname);
+    List<Contact> findByPartFirstname(@Param("firstname") String firstname);
 
     @Query("SELECT c FROM Contact c WHERE c.lastname LIKE %:lastname%")
-    List<User> findByPartLastname(@Param("lastname") String lastname);
+    List<Contact> findByPartLastname(@Param("lastname") String lastname);
 }
 

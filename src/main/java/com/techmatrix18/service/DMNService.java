@@ -21,14 +21,14 @@ public class DMNService {
         variables.put("age", age);
         variables.put("income", income);
 
-        // execute() возвращает List<Map<String, Object>>
+        // execute() return List<Map<String, Object>>
         List<Map<String, Object>> result = dmnDecisionService
                 .createExecuteDecisionBuilder()
                 .decisionKey("riskCategoryDecision")
                 .variables(variables)
                 .execute();
 
-        // Берем первый результат
+        // We take the first result
         return result.get(0).get("RiskCategory").toString();
     }
 }

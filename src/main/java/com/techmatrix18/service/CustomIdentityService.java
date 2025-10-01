@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Кастомный сервис пользователей для Flowable
- * Работает с моей таблицей users, а не FLW_ID_USER
+ * Custom user service for Flowable
+ * Works with my users table, not FLW_ID_USER
  *
  * @author Alexander Kuziv
  * @since 28.09.2025
@@ -26,7 +26,7 @@ public class CustomIdentityService {
     }
 
     /**
-     * Найти пользователя по ID
+     * Find a user by ID
      */
     public User findById(String userId) {
         try {
@@ -38,14 +38,14 @@ public class CustomIdentityService {
     }
 
     /**
-     * Получить всех пользователей
+     * Get all users
      */
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
     /**
-     * Получить всех пользователей по списку ID
+     * Get all users by ID list
      */
     public List<User> findAllByIds(List<String> ids) {
         return ids.stream()
@@ -55,7 +55,7 @@ public class CustomIdentityService {
     }
 
     /**
-     * Дополнительные методы, если нужно
+     * Additional methods if needed
      */
     public String getDisplayName(String userId) {
         User user = findById(userId);

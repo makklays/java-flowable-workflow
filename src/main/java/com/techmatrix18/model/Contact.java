@@ -1,7 +1,6 @@
 package com.techmatrix18.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -37,7 +36,7 @@ public class Contact {
     private String phone;
 
     @Column(name = "position")
-    private String position;  // Должность / роль в компании - text
+    private String position;  // Position/role in the company - text
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

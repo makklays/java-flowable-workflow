@@ -19,23 +19,23 @@ import java.util.Objects;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // автоинкремент
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")  // внешний ключ
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")  // внешний ключ
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "position_id")  // внешний ключ
+    @JoinColumn(name = "position_id")
     private Position position;
 
     @Column(name = "tenant_id")
-    private String tenantId; // позже добавить таблицу 'tenants'
+    private String tenantId; // TODO: later add the 'tenants' table
 
     @Column(name = "username")
     private String username;
@@ -62,7 +62,7 @@ public class User {
     private Boolean isMan;
 
     @Column(name = "is_picture_set")
-    private Boolean isPictureSet; // показывать аватар или нет
+    private Boolean isPictureSet; // whether to show an avatar or not
 
     @Column(name = "address")
     private String address;
@@ -75,15 +75,15 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt; // автоматически при вставке
+    private LocalDateTime createdAt; // automatically when inserted
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt; // автоматически при обновлении
+    private LocalDateTime updatedAt; // automatically upon update
 
     // constructs
 
-    public User() { } // обязателен для JPA
+    public User() { } // required for JPA
 
     public User(String username) {
         this.username = username;

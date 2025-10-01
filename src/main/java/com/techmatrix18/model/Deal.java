@@ -24,30 +24,30 @@ public class Deal {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
-    private Client client;             // Внешний ключ на клиента
+    private Client client;             // External key per client
 
     @Column(name = "name", nullable = false)
-    private String name;               // Название сделки
+    private String name;               // Name of the transaction
 
     @Column(name = "amount", precision = 15, scale = 2, nullable = false)
-    private BigDecimal amount;         // Сумма
+    private BigDecimal amount;         // Amount
 
     @Column(name = "currency", length = 5, nullable = false)
-    private String currency;           // Валюта, например, "USD", "EUR", "USDT"
+    private String currency;           // Currency, example, "USD", "EUR", "USDT"
 
     @Column(name = "stage", nullable = false)
     @Enumerated(EnumType.STRING)
-    private DealStage stage;           // Этап сделки
+    private DealStage stage;           // Deal's stage
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;       // Дата начала
+    private LocalDate startDate;       // Start date
 
     @Column(name = "close_date")
-    private LocalDate closeDate;       // Дата закрытия (если есть)
+    private LocalDate closeDate;       // Closing date (if any)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;               // Ответственный менеджер (User)
+    private User owner;               // Responsible manager (User)
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

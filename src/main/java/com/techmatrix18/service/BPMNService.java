@@ -17,7 +17,7 @@ public class BPMNService {
         this.taskService = taskService;
     }
 
-    // Запуск процесса
+    // Starting the process
     public String startLoanApprovalProcess(boolean approved) {
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(
                 "loanApproval",
@@ -26,7 +26,7 @@ public class BPMNService {
         return instance.getId();
     }
 
-    // Получение активных задач по процессу
+    // Getting active tasks for a process
     public String getActiveTasks(String processInstanceId) {
         return taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
@@ -34,7 +34,7 @@ public class BPMNService {
                 .toString();
     }
 
-    // Завершение задачи по Id
+    // Completing a task by Id
     public void completeTask(String taskId, Map<String, Object> variables) {
         taskService.complete(taskId, variables);
     }

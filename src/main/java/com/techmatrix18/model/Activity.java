@@ -1,7 +1,7 @@
 package com.techmatrix18.model;
 
-import com.techmatrix18.enums.ActivityStatus;
-import com.techmatrix18.enums.ActivityType;
+import com.techmatrix18.model.enums.ActivityStatus;
+import com.techmatrix18.model.enums.ActivityType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;

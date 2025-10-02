@@ -33,7 +33,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c WHERE c.phone LIKE %:phone%")
     List<Contact> findByPartPhone(@Param("phone") String phone);
 
-    @Query("SELECT c FROM Contact c WHERE u.email LIKE %:email%")
+    @Query("SELECT c FROM Contact c WHERE c.email LIKE %:email%")
     List<Contact> findByPartEmail(@Param("email") String email);
 
     @Query("SELECT c FROM Contact c WHERE c.firstname LIKE %:firstname%")

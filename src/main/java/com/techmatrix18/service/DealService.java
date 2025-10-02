@@ -1,6 +1,6 @@
 package com.techmatrix18.service;
 
-import com.techmatrix18.enums.DealStage;
+import com.techmatrix18.model.enums.DealStage;
 import com.techmatrix18.model.Deal;
 import com.techmatrix18.repository.DealRepository;
 import org.springframework.stereotype.Service;

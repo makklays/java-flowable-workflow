@@ -1,15 +1,16 @@
 package com.techmatrix18.repository;
 
-import com.techmatrix18.enums.ActivityStatus;
-import com.techmatrix18.enums.ActivityType;
-import com.techmatrix18.enums.ClientType;
+import com.techmatrix18.model.enums.ActivityStatus;
+import com.techmatrix18.model.enums.ActivityType;
+import com.techmatrix18.model.enums.ClientType;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Contact;
 import com.techmatrix18.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -19,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @version 0.0.1
  */
 
-@DataJpaTest
-public class ActivityRepositoryTest {
+@SpringBootTest
+class ActivityRepositoryTest {
 
     @Autowired
     private ActivityRepository activityRepository;
@@ -36,6 +37,7 @@ public class ActivityRepositoryTest {
         owner.setPictureSet(true);
 
         Client client = new Client();
+        client.setId(1L);
         client.setFirstname("Sarah");
         client.setLastname("Connor");
         client.setEmail("sarah.connor@gmail.com");

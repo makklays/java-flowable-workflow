@@ -13,7 +13,7 @@ CREATE TABLE departments
     created_at    datetime(6)  null,
     updated_at    datetime(6)  null,
 
-    constraint    UK_title unique  (title)
+    constraint    UK_departments_title unique  (title)
 );
 
 -- Adding index for fast searching by title

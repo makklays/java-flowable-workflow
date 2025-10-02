@@ -1,8 +1,7 @@
 package com.techmatrix18.repository;
 
-import com.techmatrix18.enums.ActivityStatus;
+import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
-import com.techmatrix18.model.Deal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,10 +23,12 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     List<Activity> findAll();
 
-    List<Activity> findByTitle(String title);
 
-    @Query("SELECT a FROM Activity a WHERE a.title LIKE %:title%")
-    List<Activity> findByPartTitle(@Param("title") String title);
+// no title field in Activity
+//    List<Activity> findByTitle(String title);
+//
+//    @Query("SELECT a FROM Activity a WHERE a.description LIKE %:title%")
+//    List<Activity> findByPartTitle(@Param("title") String title);
 
     List<Activity> findByOwnerId(Long ownerId);
 

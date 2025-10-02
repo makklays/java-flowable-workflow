@@ -59,6 +59,15 @@ public class Activity {
 
     public Activity() { }
 
+    public Activity(Long id, Client client, Contact contact, ActivityType type, User owner, ActivityStatus status) {
+        this.id = id;
+        this.client = client;
+        this.contact = contact;
+        this.type = type;
+        this.owner = owner;
+        this.status = status;
+    }
+
     // getters / setters
 
     public Long getId() {

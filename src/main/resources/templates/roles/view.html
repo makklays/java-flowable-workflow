@@ -37,49 +37,36 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <h5 class="card-title">Roles [11]</h5>
+                            <h5 class="card-title">View Role</h5>
                         </div>
                         <div class="col" style="text-align:right;">
-                            <a href="/roles/add" class="btn btn-primary" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
+                            <a href="/roles/edit/1" class="btn btn-primary mb-2 me-2" style="width:120px;"><i class="fas fa-pen me-1"></i> Edit</a>
+                            <a href="/roles/delete/1" class="btn btn-danger mb-2" style="width:120px;"><i class="fas fa-trash me-1"></i> Delete</a>
                         </div>
                     </div>
                     <div class="card-text">
                         <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" scope="col" >#</th>
-                                    <th scope="col">Title</th>
-                                    <th class="text-center" scope="col" >Created</th>
-                                    <th class="text-center" scope="col" >Updated</th>
-                                </tr>
-                            </thead>
                             <tbody>
-                                <tr>
-                                    <th class="text-center" scope="row">1</th>
-                                    <td>
-                                        <a href="/roles/view/1">Admin</a>
-                                    </td>
-                                    <td class="text-center">02.10.2025</td>
-                                    <td class="text-center">02.10.2025</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center" scope="row">2</th>
-                                    <td>
-                                        <a href="/roles/view/2">Manager</a>
-                                    </td>
-                                    <td class="text-center">02.10.2025</td>
-                                    <td class="text-center">03.10.2025</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center" scope="row">3</th>
-                                    <td>
-                                        <a href="/roles/view/3">Manager 2</a>
-                                    </td>
-                                    <td class="text-center">02.10.2025</td>
-                                    <td class="text-center">02.10.2025</td>
-                                </tr>
+                            <tr>
+                                <th scope="row">ID</th>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Title</th>
+                                <td>Admin</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Created</th>
+                                <td>02.10.2025</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Updated</th>
+                                <td>03.10.2025</td>
+                            </tr>
                             </tbody>
                         </table>
+
+                        <a href="/roles" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
                     </div>
                 </div>
             </div>

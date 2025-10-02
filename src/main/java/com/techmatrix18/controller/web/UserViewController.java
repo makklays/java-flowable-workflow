@@ -25,7 +25,23 @@ public class UserViewController {
         // get session
         Long userId = (Long) session.getAttribute("userId");
         log.info("---------- user ID--------------> " + userId);
-
         return "welcome";
     }
+
+    @GetMapping("/panel")
+    public String panel(Model model) {
+        return "panel";
+    }
+
+    @GetMapping("/home")
+    public String home(Model model) {
+        return "home";
+    }
+
+    @GetMapping("/users")
+    public String getAllUsers(Model model) {
+
+        return "users/index";
+    }
 }
+

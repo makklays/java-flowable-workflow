@@ -5,6 +5,11 @@ spring:
     username: admin
     password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver
+  web:
+    resources:
+      media-types:
+        wav: audio/wav
+      static-locations: file:/home/alexander/IdeaProjects/java-flowable-workflow/src/main/resources/mystatic/
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5Dialect
@@ -27,6 +32,23 @@ spring:
     user: admin
     password: admin
     out-of-order: true
+  thymeleaf:
+    check-template-location: true
+    prefix: classpath:/templates/  #this is the main
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    cache: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  messages:
+    basename: messages
+    encoding: UTF-8
 
 flowable:
   rest:
@@ -53,7 +75,31 @@ management:
 server:
   port: 8081
 
+springdoc:
+  info:
+    title: Neural Network API
+    version: 1.0
+    description: API for Neural Network Management
+  api-docs:
+    enabled: true        # Включить /v3/api-docs
+    path: /v3/api-docs   # Путь (по умолчанию /v3/api-docs)
+  swagger-ui:
+    enabled: true        # Включить Swagger UI
+    path: /swagger-ui.html  # Путь, куда перенаправлять (но по факту UI — это /swagger-ui/index.html)
+    try-it-out-enabled: true  # Кнопка "Try it out"
+
 logging:
   level:
+    org.flowable: INFO
+    org.springframework.boot.devtools: WARN
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN
+    org.springframework.kafka: INFO
+    org.apache.tomcat: INFO
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type: WARN
+    com.techmatrix18: DEBUG
+    liquibase: WARN
     root: INFO
-    org.flowable: DEBUG
+#    #org.thymeleaf: DEBUG

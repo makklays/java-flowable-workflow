@@ -1,0 +1,11 @@
+
+
+----------------------------------------------
+RabbitMQ on localhost:15672 (login: user, password: password).
+
+----------------------------------------------
+Swagger UI - OpenAPI
+URL:
+http://localhost:8081/swagger-ui/index.html
+----------------------------------------------
+

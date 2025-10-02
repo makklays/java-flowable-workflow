@@ -32,7 +32,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query("SELECT c FROM Client c WHERE c.phone LIKE %:phone%")
     List<Client> findByPartPhone(@Param("phone") String phone);
 
-    @Query("SELECT c FROM Client c WHERE u.email LIKE %:email%")
+    @Query("SELECT c FROM Client c WHERE c.email LIKE %:email%")
     List<Client> findByPartEmail(@Param("email") String email);
 
     @Query("SELECT c FROM Client c WHERE c.lastname LIKE %:lastname%")

@@ -31,6 +31,9 @@ public class Activity {
     @JoinColumn(name = "contact_id")
     private Contact contact;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private ActivityType type;
@@ -84,6 +87,10 @@ public class Activity {
     public void setContact(Contact contact) {
         this.contact = contact;
     }
+
+    public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
 
     public ActivityType getType() {
         return type;
@@ -145,12 +152,12 @@ public class Activity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Activity activity)) return false;
-        return getId().equals(activity.getId()) && getClient().equals(activity.getClient()) && getContact().equals(activity.getContact()) && getType() == activity.getType() && getDescription().equals(activity.getDescription()) && getDateTime().equals(activity.getDateTime()) && getOwner().equals(activity.getOwner()) && getStatus() == activity.getStatus() && getCreatedAt().equals(activity.getCreatedAt()) && getUpdatedAt().equals(activity.getUpdatedAt());
+        return getId().equals(activity.getId()) && getClient().equals(activity.getClient()) && getContact().equals(activity.getContact()) && getTitle().equals(activity.getTitle()) && getType() == activity.getType() && getDescription().equals(activity.getDescription()) && getDateTime().equals(activity.getDateTime()) && getOwner().equals(activity.getOwner()) && getStatus() == activity.getStatus() && getCreatedAt().equals(activity.getCreatedAt()) && getUpdatedAt().equals(activity.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getClient(), getContact(), getType(), getDescription(), getDateTime(), getOwner(), getStatus(), getCreatedAt(), getUpdatedAt());
+        return Objects.hash(getId(), getClient(), getContact(), getTitle(), getType(), getDescription(), getDateTime(), getOwner(), getStatus(), getCreatedAt(), getUpdatedAt());
     }
 
     @Override
@@ -159,6 +166,7 @@ public class Activity {
                 "id=" + id +
                 ", client=" + client +
                 ", contact=" + contact +
+                ", title='" + title + '\'' +
                 ", type=" + type +
                 ", description='" + description + '\'' +
                 ", dateTime=" + dateTime +

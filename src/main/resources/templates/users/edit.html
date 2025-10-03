@@ -49,15 +49,54 @@
                             <input type="hidden" th:field="*{id}" />
 
                             <div class="mb-3">
-                                <label for="title" class="form-label">Title</label>
-                                <input type="text" th:field="*{title}" id="title" class="form-control" required />
-                                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" id="username" th:field="*{username}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea th:field="*{description}" id="description" class="form-control" rows="4" required></textarea>
-                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                                <label for="firstname" class="form-label">Firstname</label>
+                                <input type="text" id="firstname" th:field="*{firstname}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}">Firstname error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastname" class="form-label">Firstname</label>
+                                <input type="text" id="lastname" th:field="*{lastname}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}">Lastname error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="displayname" class="form-label">Display name</label>
+                                <input type="text" id="displayname" th:field="*{displayname}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('displayname')}" th:errors="*{displayname}">Displayname error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" id="email" th:field="*{email}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" id="phone" th:field="*{phone}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Phone error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="text" id="age" th:field="*{age}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Age error</div>
+                            </div>
+
+                            <!-- checkbox isMan -->
+                            <!-- checkbox isPictureSet -->
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" id="address" th:field="*{address}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address error</div>
                             </div>
 
                             <button type="submit" class="btn btn-primary me-2" style="width:120px;">

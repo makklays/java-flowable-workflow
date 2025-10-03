@@ -1,8 +1,15 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.PositionDto;
+import com.techmatrix18.dto.RoleDto;
 import com.techmatrix18.model.Position;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.PositionRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,6 +48,31 @@ public class PositionService {
      */
     public List<Position> getAll() {
         return positionRepository.findAll();
+    }
+
+    /**
+     * Finds all positions by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Position> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return positionRepository.findAll(pageable);
+    }
+
+    public PositionDto getByIdDto(Long id) {
+        Position position = positionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Position not found"));
+        return mapToDto(position);
+    }
+
+    private PositionDto mapToDto(Position position) {
+        PositionDto dto = new PositionDto();
+        dto.setId(position.getId());
+        dto.setTitle(position.getTitle());
+        return dto;
     }
 
     /**

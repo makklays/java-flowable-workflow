@@ -54,11 +54,6 @@ public class UserViewController {
         return "home";
     }
 
-    @GetMapping("/users")
-    public String getAllUsers(Model model) {
-        return "users/index";
-    }
-
     //-------
 
     @GetMapping("/users")

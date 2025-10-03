@@ -1,8 +1,15 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.DepartmentDto;
+import com.techmatrix18.dto.RoleDto;
 import com.techmatrix18.model.Department;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.DepartmentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,6 +48,32 @@ public class DepartmentService {
      */
     public List<Department> getAll() {
         return departmentRepository.findAll();
+    }
+
+    /**
+     * Finds all departments by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Department> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return departmentRepository.findAll(pageable);
+    }
+
+    public DepartmentDto getByIdDto(Long id) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+        return mapToDto(department);
+    }
+
+    private DepartmentDto mapToDto(Department department) {
+        DepartmentDto dto = new DepartmentDto();
+        dto.setId(department.getId());
+        dto.setTitle(department.getTitle());
+        dto.setDescription(department.getDescription());
+        return dto;
     }
 
     /**

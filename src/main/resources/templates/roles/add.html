@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main8}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/main8}">
 <section xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:fragment="content">
     <h2>Roles</h2>
     <p>The list of roles of users</p>
@@ -44,15 +45,17 @@
                         </div>
                     </div>
                     <div class="card-text">
-                        <form action="/roles/add-post" method="post">
+                        <form th:action="@{/roles/add}" th:object="${roleDto}" method="post">
                             <div class="mb-3">
                                 <label for="title" class="form-label">Title</label>
-                                <input type="text" id="title" name="title" class="form-control" required />
+                                <input type="text" id="title" th:field="*{title}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="4" ></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
                             </div>
 
                             <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-save me-1"></i> Save</button>

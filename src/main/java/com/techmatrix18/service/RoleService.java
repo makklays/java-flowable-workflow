@@ -1,8 +1,14 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.RoleDto;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,6 +50,32 @@ public class RoleService {
     }
 
     /**
+     * Finds all roles by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Role> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return roleRepository.findAll(pageable);
+    }
+
+    public RoleDto getByIdDto(Long id) {
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        return mapToDto(role);
+    }
+
+    private RoleDto mapToDto(Role role) {
+        RoleDto dto = new RoleDto();
+        dto.setId(role.getId());
+        dto.setTitle(role.getTitle());
+        dto.setDescription(role.getDescription());
+        return dto;
+    }
+
+    /**
      * Finds a role by title.
      *
      * @param title
@@ -63,7 +95,7 @@ public class RoleService {
      *
      * @return boolean
      */
-    public boolean addRole(Role role) {
+    public boolean addRole(@Valid Role role) {
         Role b = roleRepository.save(role);
         if (!b.getTitle().isEmpty()) {
             return true;

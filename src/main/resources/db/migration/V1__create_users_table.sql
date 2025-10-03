@@ -21,15 +21,15 @@ CREATE TABLE users
     phone           varchar(255) null,
     age             varchar(255) null,
 
-    is_man          TINYINT(1) NOT NULL DEFAULT 0,
-    is_picture_set  TINYINT(1) NOT NULL DEFAULT 0,
+    is_man          BOOLEAN  NOT NULL DEFAULT 0,
+    is_picture_set  BOOLEAN  NOT NULL DEFAULT 0,
 
     address         varchar(255) null,
     password        varchar(255) null,
 
-    start_work_at   datetime(6)  null,
-    created_at      datetime(6)  null,
-    updated_at      datetime(6)  null,
+    start_work_at   TIMESTAMP   null,
+    created_at      TIMESTAMP   null,
+    updated_at      TIMESTAMP   null,
 
     constraint      UK_email unique (email),
     constraint      UK_username unique (username)

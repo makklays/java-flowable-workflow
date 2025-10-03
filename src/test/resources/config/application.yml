@@ -1,0 +1,43 @@
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY;NON_KEYWORDS=user,value
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.hbm2ddl.auto: none #TODO: temp relief for integration tests, revisit required
+      hibernate.type.preferred_instant_jdbc_type: TIMESTAMP
+      hibernate.jdbc.time_zone: UTC
+      hibernate.timezone.default_storage: NORMALIZE
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console   # доступ к веб-консоли по http://localhost:8080/h2-console
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baselineOnMigrate: true
+    validateOnMigrate: true
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY;NON_KEYWORDS=user,value
+  liquibase:
+    enabled: false
+
+flowable:
+  app:
+    enabled: false

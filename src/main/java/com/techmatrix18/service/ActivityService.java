@@ -1,6 +1,6 @@
 package com.techmatrix18.service;
 
-import com.techmatrix18.enums.ActivityStatus;
+import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.repository.ActivityRepository;
 import org.springframework.stereotype.Service;
@@ -36,14 +36,15 @@ public class ActivityService {
     }
 
     // Find activities by title
-    public List<Activity> getActivitiesByTitle(String title) {
-        return activityRepository.findByTitle(title);
-    }
+    // -- no title field in Activity
+//    public List<Activity> getActivitiesByTitle(String title) {
+//        return activityRepository.findByTitle(title);
+//    }
 
     // Find activities by part of title
-    public List<Activity> searchActivitiesByTitle(String title) {
-        return activityRepository.findByPartTitle(title);
-    }
+//    public List<Activity> searchActivitiesByTitle(String title) {
+//        return activityRepository.findByPartTitle(title);
+//    } -- no title field in Activity
 
     // Find activities by owner (ownerId)
     public List<Activity> getActivitiesByOwnerId(Long ownerId) {

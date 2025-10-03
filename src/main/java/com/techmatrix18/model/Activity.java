@@ -1,7 +1,7 @@
 package com.techmatrix18.model;
 
-import com.techmatrix18.enums.ActivityStatus;
-import com.techmatrix18.enums.ActivityType;
+import com.techmatrix18.model.enums.ActivityStatus;
+import com.techmatrix18.model.enums.ActivityType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -61,6 +61,15 @@ public class Activity {
     // constructs
 
     public Activity() { }
+
+    public Activity(Long id, Client client, Contact contact, ActivityType type, User owner, ActivityStatus status) {
+        this.id = id;
+        this.client = client;
+        this.contact = contact;
+        this.type = type;
+        this.owner = owner;
+        this.status = status;
+    }
 
     // getters / setters
 

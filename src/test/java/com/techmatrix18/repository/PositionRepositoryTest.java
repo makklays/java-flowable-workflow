@@ -3,9 +3,7 @@ package com.techmatrix18.repository;
 import com.techmatrix18.model.Position;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -15,10 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @version 0.0.1
  */
 
-@DataJpaTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PositionRepositoryTest {
+@SpringBootTest
+class PositionRepositoryTest {
 
     @Autowired
     private PositionRepository positionRepository;

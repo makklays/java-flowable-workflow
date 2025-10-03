@@ -1,8 +1,13 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.UserDto;
 import com.techmatrix18.model.User;
 import com.techmatrix18.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -42,6 +47,32 @@ public class UserService {
      */
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    /**
+     * Finds all roles by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<User> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return userRepository.findAll(pageable);
+    }
+
+    public UserDto getByIdDto(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        return mapToDto(user);
+    }
+
+    private UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setFirstname(user.getFirstname());
+        dto.setLastname(user.getLastname());
+        return dto;
     }
 
     /**

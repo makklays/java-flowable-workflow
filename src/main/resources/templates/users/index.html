@@ -1,7 +1,133 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main8}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/main8}">
 <section xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:fragment="content">
-    <h2>Welcome to Users</h2>
-    <p>This is the main content.</p>
+    <h2>Users</h2>
+    <p>The list of users of users</p>
+    <hr/>
+    <div class="row">
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 1</h5>
+                    <p class="card-text">Description 1</p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 2</h5>
+                    <p class="card-text">Description 2</p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 3</h5>
+                    <p class="card-text">Description 3</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="card-title">Users [11]</h5>
+                        </div>
+                        <div class="col" style="text-align:right;">
+                            <a href="/users/add" class="btn btn-primary mb-2" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div th:if="${successMessage}" class="alert alert-success" user="alert">
+                                <span th:text="${successMessage}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-text">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th class="text-center align-middle" scope="col" >#</th>
+                                <th class="align-middle" scope="col">Title</th>
+                                <th class="text-center align-middle" scope="col" >Created</th>
+                                <th class="text-center align-middle" scope="col" >Updated</th>
+                                <th class="text-center align-middle" scope="col" style="width:350px;" >Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user, iterStat : ${usersPage.content}">
+                                <th class="text-center align-middle" th:text="${iterStat.index + 1 + (currentPage * usersPage.size)}"></th>
+                                <td class="align-middle">
+                                    <a th:href="@{/users/view/{id}(id=${user.id})}" th:text="${user.title}"></a>
+                                </td>
+                                <td class="text-center align-middle"
+                                    th:text="${user.createdAt != null} ? ${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')} : '-' ">
+                                </td>
+                                <td class="text-center align-middle"
+                                    th:text="${user.updatedAt != null} ? ${#temporals.format(user.updatedAt, 'dd.MM.yyyy HH:mm')} : '-' ">
+                                </td>
+                                <td class="text-center align-middle">
+                                    <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary mb-2 me-2" style="width:120px;">
+                                        <i class="fas fa-pen me-1"></i> Edit
+                                    </a>
+                                    <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger mb-2" style="width:120px;">
+                                        <i class="fas fa-trash me-1"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- pages navigation -->
+                        <nav>
+                            <ul class="pagination justify-content-left">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/users(page=${currentPage - 1}, size=${usersPage.size})}">Previous</a>
+                                </li>
+
+                                <li class="page-item"
+                                    th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                                    th:classappend="${pageNum == currentPage} ? 'active'">
+                                    <a class="page-link" th:href="@{/users(page=${pageNum}, size=${usersPage.size})}"
+                                       th:text="${pageNum + 1}">1</a>
+                                </li>
+
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/users(page=${currentPage + 1}, size=${usersPage.size})}">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">11</h5>
+                    <p class="card-text">11111</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">22</h5>
+                    <p class="card-text">22222</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 </html>

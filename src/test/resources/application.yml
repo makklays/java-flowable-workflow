@@ -34,8 +34,21 @@ spring:
     baselineOnMigrate: true
     validateOnMigrate: true
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY;NON_KEYWORDS=user,value
+
   liquibase:
     enabled: false
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false   # отключает кэш шаблонов для горячей перезагрузки
+  devtools:
+    restart:
+      enabled: true    # автоматический рестарт при изменении классов (DevTools)
+    livereload:
+      enabled: true    # включение LiveReload для автообновления страницы
 
 flowable:
   app:

@@ -1,6 +1,10 @@
 package com.techmatrix18.dto;
 
+import com.techmatrix18.model.Department;
+import com.techmatrix18.model.Position;
+import com.techmatrix18.model.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class UserDto {
 
@@ -17,6 +21,15 @@ public class UserDto {
 
     @NotBlank(message = "Displayname is required")
     private String displayname;
+
+    @NotNull(message = "Department is required")
+    private Department department;
+
+    @NotNull(message = "Position is required")
+    private Position position;
+
+    @NotNull(message = "Role is required")
+    private Role role;
 
     @NotBlank(message = "Email is required")
     private String email;
@@ -54,6 +67,18 @@ public class UserDto {
 
     public void setDisplayname(String displayname) { this.displayname = displayname; }
 
+    public Department getDepartment() { return department; }
+
+    public void setDepartment(Department department) { this.department = department; }
+
+    public Position getPosition() { return position; }
+
+    public void setPosition(Position position) { this.position = position; }
+
+    public Role getRole() { return role; }
+
+    public void setRole(Role role) { this.role = role; }
+
     public String getEmail() { return email; }
 
     public void setEmail(String email) { this.email = email; }
@@ -66,13 +91,13 @@ public class UserDto {
 
     public void setAge(String age) { this.age = age; }
 
-    public Boolean getMan() { return isMan; }
+    public Boolean getIsMan() { return isMan; }
 
-    public void setMan(Boolean man) { isMan = man; }
+    public void setIsMan(Boolean man) { isMan = man; }
 
-    public Boolean getPictureSet() { return isPictureSet; }
+    public Boolean getIsPictureSet() { return isPictureSet; }
 
-    public void setPictureSet(Boolean pictureSet) { isPictureSet = pictureSet; }
+    public void setIsPictureSet(Boolean pictureSet) { isPictureSet = pictureSet; }
 
     public String getAddress() { return address; }
 

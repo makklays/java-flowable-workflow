@@ -47,37 +47,92 @@
                     <div class="card-text">
                         <form th:action="@{/users/add}" th:object="${userDto}" method="post">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
+                                <label for="username" class="form-label required">Username</label>
                                 <input type="text" id="username" th:field="*{username}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="firstname" class="form-label">Firstname</label>
+                                <label for="firstname" class="form-label required">Firstname</label>
                                 <input type="text" id="firstname" th:field="*{firstname}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}">Firstname error</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="lastname" class="form-label">Firstname</label>
+                                <label for="lastname" class="form-label required">Lastname</label>
                                 <input type="text" id="lastname" th:field="*{lastname}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}">Lastname error</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="displayname" class="form-label">Display name</label>
+                                <label for="displayname" class="form-label required">Display name</label>
                                 <input type="text" id="displayname" th:field="*{displayname}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('displayname')}" th:errors="*{displayname}">Displayname error</div>
                             </div>
 
+                            <!-- department -->
+                            <div class="mb-3" th:if="${departments != null and !#lists.isEmpty(departments)}">
+                                <label for="department" class="form-label required">Department</label>
+                                <select id="department" th:field="*{department}" class="form-select">
+                                    <option value="" disabled selected>-- Select Department --</option>
+                                    <option th:each="dept : ${departments}"
+                                            th:value="${dept.id}"
+                                            th:text="${dept.title}">
+                                    </option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('department')}" th:errors="*{department}">Department error</div>
+                            </div>
+                            <div th:if="${departments == null or #lists.isEmpty(departments)}" class="alert alert-warning mt-3">
+                                Need to add some <a th:href="@{/departments/add}">departments</a>
+                            </div>
+
+                            <!-- position -->
+                            <div class="mb-3" th:if="${positions != null and !#lists.isEmpty(positions)}">
+                                <label for="position" class="form-label required">Position</label>
+                                <select id="position" th:field="*{position}" class="form-select">
+                                    <!-- обычный value, без th:value -->
+                                    <option value="" disabled selected>-- Select Position --</option>
+                                    <option th:each="pos : ${positions}"
+                                            th:value="${pos.id}"
+                                            th:text="${pos.title}">
+                                    </option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}">
+                                    Position error
+                                </div>
+                            </div>
+                            <div th:if="${positions == null or #lists.isEmpty(positions)}" class="alert alert-warning mt-3">
+                                Need to add some <a th:href="@{/positions/add}">positions</a>
+                            </div>
+
+                            <!-- role -->
+                            <div class="mb-3" th:if="${roles != null and !#lists.isEmpty(roles)}">
+                                <label for="role" class="form-label required">Roles</label>
+                                <select id="role" th:field="*{role}" class="form-select">
+                                    <!-- обычный value, без th:value -->
+                                    <option value="" disabled selected>-- Select Position --</option>
+                                    <option th:each="ro : ${roles}"
+                                            th:value="${ro.id}"
+                                            th:text="${ro.title}">
+                                    </option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}">
+                                    Position error
+                                </div>
+                            </div>
+                            <div th:if="${roles == null or #lists.isEmpty(roles)}" class="alert alert-warning mt-3">
+                                Need to add some <a th:href="@{/roles/add}">roles</a>
+                            </div>
+
+
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="email" class="form-label required">Email</label>
                                 <input type="text" id="email" th:field="*{email}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="phone" class="form-label">Phone</label>
+                                <label for="phone" class="form-label required">Phone</label>
                                 <input type="text" id="phone" th:field="*{phone}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Phone error</div>
                             </div>
@@ -89,7 +144,18 @@
                             </div>
 
                             <!-- checkbox isMan -->
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" id="isMan" th:field="*{isMan}" class="form-check-input" />
+                                <label for="isMan" class="form-check-label">Is man?</label>
+                                <div class="text-danger" th:if="${#fields.hasErrors('isMan')}" th:errors="*{isMan}">isMan error</div>
+                            </div>
+
                             <!-- checkbox isPictureSet -->
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" id="isPictureSet" th:field="*{isPictureSet}" class="form-check-input" />
+                                <label for="isPictureSet" class="form-check-label">Is show picture?</label>
+                                <div class="text-danger" th:if="${#fields.hasErrors('isPictureSet')}" th:errors="*{isPictureSet}">isPictureSet error</div>
+                            </div>
 
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address</label>

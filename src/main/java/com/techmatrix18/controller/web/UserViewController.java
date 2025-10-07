@@ -2,6 +2,9 @@ package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.UserDto;
 import com.techmatrix18.model.User;
+import com.techmatrix18.service.DepartmentService;
+import com.techmatrix18.service.PositionService;
+import com.techmatrix18.service.RoleService;
 import com.techmatrix18.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -31,9 +34,18 @@ public class UserViewController {
     Logger log = Logger.getLogger(UserViewController.class.getName());
 
     private final UserService userService;
+    private final DepartmentService departmentService;
+    private final PositionService positionService;
+    private final RoleService roleService;
 
-    public UserViewController(UserService userService) {
+    public UserViewController(UserService userService,
+                              DepartmentService departmentService,
+                              PositionService positionService,
+                              RoleService roleService) {
         this.userService = userService;
+        this.departmentService = departmentService;
+        this.positionService = positionService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/welcome")
@@ -61,15 +73,18 @@ public class UserViewController {
                               @RequestParam(defaultValue = "10") int size,
                               Model model) {
         Page<User> usersPage = userService.getAllPaginated(page, size);
-        model.addAttribute("rolesPage", usersPage);
+        model.addAttribute("usersPage", usersPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", usersPage.getTotalPages());
-        return "roles/index";
+        return "users/index";
     }
 
     @GetMapping("/users/add")
     public String addUser(Model model) {
         model.addAttribute("userDto", new UserDto()); // empty form
+        model.addAttribute("departments", departmentService.getAll());
+        model.addAttribute("positions", positionService.getAll());
+        model.addAttribute("roles", roleService.getAll());
         return "users/add";
     }
 
@@ -88,11 +103,14 @@ public class UserViewController {
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
         user.setDisplayname(userDto.getDisplayname());
+        user.setDepartment(userDto.getDepartment());
+        user.setPosition(userDto.getPosition());
+        user.setRole(userDto.getRole());
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
         user.setAge(userDto.getAge());
-        user.setMan(userDto.getMan());
-        user.setPictureSet(userDto.getPictureSet());
+        user.setMan(userDto.getIsMan());
+        user.setPictureSet(userDto.getIsPictureSet());
         user.setAddress(userDto.getAddress());
         user.setStartWorkAt(LocalDate.now());
         user.setCreatedAt(LocalDateTime.now());
@@ -129,8 +147,8 @@ public class UserViewController {
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
         user.setAge(userDto.getAge());
-        user.setMan(userDto.getMan());
-        user.setPictureSet(userDto.getPictureSet());
+        user.setMan(userDto.getIsMan());
+        user.setPictureSet(userDto.getIsPictureSet());
         user.setAddress(userDto.getAddress());
         user.setUpdatedAt(LocalDateTime.now());
 

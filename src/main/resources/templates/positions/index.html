@@ -87,24 +87,27 @@
                         </table>
 
                         <!-- pages navigation -->
-                        <nav>
-                            <ul class="pagination justify-content-left">
-                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/positions(page=${currentPage - 1}, size=${positionsPage.size})}">Previous</a>
-                                </li>
+                        <div th:if="${positionsPage.totalElements > 0}">
+                            <nav>
+                                <ul class="pagination justify-content-left">
+                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/positions(page=${currentPage - 1}, size=${positionsPage.size})}">Previous</a>
+                                    </li>
 
-                                <li class="page-item"
-                                    th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                                    th:classappend="${pageNum == currentPage} ? 'active'">
-                                    <a class="page-link" th:href="@{/positions(page=${pageNum}, size=${positionsPage.size})}"
-                                       th:text="${pageNum + 1}">1</a>
-                                </li>
+                                    <li class="page-item"
+                                        th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                                        th:classappend="${pageNum == currentPage} ? 'active'">
+                                        <a class="page-link" th:href="@{/positions(page=${pageNum}, size=${positionsPage.size})}"
+                                           th:text="${pageNum + 1}">1</a>
+                                    </li>
 
-                                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/positions(page=${currentPage + 1}, size=${positionsPage.size})}">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
+                                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/positions(page=${currentPage + 1}, size=${positionsPage.size})}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
                     </div>
                 </div>
             </div>

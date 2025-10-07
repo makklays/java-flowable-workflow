@@ -70,8 +70,19 @@ public class UserService {
     private UserDto mapToDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
         dto.setFirstname(user.getFirstname());
         dto.setLastname(user.getLastname());
+        dto.setDisplayname(user.getDisplayname());
+        dto.setDepartment(user.getDepartment());
+        dto.setPosition(user.getPosition());
+        dto.setRole(user.getRole());
+        dto.setEmail(user.getEmail());
+        dto.setPhone(user.getPhone());
+        dto.setIsMan(user.getMan());
+        dto.setIsPictureSet(user.getPictureSet());
+        dto.setAge(user.getAge());
+        dto.setAddress(user.getAddress());
         return dto;
     }
 

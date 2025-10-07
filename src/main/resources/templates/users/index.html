@@ -56,7 +56,11 @@
                             <thead>
                             <tr>
                                 <th class="text-center align-middle" scope="col" >#</th>
-                                <th class="align-middle" scope="col">Title</th>
+                                <th class="align-middle" scope="col">Display name</th>
+                                <th class="align-middle" scope="col">Department</th>
+                                <th class="align-middle" scope="col">Position</th>
+                                <th class="align-middle" scope="col">E-mail</th>
+                                <th class="align-middle" scope="col">Phone</th>
                                 <th class="text-center align-middle" scope="col" >Created</th>
                                 <th class="text-center align-middle" scope="col" >Updated</th>
                                 <th class="text-center align-middle" scope="col" style="width:350px;" >Actions</th>
@@ -66,8 +70,18 @@
                             <tr th:each="user, iterStat : ${usersPage.content}">
                                 <th class="text-center align-middle" th:text="${iterStat.index + 1 + (currentPage * usersPage.size)}"></th>
                                 <td class="align-middle">
-                                    <a th:href="@{/users/view/{id}(id=${user.id})}" th:text="${user.title}"></a>
+                                    <a th:href="@{/users/view/{id}(id=${user.id})}" th:text="${user.displayname}"></a>
                                 </td>
+
+                                <td class="align-middle">
+                                    <a th:href="@{/departments/view/{id}(id=${user.department.id})}" th:text="${user.department.title}"></a>
+                                </td>
+                                <td class="align-middle">
+                                    <a th:href="@{/positions/view/{id}(id=${user.position.id})}" th:text="${user.position.title}"></a>
+                                </td>
+                                <td class="align-middle" th:text="${user.email}"></td>
+                                <td class="align-middle" th:text="${user.phone}"></td>
+
                                 <td class="text-center align-middle"
                                     th:text="${user.createdAt != null} ? ${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')} : '-' ">
                                 </td>

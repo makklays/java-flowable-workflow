@@ -106,6 +106,7 @@ public class UserViewController {
         user.setDepartment(userDto.getDepartment());
         user.setPosition(userDto.getPosition());
         user.setRole(userDto.getRole());
+        user.setTenantId("1");
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
         user.setAge(userDto.getAge());
@@ -126,6 +127,9 @@ public class UserViewController {
     public String editUser(@PathVariable Long id, Model model) {
         UserDto userDto = userService.getByIdDto(id);
         model.addAttribute("userDto", userDto);
+        model.addAttribute("departments", departmentService.getAll());
+        model.addAttribute("positions", positionService.getAll());
+        model.addAttribute("roles", roleService.getAll());
         return "users/edit";
     }
 
@@ -144,6 +148,10 @@ public class UserViewController {
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
         user.setDisplayname(userDto.getDisplayname());
+        user.setDepartment(userDto.getDepartment());
+        user.setPosition(userDto.getPosition());
+        user.setRole(userDto.getRole());
+        user.setTenantId("1");
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
         user.setAge(userDto.getAge());

@@ -53,12 +53,66 @@
                                 <td th:text="${user.id}"></td>
                             </tr>
                             <tr>
-                                <th scope="row">Title</th>
-                                <td th:text="${user.title}"></td>
+                                <th scope="row">User name</th>
+                                <td th:text="${user.username}"></td>
                             </tr>
                             <tr>
-                                <th scope="row">Description</th>
-                                <td th:text="${user.description}" style="white-space: pre-wrap;"></td>
+                                <th scope="row">Display name</th>
+                                <th th:text="${user.displayname}"></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">First name</th>
+                                <td th:text="${user.firstname}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Last name</th>
+                                <td th:text="${user.lastname}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Department</th>
+                                <td>
+                                    <a th:href="@{/departments/view/{id}(id=${user.department.id})}" th:text="${user.department.title}"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Position</th>
+                                <td>
+                                    <a th:href="@{/positions/view/{id}(id=${user.position.id})}" th:text="${user.position.title}"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Role</th>
+                                <td>
+                                    <a th:href="@{/roles/view/{id}(id=${user.role.id})}" th:text="${user.role.title}"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">E-mail</th>
+                                <td th:text="${user.email}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Phone</th>
+                                <td th:text="${user.phone}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Age</th>
+                                <td th:text="${#strings.isEmpty(user.age) ? '-' : user.age}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Is man?</th>
+                                <td th:text="${user.getMan()} ? 'Male' : 'Female'"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Is show picture?</th>
+                                <td th:text="${user.getPictureSet()} ? 'Yes' : 'No'"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Address</th>
+                                <td th:text="${#strings.isEmpty(user.address) ? '-' : user.address}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Start work</th>
+                                <td th:text="${user.startWorkAt != null ? #temporals.format(user.startWorkAt, 'dd.MM.yyyy') : '-'}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">Created</th>

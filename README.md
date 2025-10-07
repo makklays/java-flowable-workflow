@@ -11,10 +11,7 @@ Simple structure of Bank 🏦 - UML schema
 <p align="left">
     <img src="./src/main/resources/mystatic/images/1000000296.png" width="170" />
     <img src="./src/main/resources/mystatic/images/1000000295.png" width="170" />
-    <img src="./src/main/resources/mystatic/images/1000000169.png" width="170" />
-</p>
-
-<p align="left">
+    <!--img src="./src/main/resources/mystatic/images/1000000169.png" width="170" /-->
     <img src="./src/main/resources/mystatic/images/1000000170.png" width="170" />
     <img src="./src/main/resources/mystatic/images/1000000161.jpg" width="170" />
 </p>

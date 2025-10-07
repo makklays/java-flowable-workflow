@@ -1,7 +1,14 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.ClientDto;
+import com.techmatrix18.dto.ContactDto;
+import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Contact;
 import com.techmatrix18.repository.ContactRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -30,8 +37,38 @@ public class ContactService {
     }
 
     // Find contact by ID
-    public Optional<Contact> getContactById(Long id) {
+    public Optional<Contact> getById(Long id) {
         return contactRepository.findById(id);
+    }
+
+    /**
+     * Finds all contacts by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Contact> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return contactRepository.findAll(pageable);
+    }
+
+    public ContactDto getByIdDto(Long id) {
+        Contact contact = contactRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
+        return mapToDto(contact);
+    }
+
+    private ContactDto mapToDto(Contact contact) {
+        ContactDto dto = new ContactDto();
+        dto.setId(contact.getId());
+        dto.setClient(contact.getClient());
+        dto.setFirstname(contact.getFirstname());
+        dto.setLastname(contact.getLastname());
+        dto.setEmail(contact.getEmail());
+        dto.setPhone(contact.getPhone());
+        dto.setPosition(contact.getPosition());
+        return dto;
     }
 
     // Find contact by email

@@ -9,3 +9,8 @@ URL:
 http://localhost:8081/swagger-ui/index.html
 ----------------------------------------------
 
+1. Client - first step (it is a Company, Organization or Men)
+2. Contact - second step (person that work with you from Company)
+3. Activity - third step (calls with Contact from Company)
+4. Deal - last step (deals is Client + Contact + Activity)
+

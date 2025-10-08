@@ -1,8 +1,15 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.ActivityDto;
+import com.techmatrix18.dto.ClientDto;
+import com.techmatrix18.model.Client;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.repository.ActivityRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -31,8 +38,38 @@ public class ActivityService {
     }
 
     // Find activity by ID
-    public Optional<Activity> getActivityById(Long id) {
+    public Optional<Activity> getById(Long id) {
         return activityRepository.findById(id);
+    }
+
+    /**
+     * Finds all activities by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Activity> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return activityRepository.findAll(pageable);
+    }
+
+    public ActivityDto getByIdDto(Long id) {
+        Activity activity = activityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Activity not found"));
+        return mapToDto(activity);
+    }
+
+    private ActivityDto mapToDto(Activity activity) {
+        ActivityDto dto = new ActivityDto();
+        dto.setId(activity.getId());
+        dto.setClient(activity.getClient());
+        dto.setContact(activity.getContact());
+        dto.setType(activity.getType());
+        dto.setDescription(activity.getDescription());
+        dto.setDateTime(String.valueOf(activity.getDateTime()));
+        dto.setStatus(activity.getStatus());
+        return dto;
     }
 
     // Find activities by title

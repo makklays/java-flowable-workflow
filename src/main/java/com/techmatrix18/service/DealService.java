@@ -1,8 +1,15 @@
 package com.techmatrix18.service;
 
+import com.techmatrix18.dto.ActivityDto;
+import com.techmatrix18.dto.DealDto;
+import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.enums.DealStage;
 import com.techmatrix18.model.Deal;
 import com.techmatrix18.repository.DealRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -33,8 +40,39 @@ public class DealService {
     }
 
     // Find deal by ID
-    public Optional<Deal> getDealById(Long id) {
+    public Optional<Deal> getById(Long id) {
         return dealRepository.findById(id);
+    }
+
+    /**
+     * Finds all deals by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Deal> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return dealRepository.findAll(pageable);
+    }
+
+    public DealDto getByIdDto(Long id) {
+        Deal deal = dealRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Deal not found"));
+        return mapToDto(deal);
+    }
+
+    private DealDto mapToDto(Deal deal) {
+        DealDto dto = new DealDto();
+        dto.setId(deal.getId());
+        dto.setClient(deal.getClient());
+        dto.setName(deal.getName());
+        dto.setAmount(String.valueOf(deal.getAmount()));
+        dto.setCurrency(deal.getCurrency());
+        dto.setStage(deal.getStage());
+        dto.setStartDate(String.valueOf(deal.getStartDate()));
+        dto.setCloseDate(String.valueOf(deal.getCloseDate()));
+        return dto;
     }
 
     // Find deal by name

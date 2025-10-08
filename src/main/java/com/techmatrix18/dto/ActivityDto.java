@@ -11,12 +11,16 @@ public class ActivityDto {
 
     private Long id;
 
+    @NotBlank(message = "Title is required")
+    private String title;
+
     @NotNull(message = "Client is required")
     private Client client;
 
     @NotNull(message = "Contact is required")
     private Contact contact;
 
+    @NotNull(message = "Type is required")
     private ActivityType type;
 
     private String description;
@@ -24,6 +28,7 @@ public class ActivityDto {
     @NotBlank(message = "DateTime is required")
     private String dateTime;
 
+    @NotNull(message = "Status is required")
     private ActivityStatus status;
 
     // getters/setters
@@ -39,6 +44,10 @@ public class ActivityDto {
     public Contact getContact() { return contact; }
 
     public void setContact(Contact contact) { this.contact = contact; }
+
+    public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
 
     public ActivityType getType() { return type; }
 

@@ -63,6 +63,7 @@ public class ActivityService {
     private ActivityDto mapToDto(Activity activity) {
         ActivityDto dto = new ActivityDto();
         dto.setId(activity.getId());
+        dto.setTitle(activity.getTitle());
         dto.setClient(activity.getClient());
         dto.setContact(activity.getContact());
         dto.setType(activity.getType());

@@ -67,77 +67,57 @@
                                 Need to add some <a th:href="@{/clients/add}">clients</a>
                             </div>
 
-                            <!-- contact -->
-                            <div class="mb-3" th:if="${contacts != null and !#lists.isEmpty(contacts)}">
-                                <label for="contact" class="form-label required">Contacts</label>
-                                <select id="contact" th:field="*{contact}" class="form-select">
-                                    <!-- обычный value, без th:value -->
-                                    <option value="" disabled selected>-- Select Contact --</option>
-                                    <option th:each="con : ${contacts}"
-                                            th:value="${con.id}"
-                                            th:text="${con.firstname+' '+con.lastname}">
-                                    </option>
-                                </select>
-                                <div class="text-danger" th:if="${#fields.hasErrors('contact')}" th:errors="*{contact}">
-                                    Contact error
-                                </div>
-                            </div>
-                            <div th:if="${contacts == null or #lists.isEmpty(contacts)}" class="alert alert-warning mt-3">
-                                Need to add some <a th:href="@{/contacts/add}">contacts</a>
-                            </div>
-
-                            <!--div class="mb-3">
+                            <!-- name -->
+                            <div class="mb-3">
                                 <label for="name" class="form-label required">Name</label>
                                 <input type="text" id="name" th:field="*{name}" class="form-control"  />
                                 <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
-                            </div-->
+                            </div>
 
-                            <!-- types -->
-                            <div class="mb-3" th:if="${types != null and !#lists.isEmpty(types)}">
-                                <label for="type" class="form-label required">Activity Type</label>
-                                <select id="type" th:field="*{type}" class="form-select">
+                            <!-- amount -->
+                            <div class="mb-3">
+                                <label for="amount" class="form-label required">Amount</label>
+                                <input type="text" id="amount" th:field="*{amount}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount error</div>
+                            </div>
+
+                            <!-- currency -->
+                            <div class="mb-3">
+                                <label for="currency" class="form-label required">Currency</label>
+                                <input type="text" id="currency" th:field="*{currency}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}">Currency error</div>
+                            </div>
+
+                            <!-- stages -->
+                            <div class="mb-3" th:if="${stages != null and !#lists.isEmpty(stages)}">
+                                <label for="stage" class="form-label required">Deal Stage</label>
+                                <select id="stage" th:field="*{stage}" class="form-select">
                                     <option value="" disabled selected>-- Select Activity Type --</option>
-                                    <option th:each="t : ${types}"
-                                            th:value="${t}"
-                                            th:text="${t}">
+                                    <option th:each="st : ${stages}"
+                                            th:value="${st}"
+                                            th:text="${st}">
                                     </option>
                                 </select>
-                                <div class="text-danger" th:if="${#fields.hasErrors('type')}" th:errors="*{type}">
-                                    Type error
+                                <div class="text-danger" th:if="${#fields.hasErrors('stage')}" th:errors="*{stage}">
+                                    Stage error
                                 </div>
                             </div>
-                            <div th:if="${types == null or #lists.isEmpty(types)}" class="alert alert-warning mt-3">
-                                Need to add some types
+                            <div th:if="${stages == null or #lists.isEmpty(stages)}" class="alert alert-warning mt-3">
+                                Need to add some stages
                             </div>
 
+                            <!-- start date -->
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea id="description" th:field="*{description}" class="form-control" rows="4" ></textarea>
-                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
+                                <label for="startDate" class="form-label required">Start Date</label>
+                                <input type="datetime-local" id="startDate" th:field="*{startDate}" class="form-control" />
+                                <div class="text-danger" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">Start Date error</div>
                             </div>
 
+                            <!-- close date -->
                             <div class="mb-3">
-                                <label for="dateTime" class="form-label">DateTime</label>
-                                <input type="text" id="dateTime" th:field="*{dateTime}" class="form-control"  />
-                                <div class="text-danger" th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}">DateTime error</div>
-                            </div>
-
-                            <!-- status -->
-                            <div class="mb-3" th:if="${statuses != null and !#lists.isEmpty(statuses)}">
-                                <label for="status" class="form-label required">Activity Status</label>
-                                <select id="status" th:field="*{status}" class="form-select">
-                                    <option value="" disabled selected>-- Select Activity Status --</option>
-                                    <option th:each="t : ${statuses}"
-                                            th:value="${t}"
-                                            th:text="${t}">
-                                    </option>
-                                </select>
-                                <div class="text-danger" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">
-                                    Status error
-                                </div>
-                            </div>
-                            <div th:if="${statuses == null or #lists.isEmpty(statuses)}" class="alert alert-warning mt-3">
-                                Need to add some statuses
+                                <label for="closeDate" class="form-label required">Close Date</label>
+                                <input type="datetime-local" id="closeDate" th:field="*{closeDate}" class="form-control" />
+                                <div class="text-danger" th:if="${#fields.hasErrors('closeDate')}" th:errors="*{closeDate}">Close Date error</div>
                             </div>
 
                             <button type="submit" class="btn btn-primary me-2" style="width:120px;">

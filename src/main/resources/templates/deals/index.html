@@ -60,6 +60,7 @@
                                 <th class="align-middle" scope="col">Name</th>
                                 <th class="align-middle" scope="col">Amount</th>
                                 <th class="align-middle" scope="col">Currency</th>
+                                <th class="align-middle" scope="col">Stage</th>
                                 <th class="text-center align-middle" scope="col" >Created</th>
                                 <th class="text-center align-middle" scope="col" >Updated</th>
                                 <th class="text-center align-middle" scope="col" style="width:350px;" >Actions</th>
@@ -74,8 +75,10 @@
                                 <td class="align-middle">
                                     <a th:href="@{/deals/view/{id}(id=${deal.id})}" th:text="${deal.name != null ? deal.name : '-'}"></a>
                                 </td>
+
                                 <td class="align-middle" th:text="${deal.amount != null ? deal.amount : '-'}"></td>
                                 <td class="align-middle" th:text="${deal.currency != null ? deal.currency : '-'}"></td>
+                                <td class="align-middle" th:text="${deal.stage != null ? deal.stage : '-'}"></td>
 
                                 <td class="text-center align-middle"
                                     th:text="${deal.createdAt != null} ? ${#temporals.format(deal.createdAt, 'dd.MM.yyyy HH:mm')} : '-' ">

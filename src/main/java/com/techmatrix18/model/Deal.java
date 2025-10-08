@@ -40,10 +40,10 @@ public class Deal {
     private DealStage stage;           // Deal's stage
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;       // Start date
+    private LocalDateTime startDate;       // Start date
 
     @Column(name = "close_date")
-    private LocalDate closeDate;       // Closing date (if any)
+    private LocalDateTime closeDate;       // Closing date (if any)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
@@ -109,19 +109,19 @@ public class Deal {
         this.stage = stage;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getCloseDate() {
+    public LocalDateTime getCloseDate() {
         return closeDate;
     }
 
-    public void setCloseDate(LocalDate closeDate) {
+    public void setCloseDate(LocalDateTime closeDate) {
         this.closeDate = closeDate;
     }
 

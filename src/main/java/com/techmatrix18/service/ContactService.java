@@ -32,7 +32,7 @@ public class ContactService {
     }
 
     // Get all contacts
-    public List<Contact> getAllContacts() {
+    public List<Contact> getAll() {
         return contactRepository.findAll();
     }
 

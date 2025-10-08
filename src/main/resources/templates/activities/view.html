@@ -53,9 +53,14 @@
                                 <td th:text="${activity.id}"></td>
                             </tr>
                             <tr>
-                                <th scope="row">Name</th>
-                                <th th:text="${activity.name}"></th>
+                                <th scope="row">Title</th>
+                                <th th:text="${activity.title}"></th>
                             </tr>
+                            <tr>
+                                <th scope="row">Description</th>
+                                <td th:text="${activity.description}"></td>
+                            </tr>
+
                             <tr>
                                 <th scope="row">Client</th>
                                 <td>
@@ -73,10 +78,6 @@
                                 <th scope="row">Type</th>
                                 <td th:text="${activity.type}"></td>
                             </tr>
-                            <tr>
-                                <th scope="row">Description</th>
-                                <td th:text="${activity.description}"></td>
-                            </tr>
 
                             <tr>
                                 <th scope="row">Date time</th>
@@ -85,15 +86,6 @@
                             <tr>
                                 <th scope="row">Status</th>
                                 <td th:text="${activity.status}"></td>
-                            </tr>
-
-                            <tr>
-                                <th scope="row">Source</th>
-                                <td th:text="${activity.source}"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Tags</th>
-                                <td th:text="${activity.tags}"></td>
                             </tr>
 
                             <tr>

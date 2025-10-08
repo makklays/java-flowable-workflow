@@ -48,6 +48,20 @@
                         <form th:action="@{/activities/edit}" th:object="${activityDto}" method="post">
                             <input type="hidden" th:field="*{id}" />
 
+                            <!-- title -->
+                            <div class="mb-3">
+                                <label for="title" class="form-label required">Title</label>
+                                <input type="text" id="title" th:field="*{title}" class="form-control"  />
+                                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
+                            </div>
+
+                            <!-- description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="4" ></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
+                            </div>
+
                             <!-- client -->
                             <div class="mb-3" th:if="${clients != null and !#lists.isEmpty(clients)}">
                                 <label for="client" class="form-label required">Clients</label>
@@ -86,12 +100,6 @@
                                 Need to add some <a th:href="@{/contacts/add}">contacts</a>
                             </div>
 
-                            <!--div class="mb-3">
-                                <label for="name" class="form-label required">Name</label>
-                                <input type="text" id="name" th:field="*{name}" class="form-control"  />
-                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
-                            </div-->
-
                             <!-- types -->
                             <div class="mb-3" th:if="${types != null and !#lists.isEmpty(types)}">
                                 <label for="type" class="form-label required">Activity Type</label>
@@ -110,15 +118,11 @@
                                 Need to add some types
                             </div>
 
+                            <!-- date time -->
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea id="description" th:field="*{description}" class="form-control" rows="4" ></textarea>
-                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="dateTime" class="form-label">DateTime</label>
-                                <input type="text" id="dateTime" th:field="*{dateTime}" class="form-control"  />
+                                <label for="dateTime" class="form-label required">DateTime</label>
+                                <!--input type="text" id="dateTime" th:field="*{dateTime}" class="form-control" /-->
+                                <input type="datetime-local" id="dateTime" th:field="*{dateTime}" class="form-control" />
                                 <div class="text-danger" th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}">DateTime error</div>
                             </div>
 

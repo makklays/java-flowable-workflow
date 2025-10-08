@@ -62,7 +62,7 @@ public class ContactViewController {
     @GetMapping("/contacts/add")
     public String addContact(Model model) {
         model.addAttribute("contactDto", new ContactDto()); // empty form
-        model.addAttribute("clients", clientService.getAllClients());
+        model.addAttribute("clients", clientService.getAll());
         return "contacts/add";
     }
 
@@ -100,7 +100,7 @@ public class ContactViewController {
     public String editContact(@PathVariable Long id, Model model) {
         ContactDto contactDto = contactService.getByIdDto(id);
         model.addAttribute("contactDto", contactDto);
-        model.addAttribute("clients", clientService.getAllClients());
+        model.addAttribute("clients", clientService.getAll());
         return "contacts/edit";
     }
 

@@ -7,11 +7,13 @@ CREATE TABLE activities
 (
     id            bigint auto_increment primary key,
 
+    title         varchar(255) not null,
+    description   longtext null,
+
     client_id     bigint not null,
     contact_id    bigint not null,
 
     type          varchar(50) not null,
-    description   longtext null,
 
     date_time     datetime(6)  null,
     owner_id      bigint not null,

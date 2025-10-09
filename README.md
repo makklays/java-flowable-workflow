@@ -18,8 +18,11 @@ Simple structure of Bank 🏦 - UML schema
 
 ### Screens
 <p align="left">
+    /api/auth/login (send login and password)
     <img src="./src/main/resources/mystatic/images/screen1.png"  />
+    /api/v1/clients 
     <img src="./src/main/resources/mystatic/images/screen2.png"  />
+    /api/v1/clients (jwt token expired)
     <img src="./src/main/resources/mystatic/images/screen3.png"  /> 
 </p>
 

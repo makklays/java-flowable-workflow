@@ -93,6 +93,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                 );
 
         return http.build();

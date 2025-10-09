@@ -20,5 +20,6 @@ Simple structure of Bank 🏦 - UML schema
 <p align="left">
     <img src="./src/main/resources/mystatic/images/screen1.png" width="570" />
     <img src="./src/main/resources/mystatic/images/screen2.png" width="570" />
+    <img src="./src/main/resources/mystatic/images/screen3.png" width="570" /> 
 </p>
 

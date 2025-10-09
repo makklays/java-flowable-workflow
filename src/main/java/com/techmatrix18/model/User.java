@@ -22,7 +22,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
@@ -192,7 +192,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", role=" + role +
+                //", role=" + role +
                 ", department=" + department +
                 ", position=" + position +
                 ", tenantId='" + tenantId + '\'' +

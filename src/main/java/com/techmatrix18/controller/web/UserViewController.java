@@ -56,6 +56,11 @@ public class UserViewController {
         return "welcome";
     }
 
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "login";
+    }
+
     @GetMapping("/panel")
     public String panel(Model model) {
         return "panel";

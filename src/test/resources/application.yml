@@ -50,6 +50,10 @@ spring:
     livereload:
       enabled: true    # включение LiveReload для автообновления страницы
 
+jwt:
+  secret: MySuperSecretKey1234567890
+  expiration: 3600000
+
 flowable:
   app:
     enabled: false

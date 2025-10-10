@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -59,13 +60,45 @@ public class DepartmentController {
     public ResponseEntity addDepartment(@Valid @RequestBody DepartmentDto departmentDto) {
         log.info("Creating new department ID = " + departmentDto.getTitle());
         Department department = DepartmentMapper.toEntity(departmentDto);
-        boolean added = departmentService.addDepartment(department);
 
+        boolean added = departmentService.addDepartment(department);
         if (added) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Department successfully added");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add department");
         }
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update existing department by ID", description = "Updates data for an existing department by ID")
+    public ResponseEntity updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departmentDto) {
+        Department department = departmentService.getById(id);
+        if (department == null) {
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Updating department with ID + " + id);
+
+        department.setTitle(departmentDto.getTitle());
+        department.setDescription(departmentDto.getDescription());
+        department.setUpdatedAt(LocalDateTime.now());
+
+        boolean updated = departmentService.updateDepartment(department);
+        if (updated) {
+            return ResponseEntity.status(HttpStatus.OK).body("Department successfully updated");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update department");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete department by ID", description = "Deletes a department by ID")
+    public ResponseEntity deleteDepartment(@PathVariable Long id) {
+        log.info("Deleting Department ID = " + id);
+        if (departmentService.getById(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        departmentService.deleteDepartment(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

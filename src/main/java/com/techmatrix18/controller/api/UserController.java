@@ -6,8 +6,11 @@ import com.techmatrix18.model.User;
 import com.techmatrix18.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,6 +53,57 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping
+    @Operation(summary = "Create new user", description = "Adds a new user to the system")
+    public ResponseEntity addUser(@Valid @RequestBody UserDto userDto) {
+        log.info("Creating new user ID = " + userDto.getDisplayname());
+        User user = UserMapper.toEntity(userDto);
+        User saved = userService.addUser(user);
+        return ResponseEntity
+                .created(URI.create("/api/v1/users/" + saved.getId()))
+                .body(UserMapper.toDto(saved));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update existing user by ID", description = "Updates data for an existing user by ID")
+    public ResponseEntity updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
+        User user = userService.getById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Updating user with ID " + id);
+
+        user.setFirstname(userDto.getFirstname());
+        user.setLastname(userDto.getLastname());
+        user.setUsername(userDto.getUsername());
+        user.setDisplayname(userDto.getDisplayname());
+        user.setRole(userDto.getRole());
+        user.setDepartment(userDto.getDepartment());
+        user.setPosition(userDto.getPosition());
+        user.setEmail(userDto.getEmail());
+        user.setPhone(userDto.getPhone());
+        user.setAge(userDto.getAge());
+        user.setMan(userDto.getIsMan());
+        user.setPictureSet(userDto.getIsPictureSet());
+        user.setAddress(userDto.getAddress());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User updated = userService.updateUser(user);
+
+        return ResponseEntity.ok(UserMapper.toDto(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user by ID", description = "Deletes a user by ID")
+    public ResponseEntity deleteUser(@PathVariable Long id) {
+        log.info("Deleting User ID = " + id);
+        if (userService.getById(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

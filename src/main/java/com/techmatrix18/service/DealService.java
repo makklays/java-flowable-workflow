@@ -2,6 +2,7 @@ package com.techmatrix18.service;
 
 import com.techmatrix18.dto.ActivityDto;
 import com.techmatrix18.dto.DealDto;
+import com.techmatrix18.dto.DealInfoDto;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.enums.DealStage;
 import com.techmatrix18.model.Deal;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -160,6 +162,15 @@ public class DealService {
     // Delete deals by ID
     public void deleteDeal(Long id) {
         dealRepository.deleteById(id);
+    }
+
+    /**
+     * Get Deals from CRM by Owner
+     * @param ownerId
+     * @return
+     */
+    public List<DealInfoDto> getDealsByOwner(Long ownerId) {
+        return dealRepository.findDealsByOwner(ownerId);
     }
 }
 

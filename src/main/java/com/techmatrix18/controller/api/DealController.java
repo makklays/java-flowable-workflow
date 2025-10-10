@@ -1,6 +1,7 @@
 package com.techmatrix18.controller.api;
 
 import com.techmatrix18.dto.DealDto;
+import com.techmatrix18.dto.DealInfoDto;
 import com.techmatrix18.mapper.DealMapper;
 import com.techmatrix18.model.Deal;
 import com.techmatrix18.service.DealService;
@@ -102,6 +103,12 @@ public class DealController {
         }
         dealService.deleteDeal(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<DealInfoDto>> getDealsByOwner(@PathVariable Long ownerId) {
+        List<DealInfoDto> deals = dealService.getDealsByOwner(ownerId);
+        return ResponseEntity.ok(deals);
     }
 }
 

@@ -1,8 +1,11 @@
 package com.techmatrix18.repository;
 
+import com.techmatrix18.dto.DealInfoDto;
 import com.techmatrix18.model.enums.DealStage;
 import com.techmatrix18.model.Deal;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -63,5 +66,18 @@ public interface DealRepository extends JpaRepository<Deal, Long> {
     List<Deal> findByOwnerIdAndStage(Long ownerId, DealStage stage);
 
     List<Deal> findByOwnerIdAndCloseDateIsNull(Long ownerId); // active transactions
+
+    @Query(value = """
+        SELECT d.id AS deal_id,
+               d.name AS deal_name,
+               d.amount,
+               d.currency,
+               c.firstname AS client_firstname,
+               c.lastname AS client_lastname
+        FROM deals d
+        JOIN clients c ON d.client_id = c.id
+        WHERE d.owner_id = :ownerId
+    """, nativeQuery = true)
+    List<DealInfoDto> findDealsByOwner(@Param("ownerId") Long ownerId);
 }
 

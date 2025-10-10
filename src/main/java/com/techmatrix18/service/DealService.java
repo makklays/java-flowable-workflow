@@ -35,7 +35,7 @@ public class DealService {
     }
 
     // Get all deals
-    public List<Deal> getAllDeals() {
+    public List<Deal> getAll() {
         return dealRepository.findAll();
     }
 

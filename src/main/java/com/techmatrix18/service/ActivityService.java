@@ -33,7 +33,7 @@ public class ActivityService {
     }
 
     // Get all activities
-    public List<Activity> getAllActivities() {
+    public List<Activity> getAll() {
         return activityRepository.findAll();
     }
 

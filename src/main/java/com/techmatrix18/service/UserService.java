@@ -1,7 +1,9 @@
 package com.techmatrix18.service;
 
 import com.techmatrix18.dto.UserDto;
+import com.techmatrix18.model.Department;
 import com.techmatrix18.model.User;
+import com.techmatrix18.repository.DepartmentRepository;
 import com.techmatrix18.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,9 +28,11 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
+    private DepartmentRepository departmentRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, DepartmentRepository departmentRepository) {
         this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     /**
@@ -203,6 +209,25 @@ public class UserService {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Assign head of department by UserID, DepartmentID
+     *
+     * @param departmentId
+     * @param userId
+     */
+    @Transactional
+    public void assignHead(Long departmentId, Long userId) {
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
+        User head = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // TODO: add head_id
+        //department.setHead(head);
+        //departmentRepository.save(department);
     }
 }
 

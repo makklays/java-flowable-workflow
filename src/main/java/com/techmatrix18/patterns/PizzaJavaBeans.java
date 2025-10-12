@@ -19,7 +19,7 @@ public class PizzaJavaBeans {
 
     // getters / setters
 
-    public PizzaJavaBeans() { }
+    public PizzaJavaBeans() { }    // only in JavaBeans the construct without parameters (!)
 
     public String getTitle() { return title; }
 

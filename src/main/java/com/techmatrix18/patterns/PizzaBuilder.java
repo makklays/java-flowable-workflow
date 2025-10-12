@@ -26,7 +26,7 @@ public class PizzaBuilder {
     }
 
     public static class Builder {
-        private String title;                // required parameter
+        private final String title;          // required parameter
         private String amount;
         private Integer cheese = 100;
         private Integer sausage = 100;
@@ -34,11 +34,6 @@ public class PizzaBuilder {
 
         public Builder(String title) {
             this.title = title;              // required parameter here (!)
-        }
-
-        public Builder title(String title) {
-            this.title = title;
-            return this;
         }
 
         public Builder amount(String amount) {

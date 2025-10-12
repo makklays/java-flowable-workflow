@@ -45,6 +45,7 @@ public class PizzaBuilder {
         }
 
         public Builder cheese(Integer cheese) {
+            if (cheese != null && cheese < 0) throw new IllegalArgumentException("Cheese cannot be negative");
             this.cheese = cheese;
             return this;
         }

@@ -33,6 +33,9 @@ public class PizzaBuilder {
         private Integer mushroom = 100;
 
         public Builder(String title) {
+            if (title == null || title.isEmpty()) {
+                throw new IllegalArgumentException("Title is required");
+            }
             this.title = title;              // required parameter here (!)
         }
 

@@ -1,5 +1,6 @@
 package com.techmatrix18;
 
+import com.techmatrix18.patterns.Pizza;
 import com.techmatrix18.security.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,6 +39,11 @@ public class Main {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode("admin"); // хранить это в password
         //System.out.println("----------- password ---------> " + hashedPassword);
+
+        // pattern - Builder
+        Pizza pizza = new Pizza.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
+        System.out.println("Mi pizza:");
+        System.out.println(pizza);
 
         SpringApplication.run(Main.class, args);
     }

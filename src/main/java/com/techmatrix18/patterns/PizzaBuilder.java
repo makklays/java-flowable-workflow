@@ -9,7 +9,7 @@ package com.techmatrix18.patterns;
  * @version 0.0.1
  */
 
-public class Pizza {
+public class PizzaBuilder {
 
     private final String title;              // required parameter
     private final String amount;             // not required
@@ -17,7 +17,7 @@ public class Pizza {
     private final Integer sausage;           // not required
     private final Integer mushroom;          // not required
 
-    private Pizza(Builder builder) {
+    private PizzaBuilder(Builder builder) {
         this.title = builder.title;          // required
         this.amount = builder.amount;        // not required
         this.cheese = builder.cheese;        // not required
@@ -61,8 +61,8 @@ public class Pizza {
             return this;
         }
 
-        public Pizza build() {
-            return new Pizza(this);
+        public PizzaBuilder build() {
+            return new PizzaBuilder(this);
         }
     }
 
@@ -84,7 +84,7 @@ public class Pizza {
     }
 }
 
-// Pizza pizza = new Pizza.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
+// PizzaBuilder pizza = new PizzaBuilder.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
 // System.out.println(pizza);
-// Pizza{title='Pepperoni', amount='Large', cheese=200, sausage=250, mushroom=100}
+// PizzaBuilder{title='Pepperoni', amount='Large', cheese=200, sausage=250, mushroom=100}
 

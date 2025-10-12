@@ -1,15 +1,12 @@
 package com.techmatrix18;
 
-import com.techmatrix18.patterns.Pizza;
-import com.techmatrix18.security.JwtService;
+import com.techmatrix18.patterns.PizzaBuilder;
+import com.techmatrix18.patterns.PizzaJavaBeans;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.nio.charset.StandardCharsets;
@@ -40,10 +37,20 @@ public class Main {
         String hashedPassword = encoder.encode("admin"); // хранить это в password
         //System.out.println("----------- password ---------> " + hashedPassword);
 
+        // pattern - JavaBeans
+        PizzaJavaBeans pizza1 = new PizzaJavaBeans();
+        pizza1.setTitle("Pepperoni");
+        pizza1.setAmount("Large");
+        pizza1.setCheese(200);
+        pizza1.setSausage(250);
+        pizza1.setMushroom(250);
+        System.out.println("Mi pizza1:");
+        System.out.println(pizza1);
+
         // pattern - Builder
-        Pizza pizza = new Pizza.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
-        System.out.println("Mi pizza:");
-        System.out.println(pizza);
+        PizzaBuilder pizza2 = new PizzaBuilder.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
+        System.out.println("Mi pizza2:");
+        System.out.println(pizza2);
 
         SpringApplication.run(Main.class, args);
     }

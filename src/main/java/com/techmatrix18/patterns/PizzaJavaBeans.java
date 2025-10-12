@@ -39,5 +39,26 @@ public class PizzaJavaBeans {
 
     public Integer getMushroom() { return mushroom; }
     public void setMushroom(Integer mushroom) { this.mushroom = mushroom; }
+
+    @Override
+    public String toString() {
+        return "PizzaJavaBeans{" +
+                "title='" + title + '\'' +
+                ", amount='" + amount + '\'' +
+                ", cheese=" + cheese +
+                ", sausage=" + sausage +
+                ", mushroom=" + mushroom +
+                '}';
+    }
 }
+
+// PizzaJavaBeans pizza = new PizzaJavaBeans();
+// pizza.getTitle("Pepperoni");
+// pizza.getAmount("Large");
+// pizza.getCheese(200);
+// pizza.getSausage(250);
+// pizza.getMushroom(100);
+//
+// System.out.println(pizza);
+// PizzaJavaBeans{title='Pepperoni', amount='Large', cheese=200, sausage=250, mushroom=100}
 

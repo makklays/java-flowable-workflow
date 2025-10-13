@@ -29,7 +29,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 @Service
 public class UserService {
 
-    private final JavaMailSender mailSender;
+    private JavaMailSender mailSender;
     private UserRepository userRepository;
     private DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;

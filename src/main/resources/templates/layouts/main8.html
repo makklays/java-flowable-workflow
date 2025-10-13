@@ -34,6 +34,12 @@
                 <a href="/panel" th:class="'nav-link ' + (${requestURI.startsWith('/panel')} ? 'active' : 'text-white')" ><i class="fas fa-tachometer-alt me-2"></i> Panel</a>
             </li>
             <li>
+                <a href="/processes"
+                   th:class="'nav-link ' + (${requestURI.startsWith('/processes')} or ${requestURI.startsWith('/flowable')} ? 'active' : 'text-white')">
+                    <i class="fas fa-diagram-project me-2"></i> Processes
+                </a>
+            </li>
+            <li>
                 <a href="/clients" th:class="'nav-link ' + (${requestURI.startsWith('/clients')} ? 'active' : 'text-white')" ><i class="fas fa-users me-2"></i> Clients</a>
             </li>
             <li>

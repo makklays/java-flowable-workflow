@@ -53,76 +53,130 @@
                     </div>
                     <div class="card-text">
 
-                        <!-- form (user task from process) -->
-                        <form th:action="@{/flowables/forms/job-application/submit}" method="post">
-                            <input type="hidden" name="taskId" th:value="${taskId}" />
+                        <div class="row">
+                            <div class="col-md-6">
 
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username:</label>
-                                <input id="username" type="text" name="username" class="form-control" />
+                                <!-- form (user task from process) -->
+                                <form th:action="@{/flowables/forms/job-application/submit}" method="post">
+                                    <!--input type="hidden" name="taskId" th:value="${taskId}" /-->
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="username" class="form-label">Username:</label>
+                                                <input id="username" type="text" name="username" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="firstname" class="form-label">First Name:</label>
+                                                <input id="firstname" type="text" name="firstname" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="lastname" class="form-label">Last Name:</label>
+                                                <input id="lastname" type="text" name="lastname" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="displayname" class="form-label">Display Name:</label>
+                                                <input id="displayname" type="text" name="displayname" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="department" class="form-label">Department:</label>
+                                                <select id="department" name="department_id" class="form-control">
+                                                    <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.title}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="position" class="form-label">Position:</label>
+                                                <select id="position" name="position_id" class="form-control">
+                                                    <option th:each="p : ${positions}" th:value="${p.id}" th:text="${p.title}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="role" class="form-label">Role:</label>
+                                                <select id="role" name="role_id" class="form-control">
+                                                    <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.title}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label">Email:</label>
+                                                <input id="email" type="email" name="email" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="phone" class="form-label">Phone:</label>
+                                                <input id="phone" type="text" name="phone" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="salary" class="form-label">Salary:</label>
+                                                <input id="salary" type="number" name="salary" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="age" class="form-label">Age:</label>
+                                                <input id="age" type="text" name="age" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="address" class="form-label">Address:</label>
+                                                <input id="address" type="text" name="address" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <input id="is_picture" type="checkbox" name="isPictureSet" class="form-check-input" />
+                                                <label for="is_picture" class="form-check-label">Is picture set?</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <input id="is_man" type="checkbox" name="isMan" class="form-check-input" />
+                                                <label for="is_man" class="form-check-label">Is male?</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-paper-plane me-1"></i> Submit</button>
+                                    <a href="/processes" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
+                                </form>
+
                             </div>
-
-                            <div class="mb-3">
-                                <label for="firstname" class="form-label">First Name:</label>
-                                <input id="firstname" type="text" name="firstname" class="form-control" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="lastname" class="form-label">Last Name:</label>
-                                <input id="lastname" type="text" name="lastname" class="form-control" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="displayname" class="form-label">Display Name:</label>
-                                <input id="displayname" type="text" name="displayname" class="form-control" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="department" class="form-label">Department:</label>
-                                <select id="department" name="department_id" class="form-control">
-                                    <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}"></option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="position" class="form-label">Position:</label>
-                                <select id="position" name="position_id" class="form-label">
-                                    <option th:each="p : ${positions}" th:value="${p.id}" th:text="${p.name}"></option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Role:</label>
-                                <select id="role" name="role_id" class="form-label">
-                                    <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email:</label>
-                                <input id="email" type="email" name="email" class="form-label" />
-                            </div>
-
-                            <label>Phone:</label>
-                            <input type="text" name="phone" />
-
-                            <label>Salary:</label>
-                            <input type="number" name="salary" />
-
-                            <label>Age:</label>
-                            <input type="text" name="age" />
-
-                            <label>Is Male:</label>
-                            <input type="checkbox" name="isMan" />
-
-                            <label>Is Picture Set:</label>
-                            <input type="checkbox" name="isPictureSet" />
-
-                            <label>Address:</label>
-                            <input type="text" name="address" />
-
-                            <button type="submit">Submit</button>
-                        </form>
+                        </div>
 
                     </div>
                 </div>
@@ -130,7 +184,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <!--div class="row">
         <div class="col-md-4 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -147,7 +201,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div-->
 </section>
 </html>
 

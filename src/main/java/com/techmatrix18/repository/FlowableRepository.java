@@ -19,7 +19,7 @@ import java.util.List;
  * @version 0.0.1
  */
 
-@Repository
+/*@Repository
 public interface FlowableRepository extends JpaRepository<Object, String> {
 
     /**
@@ -28,7 +28,7 @@ public interface FlowableRepository extends JpaRepository<Object, String> {
      * @param userId
      * @return List <Object>
      */
-    @Query(value = """
+    /*@Query(value = """
         SELECT hi.proc_inst_id AS process_instance_id,
                pd.name AS process_name,
                pd.key_ AS process_key,
@@ -47,7 +47,7 @@ public interface FlowableRepository extends JpaRepository<Object, String> {
      * @param userId
      * @return List <Object>
      */
-    @Query(value = """
+    /*@Query(value = """
         SELECT t.id_, t.name_, t.assignee_, t.create_time_
         FROM act_ru_task t
         WHERE t.assignee_ = :userId
@@ -60,7 +60,7 @@ public interface FlowableRepository extends JpaRepository<Object, String> {
      * @param userId
      * @return List <Object>
      */
-    @Query(value = """
+    /*@Query(value = """
         SELECT h.id_, h.name_, h.assignee_, h.start_time_, h.end_time_
         FROM act_hi_taskinst h
         WHERE h.assignee_ = :userId
@@ -72,10 +72,11 @@ public interface FlowableRepository extends JpaRepository<Object, String> {
      *
      * @return List <Object>
      */
-    @Query(value = """
+    /*@Query(value = """
         SELECT d.id_, d.name_, d.deploy_time_
         FROM act_re_deployment d
         """, nativeQuery = true)
     List<Object[]> findAllDeployments();
-}
+    */
+//}
 

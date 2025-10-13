@@ -4,7 +4,7 @@ import com.techmatrix18.dto.DeploymentDto;
 import com.techmatrix18.dto.HistoricTaskDto;
 import com.techmatrix18.dto.ProcessDto;
 import com.techmatrix18.dto.TaskDto;
-import com.techmatrix18.repository.FlowableRepository;
+//import com.techmatrix18.repository.FlowableRepository;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,14 +21,14 @@ import java.util.List;
 @Service
 public class FlowableService {
 
-    private final FlowableRepository repository;
+    //private final FlowableRepository repository;
 
-    public FlowableService(FlowableRepository repository) {
+    /*public FlowableService(FlowableRepository repository) {
         this.repository = repository;
-    }
+    }*/
 
     // ---------------- Processes ----------------
-    public List<ProcessDto> getProcessesByUser(String userId) {
+    /*public List<ProcessDto> getProcessesByUser(String userId) {
         List<Object[]> rows = repository.findProcessesByUser(userId);
         if (rows == null || rows.isEmpty()) return Collections.emptyList();
 
@@ -95,6 +95,6 @@ public class FlowableService {
             deployments.add(dto);
         }
         return deployments;
-    }
+    }*/
 }
 

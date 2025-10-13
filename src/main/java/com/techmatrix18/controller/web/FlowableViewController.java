@@ -5,6 +5,8 @@ import org.flowable.engine.RuntimeService;
 //import org.flowable.task.api.TaskService;
 import org.flowable.engine.TaskService;
 //import org.flowable.task.service.TaskService;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +58,7 @@ public class FlowableViewController {
      */
     @GetMapping("/processes")
     public String addUser(Model model) {
-        model.addAttribute("processes", flowableService.getProcessesByUser("1"));
+        //model.addAttribute("processes", flowableService.getProcessesByUser("1"));
 
         return "flowables/processes";
     }
@@ -67,7 +69,7 @@ public class FlowableViewController {
      * @param model
      * @return html
      */
-    @GetMapping("/flowable/forms/job-application")
+    @GetMapping("/flowables/forms/job-application")
     public String getJobApplicationForm(Model model) {
         model.addAttribute("departments", departmentService.getAll());
         model.addAttribute("positions", positionService.getAll());
@@ -85,17 +87,24 @@ public class FlowableViewController {
     @PostMapping("/flowables/forms/job-application/submit")
     public String submitJobApplicationForm(@RequestParam Map<String, String> formData) {
 
-        String taskId = formData.get("taskId");
-
-        // We pass all the form fields to Flowable
+        // 1 Prepare the variables
         Map<String, Object> variables = new HashMap<>(formData);
-        variables.remove("taskId"); // taskId don't need as process variable
 
-        // Start of process
-        runtimeService.startProcessInstanceByKey("jobApplication", variables);
+        System.out.println("---------> " + variables.toString());
 
-        // Complete of current task
-        taskService.complete(taskId, variables);
+        // 2️ Start the process and store the ProcessInstance object
+        ProcessInstance processInstance = runtimeService
+                .startProcessInstanceByKey("jobApplication", variables);
+
+        // 3️ Get the first task of this process
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstance.getId())
+                .singleResult(); // first task of process
+
+        if (task != null) {
+            // 4 Complete current task
+            taskService.complete(task.getId(), variables);
+        }
 
         return "redirect:/processes";
     }
@@ -106,7 +115,7 @@ public class FlowableViewController {
      * @param model
      * @return html
      */
-    @GetMapping("/flowable/forms/leave-application")
+    @GetMapping("/flowables/forms/leave-application")
     public String getLeaveApplicationForm(Model model) {
         model.addAttribute("departments", departmentService.getAll());
         model.addAttribute("positions", positionService.getAll());
@@ -121,7 +130,7 @@ public class FlowableViewController {
      * @param model
      * @return html
      */
-    @GetMapping("/flowable/forms/fire-application")
+    @GetMapping("/flowables/forms/fire-application")
     public String getFireApplicationForm(Model model) {
         model.addAttribute("departments", departmentService.getAll());
         model.addAttribute("positions", positionService.getAll());

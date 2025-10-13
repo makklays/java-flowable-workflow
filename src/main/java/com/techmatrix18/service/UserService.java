@@ -10,12 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.springframework.mail.javamail.JavaMailSender;
 
 /**
  * @author Alexander Kuziv
@@ -27,14 +29,19 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    private final JavaMailSender mailSender;
     private UserRepository userRepository;
     private DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       DepartmentRepository departmentRepository,
+                       PasswordEncoder passwordEncoder,
+                       JavaMailSender mailSender) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -221,6 +228,32 @@ public class UserService {
         // TODO: add head_id
         //department.setHead(head);
         //departmentRepository.save(department);
+    }
+
+    /**
+     * Send welcome email from CRM
+     *
+     * @param email
+     */
+    public void sendWelcomeEmail(String email) {
+        String subject = "Welcome to TechMatrix18 CRM!";
+        String body = """
+                Hello and welcome!
+
+                Thank you for joining our platform.
+                We're glad to have you with us.
+
+                Best regards,
+                The TechMatrix18 Team
+                """;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(body);
+        message.setFrom("noreply@techmatrix18.com");
+
+        mailSender.send(message);
     }
 }
 

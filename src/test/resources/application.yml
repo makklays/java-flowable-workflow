@@ -50,6 +50,19 @@ spring:
     livereload:
       enabled: true    # включение LiveReload для автообновления страницы
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your_email@gmail.com
+    password: your_app_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
 jwt:
   secret: MySuperSecretKey1234567890
   expiration: 3600000

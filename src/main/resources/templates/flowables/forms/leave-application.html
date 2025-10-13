@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/main8}">
+<section xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:fragment="content">
+    <h2>Leave application</h2>
+    <p>Leave user in CRM</p>
+    <hr/>
+    <div class="row">
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 1</h5>
+                    <p class="card-text">Description 1</p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 2</h5>
+                    <p class="card-text">Description 2</p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 3</h5>
+                    <p class="card-text">Description 3</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="card-title">Add a new user</h5>
+                        </div>
+                        <!--div class="col" style="text-align:right;">
+                            <a href="/positions/add" class="btn btn-primary mb-2" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
+                        </div-->
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div th:if="${successMessage}" class="alert alert-success" position="alert">
+                                <span th:text="${successMessage}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-text">
+
+                        TODO: leave application form
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+

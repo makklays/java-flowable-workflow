@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
+  <process id="jobApplication" name="Employee Job Application Process" isExecutable="true">
+    <documentation>Employee Job Application Process</documentation>
+    <startEvent id="startEvent1" ></startEvent>
+    <userTask id="fillEmployeeForm" name="Заполнить данные сотрудника" flowable:assignee="$INITIATOR" flowable:formKey="employeeForm" >
+      <extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-24E51D7D-3034-43A8-91B6-C9B7DE3CB02F" sourceRef="startEvent1" targetRef="fillEmployeeForm"></sequenceFlow>
+    <sequenceFlow id="sid-83EDFA45-28AC-4556-B820-E29131DFA84F" sourceRef="fillEmployeeForm" targetRef="fillApproveRejectEmployeeForm"></sequenceFlow>
+    <userTask id="fillApproveRejectEmployeeForm" name="Head (approve/reject)" flowable:assignee="$INITIATOR" flowable:formKey="approveRejectEmployeeForm" >
+      <extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" sourceRef="fillApproveRejectEmployeeForm" targetRef="sendWelcomeEmail"></sequenceFlow>
+    <serviceTask id="sendWelcomeEmail" name="Service task" flowable:class="com.techmatrix18.flowable.delegate.SendEmailDelegate"></serviceTask>
+    <endEvent id="sid-B7680781-A545-43D8-8533-43863605124D"></endEvent>
+    <sequenceFlow id="sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" sourceRef="sendWelcomeEmail" targetRef="sid-B7680781-A545-43D8-8533-43863605124D"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_employeeOnboarding">
+    <bpmndi:BPMNPlane bpmnElement="employeeOnboarding" id="BPMNPlane_employeeOnboarding">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="195.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fillEmployeeForm" id="BPMNShape_fillEmployeeForm">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fillApproveRejectEmployeeForm" id="BPMNShape_fillApproveRejectEmployeeForm">
+        <omgdc:Bounds height="80.0" width="100.0" x="525.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendWelcomeEmail" id="BPMNShape_sendWelcomeEmail">
+        <omgdc:Bounds height="80.0" width="100.0" x="720.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B7680781-A545-43D8-8533-43863605124D" id="BPMNShape_sid-B7680781-A545-43D8-8533-43863605124D">
+        <omgdc:Bounds height="28.0" width="28.0" x="900.0" y="151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-24E51D7D-3034-43A8-91B6-C9B7DE3CB02F" id="BPMNEdge_sid-24E51D7D-3034-43A8-91B6-C9B7DE3CB02F" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="224.9499993675608" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-83EDFA45-28AC-4556-B820-E29131DFA84F" id="BPMNEdge_sid-83EDFA45-28AC-4556-B820-E29131DFA84F" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="429.9499999999802" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" id="BPMNEdge_sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="819.9499999999827" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" id="BPMNEdge_sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="624.9499999999803" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

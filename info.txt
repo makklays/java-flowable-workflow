@@ -20,3 +20,8 @@ http://localhost:8081/flowable-rest/service/runtime/process-instances
 
 ----------------------
 
+BPMN Process:
+1. Job Application Process (key: job-application)
+2. Leave Application Process (key: leave-application)
+3. Fire Application Process (key: fire-application)
+

@@ -1,18 +1,24 @@
 package com.techmatrix18.controller.web;
 
+import com.techmatrix18.model.User;
 import com.techmatrix18.service.*;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 //import org.flowable.task.api.TaskService;
 import org.flowable.engine.TaskService;
 //import org.flowable.task.service.TaskService;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -30,24 +36,30 @@ public class FlowableViewController {
 
     private final RuntimeService runtimeService;
     private final TaskService taskService;
+    private final RepositoryService repositoryService;
     private final FlowableService flowableService;
     private final DepartmentService departmentService;
     private final PositionService positionService;
     private final RoleService roleService;
+    private final UserService userService;
 
     public FlowableViewController(FlowableService flowableService,
                                   RuntimeService runtimeService,
                                   TaskService taskService,
+                                  RepositoryService repositoryService,
                                   DepartmentService departmentService,
                                   PositionService positionService,
-                                  RoleService roleService) {
+                                  RoleService roleService,
+                                  UserService userService) {
 
         this.flowableService = flowableService;
         this.runtimeService = runtimeService;
         this.taskService = taskService;
+        this.repositoryService = repositoryService;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.roleService = roleService;
+        this.userService = userService;
     }
 
     /**
@@ -57,8 +69,23 @@ public class FlowableViewController {
      * @return html
      */
     @GetMapping("/processes")
-    public String addUser(Model model) {
-        //model.addAttribute("processes", flowableService.getProcessesByUser("1"));
+    public String addUser(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.getUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
+
+        List<Task> tasks = taskService.createTaskQuery()
+                .taskAssignee(String.valueOf(user.getId())) // по user_id
+                .list();
+        model.addAttribute("tasks", tasks);
+
+        Map<String, String> processNames = new HashMap<>();
+        for (Task task : tasks) {
+            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(task.getProcessDefinitionId())
+                    .singleResult();
+            processNames.put(task.getId(), pd.getName());
+        }
+        model.addAttribute("processNames", processNames);
 
         return "flowables/processes";
     }
@@ -85,7 +112,9 @@ public class FlowableViewController {
      * @return redirect
      */
     @PostMapping("/flowables/forms/job-application/submit")
-    public String submitJobApplicationForm(@RequestParam Map<String, String> formData) {
+    public String submitJobApplicationForm(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Map<String, String> formData) {
+        // get current User
+        User user = userService.getUserByUsername(userDetails.getUsername());
 
         // 1 Prepare the variables
         Map<String, Object> variables = new HashMap<>(formData);
@@ -93,6 +122,8 @@ public class FlowableViewController {
         System.out.println("---------> " + variables.toString());
 
         // 2️ Start the process and store the ProcessInstance object
+        variables.put("initiator", user.getId()); // user_id initiator - first step of bank
+        variables.put("nextAssignee", "2"); // user_id next assignment - next step of bank
         ProcessInstance processInstance = runtimeService
                 .startProcessInstanceByKey("jobApplication", variables);
 

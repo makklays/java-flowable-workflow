@@ -44,9 +44,10 @@
         <div class="col-md-12 mb-3">
             <div class="card">
                 <div class="card-body">
+
                     <div class="row">
                         <div class="col">
-                            <h5 class="card-title">Processes [11]</h5>
+                            <h5 class="card-title">Tasks [11]</h5>
                         </div>
                         <!--div class="col" style="text-align:right;">
                             <a href="/positions/add" class="btn btn-primary mb-2" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
@@ -60,7 +61,35 @@
                         </div>
                     </div>
                     <div class="card-text">
+
+                        <!-- list of tasks -->
                         <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th class="align-middle" scope="col">Process Name</th>
+                                <th class="align-middle" scope="col">Task Name</th>
+                                <th class="align-middle" scope="col">Description</th>
+                                <th class="text-center align-middle" scope="col">Priority</th>
+
+                                <th class="text-center align-middle" scope="col" >Created</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="task : ${tasks}">
+                                    <td class="align-middle" th:text="${processNames[task.id]}">Process Name</td>
+                                    <td class="align-middle">
+                                        <a th:href="@{/flowables/forms/approve-reject/{id}(id=${task.id})}" th:text="${task.name}"></a>
+                                    </td>
+                                    <td class="align-middle" th:text="${task.description ?: '-'}"></td>
+                                    <td class="text-center align-middle" th:text="${task.priority}"></td>
+
+                                    <td class="text-center align-middle" th:text="${#dates.format(task.createTime, 'dd.MM.yyyy HH:mm')}">Created</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- list of processes -->
+                        <!--table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th class="text-center align-middle" scope="col" >#</th>
@@ -72,22 +101,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="process, iterStat : ${processes}">
-                                    <th class="text-center align-middle" th:text="${process.processInstanceId}"></th>
-                                    <td class="text-center align-middle" th:text="${process.processName != null} ? ${process.processName} : '-' "></td>
-                                    <td class="text-center align-middle" th:text="${process.processKey != null} ? ${process.processKey} : '-' "></td>
-                                    <td class="text-center align-middle" th:text="${process.processVersion != null} ? ${process.processVersion} : '-' "></td>
+                                <tr th:each="task, iterStat : ${tasks}">
+                                    <th class="text-center align-middle" th:text="${task.processInstanceId}"></th>
+                                    <td class="text-center align-middle" th:text="${task.processName != null} ? ${task.processName} : '-' "></td>
+                                    <td class="text-center align-middle" th:text="${task.processKey != null} ? ${task.processKey} : '-' "></td>
+                                    <td class="text-center align-middle" th:text="${task.processVersion != null} ? ${task.processVersion} : '-' "></td>
                                     <td class="text-center align-middle"
-                                        th:text="${process.startTime != null} ? ${#temporals.format(process.startTime, 'dd.MM.yyyy HH:mm')} : '-' ">
+                                        th:text="${task.startTime != null} ? ${#temporals.format(task.startTime, 'dd.MM.yyyy HH:mm')} : '-' ">
                                     </td>
                                     <td class="text-center align-middle"
-                                        th:text="${process.endTime != null} ? ${#temporals.format(process.endTime, 'dd.MM.yyyy HH:mm')} : '-' ">
+                                        th:text="${task.endTime != null} ? ${#temporals.format(task.endTime, 'dd.MM.yyyy HH:mm')} : '-' ">
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
-
+                        </table-->
                     </div>
+
                 </div>
             </div>
         </div>

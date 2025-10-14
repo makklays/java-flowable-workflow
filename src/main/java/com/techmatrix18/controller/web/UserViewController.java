@@ -9,6 +9,7 @@ import com.techmatrix18.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -117,6 +118,8 @@ public class UserViewController {
         user.setMan(userDto.getIsMan());
         user.setPictureSet(userDto.getIsPictureSet());
         user.setAddress(userDto.getAddress());
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode("admin"));
         user.setStartWorkAt(LocalDate.now());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());

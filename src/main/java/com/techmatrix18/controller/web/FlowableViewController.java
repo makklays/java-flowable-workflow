@@ -138,5 +138,20 @@ public class FlowableViewController {
 
         return "flowables/forms/fire-application";
     }
+
+    /**
+     * Show a form 'Company Dissolution Application' about a dissolution company in CRM
+     *
+     * @param model
+     * @return html
+     */
+    @GetMapping("/flowables/forms/company-dissolution-application")
+    public String getDissolutionApplicationForm(Model model) {
+        model.addAttribute("departments", departmentService.getAll());
+        model.addAttribute("positions", positionService.getAll());
+        model.addAttribute("roles", roleService.getAll());
+
+        return "flowables/forms/dissolution-application";
+    }
 }
 

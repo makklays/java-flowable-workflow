@@ -38,7 +38,18 @@
             <div class="card">
                 <div class="card-body">
 
-                    Panel
+                    <h2>Your card 🪪</h2>
+                    👤 Your username is <b th:text="${currentUser.username}">Username</b> <br/><br/>
+
+                    📝 Your name: <b th:text="${currentUser.firstname}">Firstname</b> <b th:text="${currentUser.lastname}">Lastname</b> <br/>
+                    Your display name is <b th:text="${currentUser.displayname}">Displayname</b> <br/><br/>
+
+                    🏢 Department: <b th:text="${currentUser.department.title}">Department</b> <br/>
+                    👔 Position: <b th:text="${currentUser.position.title}">Position</b> <br/>
+                    🎭 Role: <b th:text="${currentUser.role.title}">Role</b> <br/><br/>
+
+                    Age: <b th:text="${currentUser.age.isEmpty() ? '-' : currentUser.age}">18</b> <br/>
+                    Address: <b th:text="${currentUser.address != null ? currentUser.address : '-'}">Country1, City1, street1, 11</b> <br/>
 
                 </div>
             </div>

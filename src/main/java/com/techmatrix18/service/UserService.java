@@ -107,7 +107,7 @@ public class UserService {
      * @param username
      * @return
      */
-    public User findUserByUsername(String username) {
+    public User getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.get().getId() != null) {
             return user.get();
@@ -123,7 +123,7 @@ public class UserService {
      * @return found user
      * @throws NoSuchElementException if the user is not found
      */
-    public User findUserByEmail(String email) {
+    public User getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.get().getId() != null) {
             return user.get();
@@ -139,7 +139,7 @@ public class UserService {
      * @return found user
      * @throws NoSuchElementException if the user is not found
      */
-    public User findUserByPhone(String phone) {
+    public User getUserByPhone(String phone) {
         Optional<User> user = userRepository.findByPhone(phone);
         if (user.get().getId() != null) {
             return user.get();

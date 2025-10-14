@@ -2,8 +2,8 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/main8}">
 <section xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:fragment="content">
-    <h2>BPMN Processes</h2>
-    <p>The list of BPMN processes of users</p>
+    <h2>Dissolution application</h2>
+    <p>Company dissolution application in CRM</p>
     <hr/>
     <div class="row">
         <div class="col mb-3">
@@ -46,7 +46,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <h5 class="card-title">Processes [11]</h5>
+                            <h5 class="card-title">Destruct the company</h5>
                         </div>
                         <!--div class="col" style="text-align:right;">
                             <a href="/positions/add" class="btn btn-primary mb-2" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
@@ -60,32 +60,50 @@
                         </div>
                     </div>
                     <div class="card-text">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center align-middle" scope="col" >#</th>
-                                    <th class="align-middle" scope="col">Title</th>
-                                    <th class="align-middle" scope="col">Key</th>
-                                    <th class="align-middle" scope="col">Version</th>
-                                    <th class="text-center align-middle" scope="col" >Start Date</th>
-                                    <th class="text-center align-middle" scope="col" >End Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="process, iterStat : ${processes}">
-                                    <th class="text-center align-middle" th:text="${process.processInstanceId}"></th>
-                                    <td class="text-center align-middle" th:text="${process.processName != null} ? ${process.processName} : '-' "></td>
-                                    <td class="text-center align-middle" th:text="${process.processKey != null} ? ${process.processKey} : '-' "></td>
-                                    <td class="text-center align-middle" th:text="${process.processVersion != null} ? ${process.processVersion} : '-' "></td>
-                                    <td class="text-center align-middle"
-                                        th:text="${process.startTime != null} ? ${#temporals.format(process.startTime, 'dd.MM.yyyy HH:mm')} : '-' ">
-                                    </td>
-                                    <td class="text-center align-middle"
-                                        th:text="${process.endTime != null} ? ${#temporals.format(process.endTime, 'dd.MM.yyyy HH:mm')} : '-' ">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <!-- form (user task from process) -->
+                                <form th:action="@{/flowables/forms/company-dissolution-application/submit}" method="post">
+                                    <!--input type="hidden" name="taskId" th:value="${taskId}" /-->
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="id_company" class="form-label">ID Company:</label>
+                                                <input id="id_company" type="text" name="id_company" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="title" class="form-label">Title:</label>
+                                                <input id="title" type="text" name="title" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <input id="is_picture" type="checkbox" name="isPictureSet" class="form-check-input" />
+                                                <label for="is_picture" class="form-check-label">Is picture set?</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <input id="is_man" type="checkbox" name="isMan" class="form-check-input" />
+                                                <label for="is_man" class="form-check-label">Is male?</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-paper-plane me-1"></i> Submit</button>
+                                    <a href="/processes" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
+                                </form>
+
+                            </div>
+                        </div>
 
                     </div>
                 </div>
@@ -93,7 +111,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <!--div class="row">
         <div class="col-md-4 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -110,6 +128,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div-->
 </section>
 </html>
+

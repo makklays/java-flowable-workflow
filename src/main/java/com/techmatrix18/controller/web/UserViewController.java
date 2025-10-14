@@ -71,6 +71,11 @@ public class UserViewController {
         return "home";
     }
 
+    @GetMapping("/grafics")
+    public String grafics(Model model) {
+        return "grafics";
+    }
+
     //-------
 
     @GetMapping("/users")

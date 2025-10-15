@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/main8}">
+<section xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:fragment="content">
+    <h2>Job application</h2>
+    <p>Add a new user in CRM</p>
+    <hr/>
+    <div class="row">
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">HR Applications</h5>
+                    <p class="card-text">
+                        <a href="/flowables/forms/job-application" title="Job application" target="" >Job application</a> <br/>
+                        <a href="/flowables/forms/leave-application" title="Leave application" target="" >Leave application</a> <br/>
+                        <a href="/flowables/forms/fire-application" title="Fire application" target="" >Fire application</a> <br/>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Company Structure</h5>
+                    <p class="card-text">
+                        <a href="/flowables/forms/new-bank-branch-opening-application" title="New Bank Branch Opening Application" target="" >New Bank Branch Opening Application</a> <br/>
+                        <a href="/flowables/forms/new-department-opening-application" title="New Department Opening Application" target="" >New Department Opening Application</a> <br/>
+                        <a href="/flowables/forms/company-dissolution-application" title="Company Dissolution Application" target="" >Company Dissolution Application</a> <br/>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Block 3</h5>
+                    <p class="card-text">Description 3</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="card-title">Approve or reject this application</h5>
+                        </div>
+                        <!--div class="col" style="text-align:right;"></div-->
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div th:if="${successMessage}" class="alert alert-success" position="alert">
+                                <span th:text="${successMessage}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-text">
+
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <!-- form (user task from process) -->
+                                <form th:action="@{/flowables/forms/approve-reject/submit}" method="post">
+                                    <input type="hidden" name="taskId" th:value="${taskId}" />
+
+                                    <div class="row">
+                                        <div class="col-md-6" th:text="${task.name}">
+                                            Approve or reject this application
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="lastname" class="form-label">Last Name:</label>
+                                                <input id="lastname" type="text" name="lastname" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="firstname" class="form-label">First Name:</label>
+                                                <input id="firstname" type="text" name="firstname" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p>Employee name: <b th:text="${variables['firstname'] + ' ' + variables['lastname']}">John</b></p>
+                                            <p>Display name: <b th:text="${variables['displayname']}">John</b></p>
+
+                                            <p>Department: <b th:text="${variables['department']?.title ?: variables['department']}">IT</b></p>
+                                            <p>Position: <b th:text="${variables['position']?.title ?: variables['position']}">IT</b></p>
+                                            <p>Role: <b th:text="${variables['role']?.title ?: variables['role']}">IT</b></p>
+
+                                            <p>E-mail: <b th:text="${variables['email']}">E-mail</b></p>
+                                            <p>Phone: <b th:text="${variables['phone']}">Phone</b></p>
+                                            <p>Age: <b th:text="${variables['age'] ?: variables['age']}">18</b></p>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-paper-plane me-1"></i> Submit</button>
+                                    <a href="/processes" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">11</h5>
+                    <p class="card-text">11111</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">22</h5>
+                    <p class="card-text">22222</p>
+                </div>
+            </div>
+        </div>
+    </div-->
+</section>
+</html>
+

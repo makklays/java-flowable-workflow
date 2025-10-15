@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  * @author Alexander Kuziv
  * @since 10.10.2025
  * @company TechMatrix18
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 @Controller
@@ -183,6 +184,41 @@ public class FlowableViewController {
         model.addAttribute("roles", roleService.getAll());
 
         return "flowables/forms/dissolution-application";
+    }
+
+    /**
+     *
+     *
+     * @param taskId
+     * @param model
+     * @return
+     */
+    @GetMapping("/flowables/forms/approve-reject/{taskId}")
+    public String getApproveRejectForm(@PathVariable String taskId, Model model) {
+        //
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("Task not found");
+        }
+
+        Map <String, Object> variables = runtimeService.getVariables(task.getProcessInstanceId());
+        model.addAttribute("task", task);
+        model.addAttribute("variables", variables);
+
+        return "flowables/forms/approve-reject";
+    }
+
+    /**
+     *
+     *
+     * @param taskId
+     * @param formData
+     * @return
+     */
+    @PostMapping("/flowables/forms/approve-reject/submit")
+    public String get(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
+        taskService.complete(taskId, formData);
+        return "redirect:/processes";
     }
 }
 

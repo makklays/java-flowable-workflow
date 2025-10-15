@@ -64,46 +64,44 @@
 
                                 <!-- form (user task from process) -->
                                 <form th:action="@{/flowables/forms/approve-reject/submit}" method="post">
-                                    <input type="hidden" name="taskId" th:value="${taskId}" />
+                                    <input type="hidden" name="taskId" th:value="${task.getId()}" />
 
-                                    <div class="row">
-                                        <div class="col-md-6" th:text="${task.name}">
+                                    <div class="row" style="margin-bottom:20px;">
+                                        <div class="col-md-6" style="font-size:26px;" th:text="'Title: ' + ${task.name}">
                                             Approve or reject this application
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="lastname" class="form-label">Last Name:</label>
-                                                <input id="lastname" type="text" name="lastname" class="form-control" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="firstname" class="form-label">First Name:</label>
-                                                <input id="firstname" type="text" name="firstname" class="form-control" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                            <p>Display name: <b th:text="${variables['displayname']}">Dev John Connor</b></p>
+                                            <p>Firstname: <b th:text="${variables['firstname']}">John</b></p>
+                                            <p>Lastname: <b th:text="${variables['lastname']}">Connor</b></p>
+                                            <p>Username: <b th:text="${variables['username']}">terminator</b></p> <br/>
 
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p>Employee name: <b th:text="${variables['firstname'] + ' ' + variables['lastname']}">John</b></p>
-                                            <p>Display name: <b th:text="${variables['displayname']}">John</b></p>
-
-                                            <p>Department: <b th:text="${variables['department']?.title ?: variables['department']}">IT</b></p>
-                                            <p>Position: <b th:text="${variables['position']?.title ?: variables['position']}">IT</b></p>
-                                            <p>Role: <b th:text="${variables['role']?.title ?: variables['role']}">IT</b></p>
+                                            <p>Department: <b th:text="${variables['department'] ?: '-'}">Department</b></p>
+                                            <p>Position: <b th:text="${variables['position'] ?: '-'}">Position</b></p>
+                                            <p>Role: <b th:text="${variables['role'] ?: '-'}">Role</b></p> <br/>
 
                                             <p>E-mail: <b th:text="${variables['email']}">E-mail</b></p>
                                             <p>Phone: <b th:text="${variables['phone']}">Phone</b></p>
-                                            <p>Age: <b th:text="${variables['age'] ?: variables['age']}">18</b></p>
+                                            <p>Age: <b th:text="${variables['age'] ?: '-'}">18</b></p>
+                                            <p>Address: <b th:text="${variables['address'] ?: '-'}">Address</b></p>
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-paper-plane me-1"></i> Submit</button>
-                                    <a href="/processes" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
+                                    <!-- Approve -->
+                                    <button type="submit" name="action" value="approve" class="btn btn-success me-2" style="width:120px;">
+                                        <i class="fas fa-check-circle me-1"></i> Approve
+                                    </button>
+
+                                    <!-- Reject -->
+                                    <button type="submit" name="action" value="reject" class="btn btn-danger me-2" style="width:120px;">
+                                        <i class="fas fa-times-circle me-1"></i> Reject
+                                    </button>
+
+                                    <!-- Cancel -->
+                                    <a href="/processes" class="btn btn-secondary me-2" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
                                 </form>
 
                             </div>
@@ -115,24 +113,6 @@
         </div>
     </div>
 
-    <!--div class="row">
-        <div class="col-md-4 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">11</h5>
-                    <p class="card-text">11111</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">22</h5>
-                    <p class="card-text">22222</p>
-                </div>
-            </div>
-        </div>
-    </div-->
 </section>
 </html>
 

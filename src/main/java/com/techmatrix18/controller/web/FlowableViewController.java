@@ -1,5 +1,8 @@
 package com.techmatrix18.controller.web;
 
+import com.techmatrix18.model.Department;
+import com.techmatrix18.model.Position;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.model.User;
 import com.techmatrix18.service.*;
 import org.flowable.engine.RepositoryService;
@@ -64,7 +67,7 @@ public class FlowableViewController {
     }
 
     /**
-     * get all BPMN processes of user (employee) in CRM
+     * Get all BPMN processes of user (employee) in CRM
      *
      * @param model
      * @return html
@@ -92,6 +95,7 @@ public class FlowableViewController {
     }
 
     /**
+     * Step 1 (Get) - process 'Employee Onboarding Process'
      * Show a form 'Job Application' about a new user (employee) in CRM
      *
      * @param model
@@ -107,7 +111,8 @@ public class FlowableViewController {
     }
 
     /**
-     * Add a new user (employee) to CRM by BPMN process 'Employee Onboarding Process'
+     * Step 1 (Post) - process 'Employee Onboarding Process'
+     * Add a new user (employee) to CRM by BPMN process
      *
      * @param formData
      * @return redirect
@@ -120,7 +125,22 @@ public class FlowableViewController {
         // 1 Prepare the variables
         Map<String, Object> variables = new HashMap<>(formData);
 
-        System.out.println("---------> " + variables.toString());
+        // get department
+        String departmentId = formData.get("department_id");
+        Department department = departmentService.getById(Long.parseLong(departmentId));
+        variables.put("department", department.getTitle());
+
+        // get position
+        String positionId = formData.get("position_id");
+        Position position = positionService.getById(Long.parseLong(positionId));
+        variables.put("position", position.getTitle());
+
+        // get role
+        String roleId = formData.get("role_id");
+        Role role = roleService.getById(Long.parseLong(roleId));
+        variables.put("role", role.getTitle());
+
+        log.info("---------> " + variables.toString());
 
         // 2️ Start the process and store the ProcessInstance object
         variables.put("initiator", user.getId()); // user_id initiator - first step of bank
@@ -142,6 +162,53 @@ public class FlowableViewController {
     }
 
     /**
+     * Step 2 (Get) - process 'Employee Onboarding Process'
+     * Show form for action: approve or reject
+     *
+     * @param taskId
+     * @param model
+     * @return html
+     */
+    @GetMapping("/flowables/forms/approve-reject/{taskId}")
+    public String getApproveRejectForm(@PathVariable String taskId, Model model) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("Task not found");
+        }
+
+        Map <String, Object> variables = runtimeService.getVariables(task.getProcessInstanceId());
+        model.addAttribute("task", task);
+        model.addAttribute("variables", variables);
+
+        return "flowables/forms/approve-reject";
+    }
+
+    /**
+     * Step 2 (Post) - process 'Employee Onboarding Process'
+     * Get action="approve" or action="reject" to CRM by BPMN process 'Employee Onboarding Process'
+     *
+     * @param taskId
+     * @param formData
+     * @return redirect
+     */
+    @PostMapping("/flowables/forms/approve-reject/submit")
+    public String get(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("Task not found");
+        }
+        Map <String, Object> variables = runtimeService.getVariables(task.getProcessInstanceId());
+
+        // get action
+        Object action = formData.get("action");
+        variables.put("action", action);
+
+        taskService.complete(taskId, formData);
+        return "redirect:/processes";
+    }
+
+    /**
+     * Step 1 (Get) - process 'Leave Application'
      * Show a form 'Leave Application' about a leave user (employee) in CRM
      *
      * @param model
@@ -156,6 +223,21 @@ public class FlowableViewController {
     }
 
     /**
+     * Step 1 (Post) - process 'Leave Application'
+     *
+     * @param taskId
+     * @param formData
+     * @return redirect
+     */
+    @PostMapping("/flowables/forms/leave-application/submit")
+    public String getLeaveApplication(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
+        // TODO
+
+        return "redirect:/processes";
+    }
+
+    /**
+     * Step 1 (Get) - process 'Fire Application'
      * Show a form 'Fire Application' about a leave user (employee) in CRM
      *
      * @param model
@@ -170,6 +252,21 @@ public class FlowableViewController {
     }
 
     /**
+     * Step 1 (Post) - process 'Fire Application'
+     *
+     * @param taskId
+     * @param formData
+     * @return redirect
+     */
+    @PostMapping("/flowables/forms/fire-application/submit")
+    public String getFireApplication(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
+        // TODO
+
+        return "redirect:/processes";
+    }
+
+    /**
+     * Step 1 (Get) - process 'Company Dissolution Application'
      * Show a form 'Company Dissolution Application' about a dissolution company in CRM
      *
      * @param model
@@ -185,37 +282,16 @@ public class FlowableViewController {
     }
 
     /**
-     *
-     *
-     * @param taskId
-     * @param model
-     * @return
-     */
-    @GetMapping("/flowables/forms/approve-reject/{taskId}")
-    public String getApproveRejectForm(@PathVariable String taskId, Model model) {
-        //
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        if (task == null) {
-            throw new RuntimeException("Task not found");
-        }
-
-        Map <String, Object> variables = runtimeService.getVariables(task.getProcessInstanceId());
-        model.addAttribute("task", task);
-        model.addAttribute("variables", variables);
-
-        return "flowables/forms/approve-reject";
-    }
-
-    /**
-     *
+     * Step 1 (Post) - process 'Company Dissolution Application'
      *
      * @param taskId
      * @param formData
-     * @return
+     * @return redirect
      */
-    @PostMapping("/flowables/forms/approve-reject/submit")
-    public String get(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
-        taskService.complete(taskId, formData);
+    @PostMapping("/flowables/forms/company-dissolution-application/submit")
+    public String getDissolutionApplication(@RequestParam("taskId") String taskId, @RequestParam Map<String, Object> formData) {
+        // TODO
+
         return "redirect:/processes";
     }
 }

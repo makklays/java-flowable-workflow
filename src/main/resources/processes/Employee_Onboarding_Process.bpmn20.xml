@@ -15,10 +15,10 @@
         <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" sourceRef="fillApproveRejectEmployeeForm" targetRef="sendWelcomeEmail"></sequenceFlow>
-    <serviceTask id="sendWelcomeEmail" name="Service task" flowable:class="com.techmatrix18.flowable.delegate.SendEmailDelegate"></serviceTask>
+    <sequenceFlow id="sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" sourceRef="fillApproveRejectEmployeeForm" targetRef="sendMessagesTask"></sequenceFlow>
+    <serviceTask id="sendMessagesTask" name="Send Messages" flowable:delegateExpression="${sendMessagesDelegate}"></serviceTask>
     <endEvent id="sid-B7680781-A545-43D8-8533-43863605124D"></endEvent>
-    <sequenceFlow id="sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" sourceRef="sendWelcomeEmail" targetRef="sid-B7680781-A545-43D8-8533-43863605124D"></sequenceFlow>
+    <sequenceFlow id="sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" sourceRef="sendMessagesTask" targetRef="sid-B7680781-A545-43D8-8533-43863605124D"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_employeeOnboarding">
     <bpmndi:BPMNPlane bpmnElement="employeeOnboarding" id="BPMNPlane_employeeOnboarding">
@@ -31,7 +31,7 @@
       <bpmndi:BPMNShape bpmnElement="fillApproveRejectEmployeeForm" id="BPMNShape_fillApproveRejectEmployeeForm">
         <omgdc:Bounds height="80.0" width="100.0" x="525.0" y="125.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="sendWelcomeEmail" id="BPMNShape_sendWelcomeEmail">
+      <bpmndi:BPMNShape bpmnElement="sendMessagesTask" id="BPMNShape_sendMessagesTask">
         <omgdc:Bounds height="80.0" width="100.0" x="720.0" y="125.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-B7680781-A545-43D8-8533-43863605124D" id="BPMNShape_sid-B7680781-A545-43D8-8533-43863605124D">

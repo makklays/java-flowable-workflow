@@ -71,6 +71,21 @@ public class UserViewController {
         return "home";
     }
 
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        return "users/profile";
+    }
+
+    @GetMapping("/settings")
+    public String settings(Model model) {
+        return "users/settings";
+    }
+
+    @GetMapping("/new-project")
+    public String newProject(Model model) {
+        return "users/new-project";
+    }
+
     @GetMapping("/grafics")
     public String grafics(Model model) {
         return "grafics";

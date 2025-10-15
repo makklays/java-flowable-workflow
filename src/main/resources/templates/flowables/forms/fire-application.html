@@ -38,7 +38,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <h5 class="card-title">Add a new user</h5>
+                            <h5 class="card-title">Fire application</h5>
                         </div>
                         <!--div class="col" style="text-align:right;">
                             <a href="/positions/add" class="btn btn-primary mb-2" style="width:120px;"><i class="fas fa-plus me-1"></i> Add</a>
@@ -53,7 +53,51 @@
                     </div>
                     <div class="card-text">
 
-                        TODO: fire application form
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <!-- form (user task from process) -->
+                                <form th:action="@{/flowables/forms/fire-application/submit}" method="post">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="user" class="form-label required">Employee:</label>
+                                                <select id="user" name="user_id" class="form-control">
+                                                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.firstname+' '+u.lastname+' ('+ (u.department.title ?: u.department.title) +', '+ (u.position.title ?: u.position.title) +'), ID:' + u.id}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="reason" class="form-label">Reason</label>
+                                                <textarea id="reason" name="reason" class="form-control" rows="11" ></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- start date -->
+                                            <div class="mb-3">
+                                                <label for="lastDate" class="form-label required">Last Date</label>
+                                                <input type="datetime-local" id="lastDate" name="last_date" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary me-2" style="width:120px;"><i class="fas fa-paper-plane me-1"></i> Submit</button>
+                                    <a href="/processes" class="btn btn-secondary" style="width:120px;"><i class="fas fa-times me-1"></i> Cancel</a>
+                                </form>
+
+                            </div>
+                        </div>
 
                     </div>
                 </div>

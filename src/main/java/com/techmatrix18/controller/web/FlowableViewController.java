@@ -149,9 +149,8 @@ public class FlowableViewController {
      */
     @GetMapping("/flowables/forms/leave-application")
     public String getLeaveApplicationForm(Model model) {
-        model.addAttribute("departments", departmentService.getAll());
-        model.addAttribute("positions", positionService.getAll());
-        model.addAttribute("roles", roleService.getAll());
+        List<User> users = userService.getAll();
+        model.addAttribute("users", users);
 
         return "flowables/forms/leave-application";
     }
@@ -164,9 +163,8 @@ public class FlowableViewController {
      */
     @GetMapping("/flowables/forms/fire-application")
     public String getFireApplicationForm(Model model) {
-        model.addAttribute("departments", departmentService.getAll());
-        model.addAttribute("positions", positionService.getAll());
-        model.addAttribute("roles", roleService.getAll());
+        List<User> users = userService.getAll();
+        model.addAttribute("users", users);
 
         return "flowables/forms/fire-application";
     }

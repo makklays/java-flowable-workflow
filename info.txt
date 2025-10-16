@@ -19,9 +19,31 @@ http://localhost:8081/flowable-rest/service/repository/process-definitions
 http://localhost:8081/flowable-rest/service/runtime/process-instances
 
 ----------------------
+Сonstraint:
+- PRIMARY KEY                            - FOREIGN KEY
+CREATE TABLE users (                     CREATE TABLE orders (
+    id INT PRIMARY KEY,                      id INT PRIMARY KEY,
+    name VARCHAR(100)                        user_id INT,
+);                                           FOREIGN KEY (user_id) REFERENCES users(id)
+                                         );
+- UNIQUE                                 - NOT NULL
+CREATE TABLE users (                     CREATE TABLE users (
+    id INT PRIMARY KEY,                      id INT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE                name VARCHAR(100) NOT NULL
+);                                       );
+- CHECK                                  - DEFAULT
+CREATE TABLE users (                     CREATE TABLE users (
+    id INT PRIMARY KEY,                      id INT PRIMARY KEY,
+    age INT CHECK (age >= 18)                role VARCHAR(50) DEFAULT 'USER'
+);                                       );
+- INDEX (не совсем constraint)
+CREATE INDEX idx_email ON users(email);
 
+-----------------------
 BPMN Process:
 1. Job Application Process (key: job-application)
 2. Leave Application Process (key: leave-application)
 3. Fire Application Process (key: fire-application)
+
+-----------------------
 

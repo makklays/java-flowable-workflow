@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cmmn:definitions xmlns:cmmn="http://www.omg.org/spec/CMMN/20151101/MODEL"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="definitions"
+                  targetNamespace="http://example.com/cmmn">
+
+  <!-- Case -->
+  <cmmn:case id="complaintResolutionCase" name="Complaint Resolution Case">
+
+    <!-- Milestones -->
+    <cmmn:milestone id="milestoneComplaintRegistered" name="Complaint Registered"/>
+    <cmmn:milestone id="milestoneInvestigationCompleted" name="Investigation Completed"/>
+    <cmmn:milestone id="milestoneResolutionDecided" name="Resolution Decided"/>
+    <cmmn:milestone id="milestoneAutomatedActionExecuted" name="Automated Action Executed"/>
+    <cmmn:milestone id="milestoneCaseClosed" name="Case Closed"/>
+
+    <!-- Human Tasks -->
+    <cmmn:humanTask id="registerComplaint" name="Register Complaint">
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitRegisterComplaint">
+          <cmmn:planItemOnPart sourceRef="milestoneComplaintRegistered"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryRegisterComplaint"/>
+      </cmmn:entryCriterion>
+    </cmmn:humanTask>
+
+    <cmmn:humanTask id="verifyComplaint" name="Verify Complaint">
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryVerifyComplaint">
+          <cmmn:planItemOnPart sourceRef="milestoneComplaintRegistered"/>
+        </cmmn:sentry>
+      </cmmn:entryCriterion>
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitVerifyComplaint">
+          <cmmn:planItemOnPart sourceRef="milestoneInvestigationCompleted"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+    </cmmn:humanTask>
+
+    <cmmn:humanTask id="investigateIssue" name="Investigate Issue">
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryInvestigateIssue">
+          <cmmn:planItemOnPart sourceRef="milestoneComplaintRegistered"/>
+        </cmmn:sentry>
+      </cmmn:entryCriterion>
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitInvestigateIssue">
+          <cmmn:planItemOnPart sourceRef="milestoneInvestigationCompleted"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+    </cmmn:humanTask>
+
+    <cmmn:humanTask id="decideResolution" name="Decide Resolution">
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryDecideResolution">
+          <cmmn:planItemOnPart sourceRef="milestoneInvestigationCompleted"/>
+        </cmmn:sentry>
+      </cmmn:entryCriterion>
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitDecideResolution">
+          <cmmn:planItemOnPart sourceRef="milestoneResolutionDecided"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+    </cmmn:humanTask>
+
+    <cmmn:humanTask id="notifyCustomer" name="Notify Customer">
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryNotifyCustomer">
+          <cmmn:planItemOnPart sourceRef="milestoneAutomatedActionExecuted"/>
+        </cmmn:sentry>
+      </cmmn:entryCriterion>
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitNotifyCustomer">
+          <cmmn:planItemOnPart sourceRef="milestoneCaseClosed"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+    </cmmn:humanTask>
+
+    <!-- Process Task (автоматическая рассылка) -->
+    <cmmn:processTask id="executeAutomatedAction" name="Execute Automated Action" implementation="##unspecified">
+      <cmmn:entryCriterion>
+        <cmmn:sentry id="entryAutomatedAction">
+          <cmmn:planItemOnPart sourceRef="milestoneResolutionDecided"/>
+        </cmmn:sentry>
+      </cmmn:entryCriterion>
+      <cmmn:exitCriterion>
+        <cmmn:sentry id="exitAutomatedAction">
+          <cmmn:planItemOnPart sourceRef="milestoneAutomatedActionExecuted"/>
+        </cmmn:sentry>
+      </cmmn:exitCriterion>
+    </cmmn:processTask>
+
+  </cmmn:case>
+</cmmn:definitions>
+

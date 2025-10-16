@@ -8,6 +8,8 @@ import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 import java.util.logging.Logger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Alexander Kuziv
@@ -35,12 +37,19 @@ public class SendMessagesDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         String email = (String) execution.getVariable("email");
         String displayname = (String) execution.getVariable("displayname");
+        String department = (String) execution.getVariable("department");
+        String position = (String) execution.getVariable("position");
+        String age = (String) execution.getVariable("age");
 
-        log.info("📧 Sending welcome email to: " + email + " (" + displayname + ")");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+
+        log.info(formattedDateTime + " - 📧 Sending welcome email to: " + email + " (" + displayname + ")");
 
         // userService.sendWelcomeEmail(email);
         // telegramService.sendMessage("Welcome " + displayname + " (" + email + ")");
-        // slackService.sendSlackMessage("New employee: " + displayname);
+        slackService.sendSlackMessage(":rocket:" + formattedDateTime + " - 📧 Registered across BPMN process 'Job Application' a new employee in CRM: " + displayname + " - Department: " + department + ", " + position+ ", age: " + age);
     }
 }
 

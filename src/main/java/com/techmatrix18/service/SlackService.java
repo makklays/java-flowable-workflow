@@ -1,5 +1,6 @@
 package com.techmatrix18.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.Map;
@@ -14,7 +15,8 @@ import java.util.Map;
 @Service
 public class SlackService {
 
-    private static final String WEBHOOK_URL = "https://hooks.slack.com/services/XXX/YYY/ZZZ";
+    @Value("${slack.webhook.url}")
+    private String WEBHOOK_URL;
 
     public void sendSlackMessage(String text) {
         RestTemplate restTemplate = new RestTemplate();

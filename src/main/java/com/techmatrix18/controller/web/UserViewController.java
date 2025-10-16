@@ -2,13 +2,12 @@ package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.UserDto;
 import com.techmatrix18.model.User;
-import com.techmatrix18.service.DepartmentService;
-import com.techmatrix18.service.PositionService;
-import com.techmatrix18.service.RoleService;
-import com.techmatrix18.service.UserService;
+import com.techmatrix18.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 /**
@@ -37,15 +37,19 @@ public class UserViewController {
     private final DepartmentService departmentService;
     private final PositionService positionService;
     private final RoleService roleService;
+    private final SlackService slackService;
 
     public UserViewController(UserService userService,
                               DepartmentService departmentService,
                               PositionService positionService,
-                              RoleService roleService) {
+                              RoleService roleService,
+                              SlackService slackService) {
+
         this.userService = userService;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.roleService = roleService;
+        this.slackService = slackService;
     }
 
     @GetMapping("/welcome")
@@ -67,7 +71,16 @@ public class UserViewController {
     }
 
     @GetMapping("/home")
-    public String home(Model model) {
+    public String home(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByUsername(userDetails.getUsername());
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+
+        slackService.sendSlackMessage(":rocket: :technologist: " + formattedDateTime + " Enter employee in CRM: :adult: " +
+                user.getDisplayname() + " :computer: Department: " + user.getDepartment().getTitle() + ", " +
+                user.getPosition().getTitle() + ", age:" + user.getAge() );
         return "home";
     }
 

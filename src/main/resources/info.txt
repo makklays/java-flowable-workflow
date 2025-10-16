@@ -1,5 +1,4 @@
 
-
 ----------------------------------------------
 RabbitMQ on localhost:15672 (login: user, password: password).
 
@@ -13,4 +12,30 @@ http://localhost:8081/swagger-ui/index.html
 2. Contact - second step (person that work with you from Company)
 3. Activity - third step (calls with Contact from Company)
 4. Deal - last step (deals is Client + Contact + Activity)
+
+----------------------------------------------
+Вариант 1: Incoming Webhook (простой)
+Перейди в:
+👉 https://api.slack.com/apps
+Нажми “Create New App” → “From scratch”
+Дай имя, выбери workspace
+Перейди: “Incoming Webhooks” → Activate → Add New Webhook to Workspace
+Выбери канал (например, #alerts)
+Slack даст тебе URL вида:
+
+-----
+форматирование сообщения для text:
+{
+  "text": "*Жирный текст* _курсив_ `код`
+<https://example.com|текст ссылки>
+:rocket: :white_check_mark:"
+}
+Поддерживаемые элементы:
+*жирный*
+_курсив_
+`код`
+<url|описание> — кликабельные ссылки
+> — цитаты
+:emoji_name: — эмодзи
+-----------------------------------------------
 

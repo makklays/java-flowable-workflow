@@ -3,6 +3,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+application-local.yml
+.env
+
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml

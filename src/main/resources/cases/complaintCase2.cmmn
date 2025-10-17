@@ -8,25 +8,27 @@
 
     <cmmn:casePlanModel id="casePlanModel" name="Complaint Resolution Plan">
 
-      <!-- Plan Item Definitions: Human Tasks, Process Tasks, Milestones -->
+      <!-- Plan Item Definitions -->
       <cmmn:humanTask id="registerComplaint" name="Register Complaint"/>
       <cmmn:humanTask id="verifyComplaint" name="Verify Complaint"/>
       <cmmn:humanTask id="investigateIssue" name="Investigate Issue"/>
       <cmmn:humanTask id="decideResolution" name="Decide Resolution"/>
       <cmmn:humanTask id="notifyCustomer" name="Notify Customer"/>
       <cmmn:processTask id="executeAutomatedAction" name="Execute Automated Action"/>
+
+      <cmmn:milestone id="milestoneCaseStarted" name="Case Started"/>
       <cmmn:milestone id="milestoneComplaintRegistered" name="Complaint Registered"/>
       <cmmn:milestone id="milestoneInvestigationCompleted" name="Investigation Completed"/>
       <cmmn:milestone id="milestoneResolutionDecided" name="Resolution Decided"/>
       <cmmn:milestone id="milestoneAutomatedActionExecuted" name="Automated Action Executed"/>
       <cmmn:milestone id="milestoneCaseClosed" name="Case Closed"/>
 
-      <!-- Plan Items: ссылаются на определения -->
-      <!--cmmn:planItem id="piRegisterComplaint" definitionRef="registerComplaint">
+      <!-- Plan Items -->
+      <cmmn:planItem id="piRegisterComplaint" definitionRef="registerComplaint">
         <cmmn:entryCriterion>
-            <cmmn:sentry id="entryRegisterComplaint">
-                <cmmn:planItemOnPart sourceRef="milestoneCaseStarted"/>
-            </cmmn:sentry>
+          <cmmn:sentry id="entryRegisterComplaint">
+            <cmmn:planItemOnPart sourceRef="milestoneCaseStarted"/>
+          </cmmn:sentry>
         </cmmn:entryCriterion>
         <cmmn:exitCriterion>
           <cmmn:sentry id="exitRegisterComplaint">
@@ -98,8 +100,9 @@
             <cmmn:planItemOnPart sourceRef="milestoneCaseClosed"/>
           </cmmn:sentry>
         </cmmn:exitCriterion>
-      </cmmn:planItem-->
+      </cmmn:planItem>
 
     </cmmn:casePlanModel>
   </cmmn:case>
 </cmmn:definitions>
+

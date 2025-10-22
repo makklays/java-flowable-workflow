@@ -34,20 +34,18 @@ I enjoy working with it.
 Below you can see a few screenshots from the project. 
 
 ## Screens
-
 ### CRM
 <p align="left">
     /login (by login and password)
     <img src="./src/main/resources/mystatic/images/screen4.png" />
-    Page with BPNM, CMMN processes  
+    Page with BPNM, CMMN processes of Bank  
     <img src="./src/main/resources/mystatic/images/screen7.jpeg" />
-    Page with Departments 
+    Page with Departments of Bank 
     <img src="./src/main/resources/mystatic/images/screen8.jpeg" />
 </p>
 
 ### Flowable UI 
 Flowable UI from docker-compose.yml 
-
 <p align="left">
     Flowable UI
     <img src="./src/main/resources/mystatic/images/screen5.png" />
@@ -67,3 +65,4 @@ accessible via JWT
     /api/v1/clients (jwt token expired)
     <img src="./src/main/resources/mystatic/images/screen3.png" /> 
 </p>
+

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  flowable-ui:
+    image: flowable/flowable-ui:latest
+    container_name: flowable-ui
+    environment:
+      # Используем встроенную H2 базу (по умолчанию Flowable её включает)
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:flowable;DB_CLOSE_DELAY=-1
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD:
+
+      # Автоматическое создание таблиц
+      FLOWABLE_DATABASE_SCHEMA_UPDATE: true
+
+      # (опционально) настройки UI
+      FLOWABLE_REST_APP_ADMIN_USER_ID: admin
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+      FLOWABLE_REST_APP_ADMIN_FIRST_NAME: Admin
+      FLOWABLE_REST_APP_ADMIN_LAST_NAME: User
+
+    ports:
+      - "8080:8080"
+    restart: always
+
+
+  #flowable-design:
+  #  image: flowable/flowable-design:latest
+  #  container_name: flowable-design
+  #  depends_on:
+  #    - flowable-ui
+  #  environment:
+  #    FLOWABLE_REST_APP_SERVER_CONFIG_REST_ROOT: http://flowable-ui:8080/flowable-rest
+  #  ports:
+  #    - "8081:8080"
+  #  restart: always
+

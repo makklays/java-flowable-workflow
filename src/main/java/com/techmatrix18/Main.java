@@ -8,10 +8,12 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Scanner;
 
 /**
  * This is Main class
@@ -25,11 +27,37 @@ import java.util.Date;
 @SpringBootApplication
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Hello Flowable!");
 
+        //
+        /*String name;
+        try {
+            String name = System.in.read();
+            System.out.println("Hello, " + (String)name);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }*/
+
+        //
+        /*InputStream input = System.in;
+        StringBuilder nameBuilder = new StringBuilder();
+        int ch;
+        // читаем посимвольно, пока не встретим Enter (код 10 или 13)
+        while ((ch = input.read()) != -1 && ch != '\n' && ch != '\r') {
+            nameBuilder.append((char) ch);
+        }
+        String name1 = nameBuilder.toString();
+        System.out.println("Hello, " + name1);
+
+        //
+        Scanner scanner = new Scanner(System.in);
+        String name = scanner.nextLine();
+        System.out.println("Hello, " + name);
+        scanner.close();*/
+
         // jwt to log
-        String jwtToken = PasswordGenerator.generateToken();
+        //String jwtToken = PasswordGenerator.generateToken();
         //System.out.println("----------- jwtToken ---------> " + jwtToken);
 
         // password to log
@@ -56,7 +84,7 @@ public class Main {
     }
 }
 
-class PasswordGenerator {
+/*class PasswordGenerator {
     public static String generateToken() {
         // безопасный ключ 256 бит
         String secret = "MySuperSuperSecretKey1234567890MySuperSuperSecretKey1234567890";
@@ -69,5 +97,5 @@ class PasswordGenerator {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-}
+}*/
 

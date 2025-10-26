@@ -25,6 +25,19 @@ public class CasaDePapel {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CasaDePapel)) return false;
+        CasaDePapel that = (CasaDePapel) obj;
+        return this.pais.equals(that.pais) && this.team.equals(that.team);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 + pais.hashCode() + team.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "CasaDePapel{" +
                 "pais='" + pais + '\'' +

@@ -90,8 +90,8 @@ jvm_memory_used_bytes
 Если пусто → значит Spring Boot не отдаёт метрики (Security или порт)
 --
 💡 Итог:
-Spring Boot → генерирует метрики
-Prometheus → собирает и хранит метрики
-Grafana → отображает метрики через дашборды
+Spring Boot → генерирует метрики (http://localhost:8081/actuator/prometheus)
+Prometheus → собирает и хранит метрики (http://localhost:9090/targets)
+Grafana → отображает метрики через дашборды (http://localhost:3000)
 -----------------------------------------------
 

@@ -59,6 +59,35 @@ Grafana
 
 http://localhost:9090/graph
 https://grafana.com/grafana/dashboards/4701-jvm-micrometer/
+-------
+Настройка Grafana
+Запусти Grafana:
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+В браузере открой http://localhost:3000
+Логин: admin/admin
+Добавь Prometheus как Data Source:
+Configuration → Data Sources → Add data source → Prometheus
+URL: http://host.docker.internal:9090 (или http://localhost:9090)
+Нажать Save & Test → должно быть Data source is working
+--
+Импорт дашборда JVM Micrometer
+В Grafana → Dashboards → Import
+Вставь ID дашборда: 4701
+В поле Prometheus выбери Data Source, который ты создал
+Нажми Import
+Теперь Grafana показывает графики: JVM память, GC, active threads, HTTP requests и JDBC connections.
+--
+Проверка и отладка
+Если графики пустые:
+Проверь Prometheus: http://localhost:9090/targets → должен быть UP
+В Prometheus попробуй запрос:
+jvm_memory_used_bytes
+Если есть данные → Grafana тоже будет их показывать
+Если пусто → значит Spring Boot не отдаёт метрики (Security или порт)
 
 -----------------------------------------------
 

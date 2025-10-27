@@ -26,12 +26,17 @@ services:
 
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: prometheus-java-flowable
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
+  #grafana:
+  #  image: grafana/grafana
+  #  container_name: grafana-java-flowable
+  #  ports:
+  #    - "3000:3000"
 
   #flowable-design:
   #  image: flowable/flowable-design:latest

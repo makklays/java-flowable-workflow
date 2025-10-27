@@ -24,7 +24,9 @@ and with a REST API (accessible via JWT).
 For work with Flowable I created simple CRM with several Entities and html pages with CRUD functionality to manage them.
 After that, I started working with Flowable and creating different BPMN process (like application for user, example: 
 'Job application', 'Leave application', etc.). I came up with the forms myself and figured out how they could be 
-added to the CRM.
+added to the CRM. 
+
+I have connected and added monitoring of metrics from a Spring Boot project in Grafana and Prometheus.
 
 I want to extend the project with multiple BPMN, CMMN, and DML processes, as well as their combinations, to demonstrate my expertise in working with them.
 In the future, I’d like to expand the project with new entities, possibly up to an ERP system.
@@ -35,34 +37,45 @@ Below you can see a few screenshots from the project.
 
 ## Screens
 ### CRM
-<p align="left">
-    /login (by login and password)
-    <img src="./src/main/resources/mystatic/images/screen4.png" />
-    Page with BPNM, CMMN processes of Bank  
-    <img src="./src/main/resources/mystatic/images/screen7.jpeg" />
-    Page with Departments of Bank 
-    <img src="./src/main/resources/mystatic/images/screen8.jpeg" />
-</p>
+login (by login and password)
+<img src="./src/main/resources/mystatic/images/screen4.png" />
+
+Page with BPNM, CMMN processes of Bank  
+<img src="./src/main/resources/mystatic/images/screen7.jpeg" />
+
+Page with Departments of Bank 
+<img src="./src/main/resources/mystatic/images/screen8.jpeg" />
 
 ### Flowable UI 
 Flowable UI from docker-compose.yml 
-<p align="left">
-    Flowable UI
-    <img src="./src/main/resources/mystatic/images/screen5.png" />
-    Add BPMN process
-    <img src="./src/main/resources/mystatic/images/screen6.png" />
-    BPMN process
-    <img src="./src/main/resources/mystatic/images/screen9.png" />
-</p>
+
+Flowable UI
+<img src="./src/main/resources/mystatic/images/screen5.png" />
+
+Add BPMN process
+<img src="./src/main/resources/mystatic/images/screen6.png" />
+
+BPMN process
+<img src="./src/main/resources/mystatic/images/screen9.png" />
 
 ### REST API 
 accessible via JWT
-<p align="left">
-    /api/auth/login (send login and password)
-    <img src="./src/main/resources/mystatic/images/screen1.png" />
-    /api/v1/clients 
-    <img src="./src/main/resources/mystatic/images/screen2.png" />
-    /api/v1/clients (jwt token expired)
-    <img src="./src/main/resources/mystatic/images/screen3.png" /> 
-</p>
+
+/api/auth/login (send login and password)
+<img src="./src/main/resources/mystatic/images/screen1.png" />
+
+/api/v1/clients 
+<img src="./src/main/resources/mystatic/images/screen2.png" />
+
+/api/v1/clients (jwt token expired)
+<img src="./src/main/resources/mystatic/images/screen3.png" /> 
+
+### Prometheus + Grafana
+All metrics are collected via Prometheus and displayed in Grafana dashboards
+
+<img src="./src/main/resources/mystatic/images/screen11.png" />
+
+<img src="./src/main/resources/mystatic/images/screen12.png" />
+
+<img src="./src/main/resources/mystatic/images/screen13.png" />
 

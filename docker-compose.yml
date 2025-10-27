@@ -24,6 +24,14 @@ services:
       - "8080:8080"
     restart: always
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
 
   #flowable-design:
   #  image: flowable/flowable-design:latest

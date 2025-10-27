@@ -39,3 +39,23 @@ _курсив_
 :emoji_name: — эмодзи
 -----------------------------------------------
 
+После перезапуска приложения метрики будут доступны по URL:
+👉 http://localhost:8081/actuator/prometheus
+Проверить можно так:
+curl http://localhost:8081/actuator/prometheus | head -n 20
+
+Что дальше?
+Если хочешь подключить Grafana + Prometheus, тебе нужно:
+Prometheus config (prometheus.yml)
+scrape_configs:
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+Grafana
+Подключи Prometheus как Data Source (http://localhost:9090).
+Импортируй дашборд:
+👉 https://grafana.com/grafana/dashboards/4701 — готовый шаблон для Spring Boot + Micrometer.
+
+-----------------------------------------------
+

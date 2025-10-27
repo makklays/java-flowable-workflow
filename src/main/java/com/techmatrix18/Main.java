@@ -30,6 +30,46 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Hello Flowable!");
 
+        /*int i = 3;
+        byte b = 1;
+        byte b1 = 1 + 2;                // line 1
+        //short s = 304111;               // line 2-
+        short s1 = (short) 304111;       // line 3
+        //b = b1 + 1;                     // line 4-
+        b = (byte)  (b1 + 1);           // line 5
+        //b = −b;                         // line 6-
+        b = (byte) −b;                  // line 7
+        b1 *= 2;                       // line 8
+        //b = i;                          // line 9-
+        b = (byte)  i;
+        b += i++;
+        float f = 1.1f;
+        b /= f;*/
+
+        /*System.out.println(010 | 4);
+        System.out.println(12345 + 5432l);
+        System.out.println("2 + 2 = " + 2 + 2);
+
+        int a = 10;
+        int b = 20;
+
+        System.out.println(a > 20 && b > 10);
+        System.out.println(a > 20 || b > 10);
+        System.out.println(! (b > 10));
+        System.out.println(! (a > 20));
+
+        byte aa = 0b0001_1110;
+        byte bb = 1_____14;
+        //short s = 46_;
+        //int i = _78;
+
+        double m1 = 5_000_000.75;
+        //long m2 = _5_000_000;
+        //int m = 0b_1010;
+        int m4 = 5_000_000;
+        int m5 = 0_10;
+        //int m6 = 5_000_000_;*/
+
         //
         /*String name;
         try {

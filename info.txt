@@ -47,3 +47,8 @@ BPMN Process:
 
 -----------------------
 
+Swagger UI: 👉 http://localhost:8081/swagger-ui/index.html
+API Docs: 👉 http://localhost:8081/v3/api-docs
+
+-----------------------
+

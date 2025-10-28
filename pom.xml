@@ -46,6 +46,12 @@
             <version>2.0.1</version>
         </dependency>
 
+        <!-- Spring Data REST (for CRUD) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+
         <!-- JWT (JJWT library) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

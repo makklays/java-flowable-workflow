@@ -194,7 +194,7 @@
         </dependency>
         <!-- end for thymeleaf -->
 
-        <!-- Open API -->
+        <!-- Swagger UI and Open API -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

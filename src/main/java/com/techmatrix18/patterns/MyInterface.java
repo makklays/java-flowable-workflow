@@ -1,7 +1,13 @@
 package com.techmatrix18.patterns;
 
 /**
- * My - Interface
+ * Современные интерфейсы (Java 8+) могут содержать:
+ *
+ * abstract методы — контракт (что нужно реализовать);
+ * default методы — реализация по умолчанию;
+ * static методы — утилитарные;
+ * private методы — вспомогательные (с Java 9);
+ * public static final константы.
  *
  * @author Alexander Kuziv
  * @since 28.10.2025

@@ -5,24 +5,14 @@ import com.techmatrix18.service.ContactService;
 import com.techmatrix18.service.DealService;
 import com.techmatrix18.service.RedisService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.TemplateEngine;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.context.WebContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.thymeleaf.web.IWebExchange;
-
-import org.thymeleaf.context.WebContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
-
 
 /**
  * Report controller with endpoints for reports pages and
@@ -70,13 +60,12 @@ public class ReportViewController {
             return cachedPage; // Возвращаем закэшированное
         }
 
-        // Генерируем HTML с помощью Thymeleaf
-        //WebContext context = new WebContext(request, response, request.getServletContext(), request.getLocale(), variables);
+        // Generate HTML using Thymeleaf
         Context context = new Context();
         context.setVariables(variables);
         String html = templateEngine.process("reports/index", context);
 
-        // Сохраняем в Redis
+        // Save in Redis
         redisService.saveValue("reports:index", html);
         log.info("Returning HTML");
 

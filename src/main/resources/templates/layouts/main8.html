@@ -6,11 +6,11 @@
     <title layout:title-pattern="${title} :: Java + Flowable">Java + Flowable</title>
     <!--title>Java + Flowable</title-->
 
-    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}" />
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}" />
 
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script th:src="@{/js/signup.js}"></script>
+    <script th:src="@{js/bootstrap.min.js}"></script>
+    <script th:src="@{js/signup.js}"></script>
 
     <!-- grafics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,8 +18,8 @@
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- Font Awesome (site fontawesome.com) -->
-    <link rel="stylesheet" type="text/css" th:href="@{/css/awesome6/css/all.min.css}" />
-    <link rel="stylesheet" type="text/css" th:href="@{/css/mystyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{css/awesome6/css/all.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{css/mystyle.css}" />
 
     <link rel="icon" href="/images/fl-logo.png" />
 </head>
@@ -80,6 +80,13 @@
                 </li>
             </block>
 
+            <!-- Analyst -->
+            <block th:if="${currentUser.role.title == 'analyst'}">
+                <li>
+                    <a href="/reports" th:class="'nav-link ' + (${requestURI.startsWith('/reports')} ? 'active' : 'text-white')" ><i class="fas fa-chart-line me-2"></i> Reports</a>
+                </li>
+            </block>
+
             <!-- Manager -->
             <block th:if="${currentUser.role.title == 'manager'}">
                 <li>
@@ -136,7 +143,7 @@
                 <li><a class="dropdown-item" href="/settings">Settings</a></li>
                 <li><a class="dropdown-item" href="/profile">Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                <li><a class="dropdown-item" th:href="@{logout}">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -149,8 +156,8 @@
     </div>
 </div>
 
-<script th:src="@{/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
-<script th:src="@{/js/sidebars.js}" crossorigin="anonymous"></script>
+<script th:src="@{js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
+<script th:src="@{js/sidebars.js}" crossorigin="anonymous"></script>
 
 </body>
 </html>

@@ -19,7 +19,6 @@ services:
       FLOWABLE_REST_APP_ADMIN_PASSWORD: test
       FLOWABLE_REST_APP_ADMIN_FIRST_NAME: Admin
       FLOWABLE_REST_APP_ADMIN_LAST_NAME: User
-
     ports:
       - "8080:8080"
     restart: always
@@ -31,6 +30,14 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  redis:
+    image: redis:latest
+    container_name: redis-java-flowable
+    ports:
+      - "6379:6379"
+    restart: always
+
 
   #grafana:
   #  image: grafana/grafana

@@ -5,6 +5,13 @@ spring:
     username: admin
     password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # password: myRedisPassword  # если установлен пароль, раскомментируй
+      database: 0                 # номер базы (0–15, можно выбрать любую)
+      timeout: 2000ms
   web:
     resources:
       media-types:

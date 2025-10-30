@@ -5,7 +5,7 @@ This is a <b>Flowable + Java</b> demo project with sample code to demonstrate my
 Simple structure of Bank 🏦 (UML schema)
 
 <p align="left">
-    <img src="./src/main/resources/mystatic/schemas/schema2.png" />
+    <img src="./src/main/resources/mystatic/schemas/schema3.png" />
 </p>
 
 <p align="left">

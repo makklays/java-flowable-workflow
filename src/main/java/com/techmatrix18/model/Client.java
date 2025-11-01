@@ -2,6 +2,8 @@ package com.techmatrix18.model;
 
 import com.techmatrix18.model.enums.ClientType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -52,10 +54,12 @@ public class Client {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     // constructs

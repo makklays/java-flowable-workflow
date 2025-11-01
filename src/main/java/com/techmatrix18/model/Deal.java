@@ -2,8 +2,9 @@ package com.techmatrix18.model;
 
 import com.techmatrix18.model.enums.DealStage;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -49,10 +50,12 @@ public class Deal {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;               // Responsible manager (User)
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     // constructs

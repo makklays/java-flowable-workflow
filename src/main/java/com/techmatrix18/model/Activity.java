@@ -3,6 +3,8 @@ package com.techmatrix18.model;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.enums.ActivityType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -52,10 +54,12 @@ public class Activity {
     @Enumerated(EnumType.STRING)
     private ActivityStatus status;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     // constructs

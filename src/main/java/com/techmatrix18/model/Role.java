@@ -28,7 +28,7 @@ public class Role {
     private String description;
 
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;
 
     @UpdateTimestamp

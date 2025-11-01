@@ -21,13 +21,11 @@ public class OlapCrmService {
     }
 
     public OlapCrm getById(Long id) {
-        return olapCrmRepository.findById(id).orElseThrow(() -> new RuntimeException("OlapCrm not found"));
+        return olapCrmRepository.findById(id).orElse(null);
     }
 
     public OlapCrm getByOwnerId(Long ownerId) {
-        return olapCrmRepository.findByOwnerId(ownerId).orElseThrow(
-            () -> new RuntimeException("OlapCrm not found for ownerId: " + ownerId)
-        );
+        return olapCrmRepository.findByOwnerId(ownerId).orElse(null);
     }
 
     public List<OlapCrm> getAll() {

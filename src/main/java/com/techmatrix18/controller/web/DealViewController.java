@@ -2,14 +2,10 @@ package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.DealDto;
 import com.techmatrix18.model.Deal;
+import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
-import com.techmatrix18.model.enums.ActivityStatus;
-import com.techmatrix18.model.enums.ActivityType;
 import com.techmatrix18.model.enums.DealStage;
-import com.techmatrix18.service.ActivityService;
-import com.techmatrix18.service.ClientService;
-import com.techmatrix18.service.DealService;
-import com.techmatrix18.service.UserService;
+import com.techmatrix18.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -19,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -43,15 +38,18 @@ public class DealViewController {
     private final ActivityService activityService;
     private final ClientService clientService;
     private final UserService userService;
+    private final OlapCrmService olapCrmService;
 
     public DealViewController(DealService dealService,
                               ActivityService activityService,
                               ClientService clientService,
-                              UserService userService) {
+                              UserService userService,
+                              OlapCrmService olapCrmService) {
         this.dealService = dealService;
         this.activityService = activityService;
         this.clientService = clientService;
         this.userService = userService;
+        this.olapCrmService = olapCrmService;
     }
 
     @GetMapping("/deals")
@@ -107,6 +105,26 @@ public class DealViewController {
         // save Client in database
         dealService.saveDeal(deal);
         redirectAttributes.addFlashAttribute("successMessage", "Deal was successfully added!");
+
+        // Add data to reports
+        OlapCrm olapCrm = olapCrmService.getByOwnerId(user.getId());
+        if (olapCrm != null) {
+            log.info("OlapCrm report found for user id: " + user.getId());
+            olapCrm.setDeals(olapCrm.getDeals() + 1);
+        } else {
+            log.info("OlapCrm report NOT found for user id: " + user.getId() + ", creating new one.");
+            olapCrm = new OlapCrm();
+            olapCrm.setOwner(user);
+            olapCrm.setActivities(1);
+        }
+        BigDecimal prevSumAmount = new BigDecimal(dealDto.getAmount());
+        olapCrm.setSumAmount(prevSumAmount.add(olapCrm.getSumAmount()));
+        if (olapCrm.getFirstDealDate() == null) {
+            olapCrm.setFirstDealDate(deal.getCreatedAt());
+        }
+        olapCrm.setLastDealDate(deal.getCreatedAt());
+
+        olapCrmService.save(olapCrm);
 
         return "redirect:/deals";
     }

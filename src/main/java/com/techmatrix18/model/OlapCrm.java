@@ -1,7 +1,8 @@
 package com.techmatrix18.model;
 
 import jakarta.persistence.*;
-
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -25,8 +26,9 @@ public class OlapCrm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "owner_id")
-    private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @Column(name = "activities")
     private int activities;
@@ -34,8 +36,8 @@ public class OlapCrm {
     @Column(name = "contacts")
     private int contacts;
 
-    @Column(name = "clientes")
-    private int clientes;
+    @Column(name = "clients")
+    private int clients;
 
     @Column(name = "deals")
     private int deals;
@@ -49,44 +51,46 @@ public class OlapCrm {
     @Column(name = "last_deal_date")
     private LocalDateTime lastDealDate;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     // constructs
 
     public OlapCrm() { } // required for JPA
 
-    public OlapCrm(Long ownerId, int activities, int contacts, int clientes, int deals) {
-        this.ownerId = ownerId;
+    public OlapCrm(User owner, int activities, int contacts, int clients, int deals) {
+        this.owner = owner;
         this.activities = activities;
         this.contacts = contacts;
-        this.clientes = clientes;
+        this.clients = clients;
         this.deals = deals;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public OlapCrm(Long ownerId, int activities, int contacts, int clientes, int deals, BigDecimal sumAmount) {
-        this.ownerId = ownerId;
+    public OlapCrm(User owner, int activities, int contacts, int clients, int deals, BigDecimal sumAmount) {
+        this.owner = owner;
         this.activities = activities;
         this.contacts = contacts;
-        this.clientes = clientes;
+        this.clients = clients;
         this.deals = deals;
         this.sumAmount = sumAmount;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public OlapCrm(Long ownerId, int activities, int contacts, int clientes, int deals, BigDecimal sumAmount,
+    public OlapCrm(User owner, int activities, int contacts, int clients, int deals, BigDecimal sumAmount,
                    LocalDateTime firstDealDate, LocalDateTime lastDealDate,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.activities = activities;
         this.contacts = contacts;
-        this.clientes = clientes;
+        this.clients = clients;
         this.deals = deals;
         this.sumAmount = sumAmount;
         this.firstDealDate = firstDealDate;
@@ -105,12 +109,12 @@ public class OlapCrm {
         this.id = id;
     }
 
-    public Long getOwnerId() {
-        return ownerId;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public int getActivities() {
@@ -129,12 +133,12 @@ public class OlapCrm {
         this.contacts = contacts;
     }
 
-    public int getClientes() {
-        return clientes;
+    public int getClients() {
+        return clients;
     }
 
-    public void setClientes(int clientes) {
-        this.clientes = clientes;
+    public void setClients(int clients) {
+        this.clients = clients;
     }
 
     public int getDeals() {
@@ -143,6 +147,14 @@ public class OlapCrm {
 
     public void setDeals(int deals) {
         this.deals = deals;
+    }
+
+    public BigDecimal getSumAmount() {
+        return sumAmount;
+    }
+
+    public void setSumAmount(BigDecimal sumAmount) {
+        this.sumAmount = sumAmount;
     }
 
     public LocalDateTime getFirstDealDate() {
@@ -182,18 +194,18 @@ public class OlapCrm {
         if (this == o) return true;
         if (!(o instanceof OlapCrm olapCrm)) return false;
         return getActivities() == olapCrm.getActivities() && getContacts() == olapCrm.getContacts() &&
-                getClientes() == olapCrm.getClientes() && getDeals() == olapCrm.getDeals() &&
-                getId().equals(olapCrm.getId()) && getOwnerId().equals(olapCrm.getOwnerId());
+                getClients() == olapCrm.getClients() && getDeals() == olapCrm.getDeals() &&
+                getId().equals(olapCrm.getId()) && getOwner().equals(olapCrm.getOwner());
     }
 
     @Override
     public int hashCode() {
         int result = 17;
         result = 31 * result + (getId() != null ? getId().hashCode() : 0);
-        result = 31 * result + (getOwnerId() != null ? getOwnerId().hashCode() : 0);
+        result = 31 * result + (getOwner() != null ? getOwner().hashCode() : 0);
         result = 31 * result + getActivities();
         result = 31 * result + getContacts();
-        result = 31 * result + getClientes();
+        result = 31 * result + getClients();
         result = 31 * result + getDeals();
         return result;
     }

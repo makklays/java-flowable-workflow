@@ -1,13 +1,13 @@
 package com.techmatrix18.controller.web;
 
-import com.techmatrix18.service.ActivityService;
-import com.techmatrix18.service.ContactService;
-import com.techmatrix18.service.DealService;
-import com.techmatrix18.service.RedisService;
+import com.techmatrix18.model.OlapCrm;
+import com.techmatrix18.service.*;
+import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.TemplateEngine;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.thymeleaf.context.Context;
@@ -34,35 +34,44 @@ public class ReportViewController {
     private final DealService dealService;
     private final RedisService redisService;
     private final TemplateEngine templateEngine;
+    private final OlapCrmService olapCrmService;
 
     public ReportViewController(ActivityService activityService,
                                 ContactService contactService,
                                 DealService dealService,
                                 RedisService redisService,
-                                TemplateEngine templateEngine) {
+                                TemplateEngine templateEngine,
+                                OlapCrmService olapCrmService) {
         this.activityService = activityService;
         this.contactService = contactService;
         this.dealService = dealService;
         this.redisService = redisService;
         this.templateEngine = templateEngine;
+        this.olapCrmService = olapCrmService;
     }
 
     @GetMapping("/reports")
     @ResponseBody
-    public String allReports(HttpServletRequest request,
+    public String allReports(Model model, HttpServletRequest request,
                              HttpServletResponse response,
                              Map<String, Object> variables) {
 
-        String cachedPage = redisService.getValue("reports:index");
+        //String cachedPage = redisService.getValue("reports:index");
+        String cachedPage = null;
 
         if (cachedPage != null) {
             log.info("Returning cached HTML");
             return cachedPage; // Возвращаем закэшированное
         }
 
+        // get data for the report
+        List<OlapCrm> report = olapCrmService.getAll();
+        //model.addAttribute("report", report);
+
         // Generate HTML using Thymeleaf
         Context context = new Context();
         context.setVariables(variables);
+        context.setVariable("report", report);
         String html = templateEngine.process("reports/index", context);
 
         // Save in Redis
@@ -70,6 +79,13 @@ public class ReportViewController {
         log.info("Returning HTML");
 
         return html;
+    }
+
+    @GetMapping("/reports/report-crm")
+    public String reportCrm(Model model) {
+        List<OlapCrm> report = olapCrmService.getAll();
+        model.addAttribute("report", report);
+        return "reports/report-crm";
     }
 }
 

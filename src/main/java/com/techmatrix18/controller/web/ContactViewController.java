@@ -1,13 +1,12 @@
 package com.techmatrix18.controller.web;
 
-import com.techmatrix18.dto.ClientDto;
 import com.techmatrix18.dto.ContactDto;
-import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Contact;
+import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
-import com.techmatrix18.model.enums.ClientType;
 import com.techmatrix18.service.ClientService;
 import com.techmatrix18.service.ContactService;
+import com.techmatrix18.service.OlapCrmService;
 import com.techmatrix18.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -17,9 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -39,11 +36,16 @@ public class ContactViewController {
     private final ContactService contactService;
     private final ClientService clientService;
     private final UserService userService;
+    private final OlapCrmService olapCrmService;
 
-    public ContactViewController(ContactService contactService, ClientService clientService, UserService userService) {
+    public ContactViewController(ContactService contactService,
+                                 ClientService clientService,
+                                 UserService userService,
+                                 OlapCrmService olapCrmService) {
         this.contactService = contactService;
         this.clientService = clientService;
         this.userService = userService;
+        this.olapCrmService = olapCrmService;
     }
 
     @GetMapping("/contacts")
@@ -92,6 +94,20 @@ public class ContactViewController {
         // save Contact in database
         contactService.saveContact(contact);
         redirectAttributes.addFlashAttribute("successMessage", "Contact was successfully added!");
+
+        // Add data to reports
+        OlapCrm olapCrm = olapCrmService.getByOwnerId(user.getId());
+        if (olapCrm != null) {
+            log.info("OlapCrm report found for user id: " + user.getId());
+            olapCrm.setContacts(olapCrm.getContacts() + 1);
+        } else {
+            log.info("OlapCrm report NOT found for user id: " + user.getId());
+            olapCrm = new OlapCrm();
+            olapCrm.setOwner(user);
+            olapCrm.setContacts(1);
+        }
+
+        olapCrmService.save(olapCrm);
 
         return "redirect:/contacts";
     }

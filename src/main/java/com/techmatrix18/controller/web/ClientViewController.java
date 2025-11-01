@@ -1,13 +1,12 @@
 package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.ClientDto;
-import com.techmatrix18.dto.DepartmentDto;
 import com.techmatrix18.model.Client;
-import com.techmatrix18.model.Department;
+import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
 import com.techmatrix18.model.enums.ClientType;
 import com.techmatrix18.service.ClientService;
-import com.techmatrix18.service.DepartmentService;
+import com.techmatrix18.service.OlapCrmService;
 import com.techmatrix18.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -17,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -38,10 +36,14 @@ public class ClientViewController {
 
     private final ClientService clientService;
     private final UserService userService;
+    private final OlapCrmService olapCrmService;
 
-    public ClientViewController(ClientService clientService, UserService userService) {
+    public ClientViewController(ClientService clientService,
+                                UserService userService,
+                                OlapCrmService olapCrmService) {
         this.clientService = clientService;
         this.userService = userService;
+        this.olapCrmService = olapCrmService;
     }
 
     @GetMapping("/clients")
@@ -94,6 +96,20 @@ public class ClientViewController {
         // save Client in database
         clientService.saveClient(client);
         redirectAttributes.addFlashAttribute("successMessage", "Client was successfully added!");
+
+        // Add data to reports
+        OlapCrm olapCrm = olapCrmService.getByOwnerId(user.getId());
+        if (olapCrm != null) {
+            log.info("OlapCrm report found for user id: " + user.getId());
+            olapCrm.setClients(olapCrm.getClients() + 1);
+        } else {
+            log.info("OlapCrm report NOT found for user id: " + user.getId() + ", creating new one.");
+            olapCrm = new OlapCrm();
+            olapCrm.setOwner(user);
+            olapCrm.setClients(1);
+        }
+
+        olapCrmService.save(olapCrm);
 
         return "redirect:/clients";
     }

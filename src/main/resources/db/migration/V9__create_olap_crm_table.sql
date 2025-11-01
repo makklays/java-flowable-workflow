@@ -14,10 +14,10 @@ CREATE TABLE olap_crm
     clients         int not null default 0,
     deals           int not null default 0,
 
-    sum_amount      DECIMAL(15,2) NOT NULL,
+    sum_amount      DECIMAL(15,2) NULL,
 
-    first_deal_date datetime(6)  not null,
-    last_deal_date  datetime(6)  not null,
+    first_deal_date datetime(6)  null,
+    last_deal_date  datetime(6)  null,
 
     created_at      datetime(6)  null,
     updated_at      datetime(6)  null

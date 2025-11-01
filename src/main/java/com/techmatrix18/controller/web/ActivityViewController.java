@@ -2,13 +2,11 @@ package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.ActivityDto;
 import com.techmatrix18.model.Activity;
+import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.enums.ActivityType;
-import com.techmatrix18.service.ActivityService;
-import com.techmatrix18.service.ClientService;
-import com.techmatrix18.service.ContactService;
-import com.techmatrix18.service.UserService;
+import com.techmatrix18.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -40,15 +38,18 @@ public class ActivityViewController {
     private final ContactService contactService;
     private final ClientService clientService;
     private final UserService userService;
+    private final OlapCrmService olapCrmService;
 
     public ActivityViewController(ActivityService activityService,
                                   ContactService contactService,
                                   ClientService clientService,
-                                  UserService userService) {
+                                  UserService userService,
+                                  OlapCrmService olapCrmService) {
         this.activityService = activityService;
         this.contactService = contactService;
         this.clientService = clientService;
         this.userService = userService;
+        this.olapCrmService = olapCrmService;
     }
 
     @GetMapping("/activities")
@@ -103,6 +104,20 @@ public class ActivityViewController {
         // save Client in database
         activityService.saveActivity(activity);
         redirectAttributes.addFlashAttribute("successMessage", "Activity was successfully added!");
+
+        // Add data to reports
+        OlapCrm olapCrm = olapCrmService.getByOwnerId(user.getId());
+        if (olapCrm != null) {
+            log.info("OlapCrm report found for user id: " + user.getId());
+            olapCrm.setActivities(olapCrm.getActivities() + 1);
+        } else {
+            log.info("OlapCrm report NOT found for user id: " + user.getId() + ", creating new one.");
+            olapCrm = new OlapCrm();
+            olapCrm.setOwner(user);
+            olapCrm.setActivities(1);
+        }
+
+        olapCrmService.save(olapCrm);
 
         return "redirect:/activities";
     }

@@ -1,6 +1,7 @@
 package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.UserDto;
+import com.techmatrix18.metrics.CustomMetrics;
 import com.techmatrix18.model.User;
 import com.techmatrix18.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -38,18 +39,21 @@ public class UserViewController {
     private final PositionService positionService;
     private final RoleService roleService;
     private final SlackService slackService;
+    private final CustomMetrics customMetrics;
 
     public UserViewController(UserService userService,
                               DepartmentService departmentService,
                               PositionService positionService,
                               RoleService roleService,
-                              SlackService slackService) {
+                              SlackService slackService,
+                              CustomMetrics customMetrics) {
 
         this.userService = userService;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.roleService = roleService;
         this.slackService = slackService;
+        this.customMetrics = customMetrics;
     }
 
     @GetMapping("/welcome")
@@ -67,6 +71,10 @@ public class UserViewController {
 
     @GetMapping("/panel")
     public String panel(Model model) {
+
+        // Increase the counter when the endpoint is called
+        customMetrics.increment();
+
         return "panel";
     }
 

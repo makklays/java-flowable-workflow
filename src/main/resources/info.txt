@@ -93,6 +93,7 @@ jvm_memory_used_bytes
 Spring Boot → генерирует метрики (http://localhost:8081/actuator/prometheus)
 Prometheus → собирает и хранит метрики (http://localhost:9090/targets)
 Grafana → отображает метрики через дашборды (http://localhost:3000)
+
 -----------------------------------------------
 
 1 Порождающие (Creational)
@@ -129,6 +130,11 @@ State           - (Состояние)
 Strategy        - (Стратегия)
 Template Method - (Шаблонный метод)
 Visitor         - (Посетитель)
+
+-----------------------------------------------
+
+Для запуска Prometheus с указанным конфигурационным файлом используй команду из корня проекта:
+sudo prometheus --config.file=prometheus.yml
 
 -----------------------------------------------
 

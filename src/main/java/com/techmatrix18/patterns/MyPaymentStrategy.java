@@ -50,11 +50,11 @@ public class StrategyExample {
     public static void main(String[] args) {
         PaymentContext context = new PaymentContext();
 
-        // Оплата кредиткой
+        // Payment by credit card
         context.setPaymentStrategy(new CreditCardPayment());
         context.pay(100.0);
 
-        // Меняем стратегию во время выполнения
+        // Changing the strategy at runtime
         context.setPaymentStrategy(new PayPalPayment());
         context.pay(50.0);
     }

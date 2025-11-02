@@ -1,0 +1,189 @@
+
+---- COMMON QUESTIONS ----
+
+🧠 1. Core Java
+Что такое JVM, JRE, JDK и их различия?
+Объясни, как работает Garbage Collector. Какие существуют типы GC?
+Что такое immutability и зачем нужен String immutable?
+Разница между == и equals()?
+Что такое hashCode() и equals(), как они связаны с HashMap?
+Что делает ключевое слово volatile?
+Чем отличаются synchronized и Lock?
+Что такое ThreadLocal?
+Объясни разницу между Callable, Runnable, Thread.
+Что такое Future, CompletableFuture и как их использовать?
+Как работает Stream API (lazy evaluation, intermediate vs terminal operations)?
+Что делает Optional и зачем он нужен?
+
+⚙️ 2. Коллекции и структуры данных
+Разница между ArrayList, LinkedList, HashSet, TreeSet.
+Как работает HashMap внутри? (hashing, buckets, collisions)
+Что такое ConcurrentHashMap и чем он отличается от обычного HashMap?
+Как работает CopyOnWriteArrayList?
+Почему HashMap не потокобезопасен?
+Что такое fail-fast iterator?
+
+🧩 3. ООП, SOLID, паттерны
+Объясни принципы SOLID с примерами.
+В чем разница между композицией и наследованием?
+Пример паттернов: Strategy, Factory, Singleton, Builder, Observer.
+Что такое Dependency Injection и зачем он нужен?
+Чем отличается interface от abstract class?
+
+🌐 4. Spring / Spring Boot
+Как работает IoC Container?
+Что такое Bean, Scope, @Component, @Service, @Repository?
+Разница между @Autowired, @Qualifier, @Value.
+Как работает AOP (Aspect-Oriented Programming) в Spring?
+Что такое Spring Data JPA и Hibernate?
+Как работает Transaction Management (@Transactional)?
+Как реализовать REST API на Spring Boot?
+Как добавить Swagger / OpenAPI?
+Что делает Spring Security и как работает аутентификация через JWT?
+Как работает Spring Actuator и Prometheus метрики?
+
+🗄️ 5. Базы данных (SQL / NoSQL)
+Как работает ORM и что такое EntityManager?
+Что такое Lazy / Eager fetching?
+Разница между JOIN типами (INNER, LEFT, RIGHT, FULL)?
+Что такое transaction isolation levels?
+Как реализовать pagination и sorting в JPA?
+Когда лучше использовать Redis / MongoDB?
+
+🧰 6. Архитектура и дизайн
+Что такое Hexagonal Architecture (Ports & Adapters)?
+Объясни различие monolith vs microservices.
+Как реализовать communication между микросервисами (REST, gRPC, Kafka)?
+Что такое API Gateway?
+Как реализовать caching (Redis, Caffeine)?
+Что такое CQRS и Event Sourcing?
+Что такое Circuit Breaker (Resilience4j)?
+
+☁️ 7. DevOps / Infrastructure
+Как задеплоить Spring Boot приложение в Docker / Kubernetes?
+Что делает Dockerfile и docker-compose.yml?
+Что такое ConfigMap и Secret в Kubernetes?
+Как использовать liveness/readiness probes?
+Что мониторить через Prometheus + Grafana?
+Как настраивается CI/CD pipeline (GitHub Actions, Jenkins)?
+
+🧩 8. Тестирование
+Что такое unit test, integration test, end-to-end test?
+Как работает Mockito / JUnit 5?
+Что такое TestContainers?
+Как замокать внешние сервисы?
+Как протестировать контроллер без запуска контекста Spring?
+
+🚀 9. Performance / Scaling
+Что делать, если приложение тормозит — с чего начать?
+Как профилировать JVM (VisualVM, JConsole)?
+Что такое Thread Dump и Heap Dump?
+Как оптимизировать SQL запросы и Hibernate?
+Что такое connection pool и зачем он нужен?
+
+💬 10. Soft Skills и Architecture Thinking
+Как ты подходишь к code review?
+Приведи пример, как улучшил архитектуру существующего проекта.
+Как решаешь конфликты в команде?
+Что делаешь, если есть технический долг?
+
+---- SPRING BOOT ----
+
+🧩 1. Основы Spring Framework
+Что такое Inversion of Control (IoC) и Dependency Injection (DI)?
+Какие типы внедрения зависимостей ты знаешь?
+(constructor, setter, field injection)
+Что такое ApplicationContext и чем он отличается от BeanFactory?
+Что такое Spring Bean?
+Что такое bean scope и какие есть типы (singleton, prototype, request, session)?
+Как работает жизненный цикл Spring Bean?
+Что делают аннотации:
+@Component, @Service, @Repository, @Controller
+@Autowired, @Qualifier, @Value, @Lazy
+Что делает @Configuration и @Bean?
+Чем отличаются Java Config, XML Config и Annotation Config?
+
+🚀 2. Spring Boot — основы
+Что такое Spring Boot и чем он отличается от классического Spring?
+Что делает файл application.yml / application.properties?
+Что такое starter dependencies?
+Как работает Spring Boot auto-configuration (@SpringBootApplication)?
+Что такое Spring Boot Actuator и для чего используется?
+Как добавить собственный Actuator endpoint?
+Как работает Spring Boot DevTools?
+Как изменить порт приложения?
+
+🧱 3. Spring MVC / REST
+Что делает аннотация @RestController?
+Разница между @Controller и @RestController?
+Что делают аннотации @RequestMapping, @GetMapping, @PostMapping и т. д.?
+Как работает Request Body / Response Body?
+Что такое PathVariable и RequestParam?
+Как вернуть HTTP статус вручную? (ResponseEntity)
+Что такое ExceptionHandler и как обрабатывать ошибки глобально (@ControllerAdvice)?
+Как реализовать file upload/download в Spring Boot?
+
+⚙️ 4. Spring Data JPA / Hibernate
+Что такое ORM и зачем нужен Hibernate?
+Что такое Entity, Repository, CrudRepository, JpaRepository?
+Разница между save() и saveAndFlush()?
+Как работает Lazy и Eager Fetching?
+Что такое cascade и orphanRemoval?
+Разница между @OneToMany, @ManyToOne, @OneToOne, @ManyToMany?
+Как использовать @Query и @Modifying?
+Как сделать pagination и sorting?
+Что такое N+1 проблема и как её избежать?
+
+🧰 5. Spring Security
+Что такое Spring Security и зачем он нужен?
+Как работает Authentication и Authorization?
+Разница между UserDetailsService, AuthenticationProvider и SecurityContextHolder?
+Как реализовать JWT аутентификацию в Spring Boot?
+Что такое BCryptPasswordEncoder?
+Как разрешить доступ к определённым URL (например, /admin/**)?
+Как добавить CORS настройки в SecurityConfig?
+
+☁️ 6. Spring Boot + Microservices
+Что такое microservice architecture и чем она отличается от монолита?
+Как реализовать communication между сервисами (REST, Feign Client, Kafka, RabbitMQ)?
+Что делает Spring Cloud Config?
+Что такое Eureka / Service Discovery?
+Как использовать Circuit Breaker (Resilience4j / Hystrix)?
+Что делает Spring Cloud Gateway?
+Как настроить distributed tracing (Zipkin, Sleuth)?
+
+📊 7. Monitoring / Observability
+Что такое Spring Boot Actuator?
+Как добавить Prometheus endpoint (/actuator/prometheus)?
+Как собрать метрики через Micrometer?
+Что такое health check (/actuator/health)?
+Как добавить Grafana dashboard для Spring Boot?
+Что такое custom metrics (пример через Counter, Gauge)?
+
+🧪 8. Testing
+Разница между Unit, Integration и End-to-End тестами?
+Как работает @SpringBootTest?
+Что делают аннотации @Mock, @InjectMocks, @MockBean?
+Что такое TestRestTemplate и MockMvc?
+Как использовать H2 Database для тестов?
+Как писать тесты для REST API?
+Что такое TestContainers и как применить?
+
+🧩 9. Performance / Configuration
+Как ограничить количество потоков в @Async?
+Как работает connection pool (HikariCP)?
+Что такое @Cacheable, @CachePut, @CacheEvict?
+Как кэшировать запросы через Redis?
+Как профилировать Spring Boot приложение? (actuator/metrics, VisualVM)
+Как использовать Spring Profiles (application-dev.yml, application-prod.yml)?
+
+🔧 10. Advanced Topics
+Что делает @Transactional(propagation = Propagation.REQUIRES_NEW)?
+Как работает event publishing (ApplicationEventPublisher)?
+Что делает Spring AOP и как использовать @Aspect?
+Как реализовать собственный annotation-based interceptor?
+Что делает @Async и @Scheduled?
+Как реализовать custom starter для Spring Boot?
+
+------------------------------------------------------
+

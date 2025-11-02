@@ -62,7 +62,14 @@ class ActivityRepositoryTest {
         contact = contactRepository.save(contact);
 
         // Теперь можно сохранять Activity
-        Activity activity = new Activity(null, client, contact, ActivityType.CALL, owner, ActivityStatus.IN_PROGRESS);
+        //Activity activity = new Activity(null, client, contact, ActivityType.CALL, owner, ActivityStatus.IN_PROGRESS);
+        Activity activity = new Activity.Builder()
+                .client(client)
+                .contact(contact)
+                .type(ActivityType.CALL)
+                .owner(owner)
+                .status(ActivityStatus.IN_PROGRESS)
+                .build();
         Activity saved = activityRepository.save(activity);
 
         assertThat(saved.getId()).isNotNull();

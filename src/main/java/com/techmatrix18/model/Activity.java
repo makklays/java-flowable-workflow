@@ -3,6 +3,7 @@ package com.techmatrix18.model;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.enums.ActivityType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
@@ -33,7 +34,8 @@ public class Activity {
     @JoinColumn(name = "contact_id")
     private Contact contact;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
+    @NotBlank
     private String title;
 
     @Column(name = "type")
@@ -64,16 +66,52 @@ public class Activity {
 
     // constructs
 
-    public Activity() { }
+    private Activity() { }
 
-    public Activity(Long id, Client client, Contact contact, ActivityType type, User owner, ActivityStatus status) {
+    // Builder
+    public static class Builder {
+        private Long id;
+        private Client client;
+        private Contact contact;
+        private String title;
+        private ActivityType type;
+        private String description;
+        private LocalDateTime dateTime;
+        private User owner;
+        private ActivityStatus status;
+
+        public Builder id(Long id) { this.id = id; return this; }
+        public Builder client(Client client) { this.client = client; return this; }
+        public Builder contact(Contact contact) { this.contact = contact; return this; }
+        public Builder title(String title) { this.title = title; return this; }
+        public Builder type(ActivityType type) { this.type = type; return this; }
+        public Builder description(String description) { this.description = description; return this; }
+        public Builder dateTime(LocalDateTime dateTime) { this.dateTime = dateTime; return this; }
+        public Builder owner(User owner) { this.owner = owner; return this; }
+        public Builder status(ActivityStatus status) { this.status = status; return this; }
+        public Activity build() {
+            Activity activity = new Activity();
+            activity.id = this.id;
+            activity.client = this.client;
+            activity.contact = this.contact;
+            activity.title = this.title;
+            activity.type = this.type;
+            activity.description = this.description;
+            activity.dateTime = this.dateTime;
+            activity.owner = this.owner;
+            activity.status = this.status;
+            return activity;
+        }
+    }
+
+    /*public Activity(Long id, Client client, Contact contact, ActivityType type, User owner, ActivityStatus status) {
         this.id = id;
         this.client = client;
         this.contact = contact;
         this.type = type;
         this.owner = owner;
         this.status = status;
-    }
+    }*/
 
     // getters / setters
 
@@ -165,28 +203,27 @@ public class Activity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Activity activity)) return false;
-        return getId().equals(activity.getId()) && getClient().equals(activity.getClient()) && getContact().equals(activity.getContact()) && getTitle().equals(activity.getTitle()) && getType() == activity.getType() && getDescription().equals(activity.getDescription()) && getDateTime().equals(activity.getDateTime()) && getOwner().equals(activity.getOwner()) && getStatus() == activity.getStatus() && getCreatedAt().equals(activity.getCreatedAt()) && getUpdatedAt().equals(activity.getUpdatedAt());
+        return id != null && id.equals(activity.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getClient(), getContact(), getTitle(), getType(), getDescription(), getDateTime(), getOwner(), getStatus(), getCreatedAt(), getUpdatedAt());
+        int result = 17;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Activity{" +
                 "id=" + id +
-                ", client=" + client +
-                ", contact=" + contact +
+                ", clientId=" + (client != null ? client.getId() : null) +
+                ", contactId=" + (contact != null ? contact.getId() : null) +
+                ", ownerId=" + (owner != null ? owner.getId() : null) +
                 ", title='" + title + '\'' +
                 ", type=" + type +
-                ", description='" + description + '\'' +
-                ", dateTime=" + dateTime +
-                ", owner=" + owner +
                 ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

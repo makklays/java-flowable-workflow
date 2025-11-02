@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class ActivityMapper {
 
     public static ActivityDto toDto (Activity activity) {
-        ActivityDto dto = new ActivityDto();
+        /*ActivityDto dto = new ActivityDto();
         dto.setId(activity.getId());
         dto.setClient(activity.getClient());
         dto.setContact(activity.getContact());
@@ -24,7 +24,18 @@ public class ActivityMapper {
         dto.setTitle(activity.getTitle());
         dto.setDescription(activity.getDescription());
         dto.setStatus(activity.getStatus());
-        dto.setDateTime(String.valueOf(activity.getDateTime()));
+        dto.setDateTime(String.valueOf(activity.getDateTime()));*/
+
+        ActivityDto dto = new ActivityDto.Builder()
+                .id(activity.getId())
+                .title(activity.getTitle())
+                .client(activity.getClient())
+                .contact(activity.getContact())
+                .type(activity.getType())
+                .description(activity.getDescription())
+                .dateTime(String.valueOf(activity.getDateTime()))
+                .status(activity.getStatus())
+                .build();
         return dto;
     }
 
@@ -33,7 +44,7 @@ public class ActivityMapper {
     }
 
     public static Activity toEntity(ActivityDto activityDto) {
-        Activity activity = new Activity();
+        /*Activity activity = new Activity();
         activity.setId(activityDto.getId());
         activity.setTitle(activityDto.getTitle());
         activity.setDescription(activityDto.getDescription());
@@ -41,7 +52,18 @@ public class ActivityMapper {
         activity.setContact(activityDto.getContact());
         activity.setType(activityDto.getType());
         activity.setStatus(activityDto.getStatus());
-        activity.setDateTime(LocalDateTime.parse(activityDto.getDateTime()));
+        activity.setDateTime(LocalDateTime.parse(activityDto.getDateTime()));*/
+
+        Activity activity = new Activity.Builder()
+                .id(activityDto.getId())
+                .title(activityDto.getTitle())
+                .description(activityDto.getDescription())
+                .client(activityDto.getClient())
+                .contact(activityDto.getContact())
+                .type(activityDto.getType())
+                .status(activityDto.getStatus())
+                .dateTime(LocalDateTime.parse(activityDto.getDateTime()))
+                .build();
         return activity;
     }
 }

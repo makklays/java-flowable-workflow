@@ -67,7 +67,7 @@ public class ActivityViewController {
 
     @GetMapping("/activities/add")
     public String addActivity(Model model) {
-        model.addAttribute("activityDto", new ActivityDto()); // empty form
+        model.addAttribute("activityDto", new ActivityDto.Builder().build()); // empty form
         model.addAttribute("types", Arrays.asList(ActivityType.values()));
         model.addAttribute("statuses", Arrays.asList(ActivityStatus.values()));
         model.addAttribute("clients", clientService.getAll());
@@ -88,7 +88,7 @@ public class ActivityViewController {
         User user = userService.getById(1L);
 
         // Mapping DTO → Entity
-        Activity activity = new Activity();
+        /*Activity activity = new Activity();
         activity.setClient(activityDto.getClient());
         activity.setContact(activityDto.getContact());
         activity.setTitle(activityDto.getTitle());
@@ -99,7 +99,19 @@ public class ActivityViewController {
         activity.setStatus(activityDto.getStatus());
         activity.setOwner(user);
         activity.setCreatedAt(LocalDateTime.now());
-        activity.setUpdatedAt(LocalDateTime.now());
+        activity.setUpdatedAt(LocalDateTime.now());*/
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        Activity activity = new Activity.Builder()
+                .client(activityDto.getClient())
+                .contact(activityDto.getContact())
+                .title(activityDto.getTitle())
+                .type(activityDto.getType())
+                .description(activityDto.getDescription())
+                .dateTime(LocalDateTime.parse(activityDto.getDateTime(), formatter))
+                .status(activityDto.getStatus())
+                .owner(user)
+                .build();
 
         // save Client in database
         activityService.saveActivity(activity);

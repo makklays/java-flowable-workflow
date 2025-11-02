@@ -31,6 +31,42 @@ public class ActivityDto {
     @NotNull(message = "Status is required")
     private ActivityStatus status;
 
+    // constructors
+
+    private ActivityDto() { }
+
+    public static class Builder {
+        private Long id;
+        private String title;
+        private Client client;
+        private Contact contact;
+        private ActivityType type;
+        private String description;
+        private String dateTime;
+        private ActivityStatus status;
+
+        public Builder id(Long id) { this.id = id; return this; }
+        public Builder title(String title) { this.title = title; return this; }
+        public Builder client(Client client) { this.client = client; return this; }
+        public Builder contact(Contact contact) { this.contact = contact; return this; }
+        public Builder type(ActivityType type) { this.type = type; return this; }
+        public Builder description(String description) { this.description = description; return this; }
+        public Builder dateTime(String dateTime) { this.dateTime = dateTime; return this; }
+        public Builder status(ActivityStatus status) { this.status = status; return this; }
+        public ActivityDto build() {
+            ActivityDto dto = new ActivityDto();
+            dto.id = this.id;
+            dto.title = this.title;
+            dto.client = this.client;
+            dto.contact = this.contact;
+            dto.type = this.type;
+            dto.description = this.description;
+            dto.dateTime = this.dateTime;
+            dto.status = this.status;
+            return dto;
+        }
+    }
+
     // getters/setters
 
     public Long getId() { return id; }

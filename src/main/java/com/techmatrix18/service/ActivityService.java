@@ -61,7 +61,7 @@ public class ActivityService {
     }
 
     private ActivityDto mapToDto(Activity activity) {
-        ActivityDto dto = new ActivityDto();
+        /*ActivityDto dto = new ActivityDto();
         dto.setId(activity.getId());
         dto.setTitle(activity.getTitle());
         dto.setClient(activity.getClient());
@@ -69,7 +69,18 @@ public class ActivityService {
         dto.setType(activity.getType());
         dto.setDescription(activity.getDescription());
         dto.setDateTime(String.valueOf(activity.getDateTime()));
-        dto.setStatus(activity.getStatus());
+        dto.setStatus(activity.getStatus());*/
+
+        ActivityDto dto = new ActivityDto.Builder()
+                .id(activity.getId())
+                .title(activity.getTitle())
+                .client(activity.getClient())
+                .contact(activity.getContact())
+                .type(activity.getType())
+                .description(activity.getDescription())
+                .dateTime(String.valueOf(activity.getDateTime()))
+                .status(activity.getStatus())
+                .build();
         return dto;
     }
 

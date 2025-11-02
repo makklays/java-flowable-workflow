@@ -19,7 +19,7 @@ import java.util.Optional;
  * @author Alexander Kuziv
  * @since 01.10.2025
  * @company TechMatrix18
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 @Service
@@ -54,23 +54,13 @@ public class ActivityService {
         return activityRepository.findAll(pageable);
     }
 
-    public ActivityDto getByIdDto(Long id) {
+    /*public ActivityDto getByIdDto(Long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activity not found"));
         return mapToDto(activity);
     }
 
     private ActivityDto mapToDto(Activity activity) {
-        /*ActivityDto dto = new ActivityDto();
-        dto.setId(activity.getId());
-        dto.setTitle(activity.getTitle());
-        dto.setClient(activity.getClient());
-        dto.setContact(activity.getContact());
-        dto.setType(activity.getType());
-        dto.setDescription(activity.getDescription());
-        dto.setDateTime(String.valueOf(activity.getDateTime()));
-        dto.setStatus(activity.getStatus());*/
-
         ActivityDto dto = new ActivityDto.Builder()
                 .id(activity.getId())
                 .title(activity.getTitle())
@@ -82,7 +72,7 @@ public class ActivityService {
                 .status(activity.getStatus())
                 .build();
         return dto;
-    }
+    }*/
 
     // Find activities by title
     // -- no title field in Activity

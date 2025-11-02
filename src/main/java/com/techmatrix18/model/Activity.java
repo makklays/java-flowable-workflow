@@ -7,13 +7,12 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * @author Alexander Kuziv
  * @since 30.09.2025
  * @company TechMatrix18
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 @Entity
@@ -101,6 +100,20 @@ public class Activity {
             activity.owner = this.owner;
             activity.status = this.status;
             return activity;
+        }
+
+        public static Builder from(Activity activity) {
+            Builder builder = new Builder();
+            builder.id = activity.id;
+            builder.client = activity.client;
+            builder.contact = activity.contact;
+            builder.title = activity.title;
+            builder.type = activity.type;
+            builder.description = activity.description;
+            builder.dateTime = activity.dateTime;
+            builder.owner = activity.owner;
+            builder.status = activity.status;
+            return builder;
         }
     }
 

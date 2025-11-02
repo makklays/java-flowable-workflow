@@ -1,6 +1,7 @@
 package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.ActivityDto;
+import com.techmatrix18.mapper.ActivityMapper;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +28,7 @@ import java.util.logging.Logger;
  * @author Alexander Kuziv
  * @since 02.10.2025
  * @company TechMatrix18
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 @Controller
@@ -136,7 +138,8 @@ public class ActivityViewController {
 
     @GetMapping("/activities/edit/{id}")
     public String editActivity(@PathVariable Long id, Model model) {
-        ActivityDto activityDto = activityService.getByIdDto(id);
+        Optional<Activity> activity = activityService.getById(id);
+        ActivityDto activityDto = ActivityMapper.toDto(activity.get());
         model.addAttribute("activityDto", activityDto);
         model.addAttribute("types", Arrays.asList(ActivityType.values()));
         model.addAttribute("statuses", Arrays.asList(ActivityStatus.values()));
@@ -162,7 +165,7 @@ public class ActivityViewController {
         User user = userService.getById(1L);
 
         // Mapping DTO → Entity
-        Activity activity = activityService.getById(activityDto.getId())
+        /*Activity activity = activityService.getById(activityDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found with id " + activityDto.getId()));
         activity.setClient(activityDto.getClient());
         activity.setContact(activityDto.getContact());
@@ -173,9 +176,24 @@ public class ActivityViewController {
         activity.setDateTime(LocalDateTime.parse(activityDto.getDateTime(), formatter));
         activity.setStatus(activityDto.getStatus());
         activity.setOwner(user);
-        activity.setUpdatedAt(LocalDateTime.now());
+        activity.setUpdatedAt(LocalDateTime.now());*/
 
-        activityService.saveActivity(activity); // update entity
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        Activity existing = activityService.getById(activityDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Activity not found with id " + activityDto.getId()));
+
+        Activity updated = Activity.Builder.from(existing)
+                .client(activityDto.getClient())
+                .contact(activityDto.getContact())
+                .title(activityDto.getTitle())
+                .type(activityDto.getType())
+                .description(activityDto.getDescription())
+                .dateTime(LocalDateTime.parse(activityDto.getDateTime(), formatter))
+                .status(activityDto.getStatus())
+                .owner(user)
+                .build();
+
+        activityService.saveActivity(updated); // update entity
 
         redirectAttributes.addFlashAttribute("successMessage", "Activity was successfully updated!");
         return "redirect:/activities";

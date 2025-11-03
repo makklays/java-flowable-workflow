@@ -3,8 +3,6 @@ package com.techmatrix18.repository;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;

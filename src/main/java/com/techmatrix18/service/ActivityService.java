@@ -1,8 +1,5 @@
 package com.techmatrix18.service;
 
-import com.techmatrix18.dto.ActivityDto;
-import com.techmatrix18.dto.ClientDto;
-import com.techmatrix18.model.Client;
 import com.techmatrix18.model.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.repository.ActivityRepository;

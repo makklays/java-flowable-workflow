@@ -11,12 +11,20 @@ package com.techmatrix18.patterns;
 
 public class PizzaBuilder {
 
-    private final String title;              // required parameter
-    private final String amount;             // not required
-    private final Integer cheese;            // not required
-    private final Integer sausage;           // not required
-    private final Integer mushroom;          // not required
+    // Title of the pizza is required
+    private final String title;
+    // Amount of pizza is not required
+    private final String amount;
+    // Cheese quantity is not required
+    private final Integer cheese;
+    // Sausage quantity is not required
+    private final Integer sausage;
+    // Mushroom quantity is not required
+    private final Integer mushroom;
 
+    /**
+     * Private constructor to enforce object creation through the Builder
+     */
     private PizzaBuilder(Builder builder) {
         this.title = builder.title;          // required
         this.amount = builder.amount;        // not required
@@ -25,6 +33,9 @@ public class PizzaBuilder {
         this.mushroom = builder.mushroom;    // not required
     }
 
+    /**
+     * Static nested Builder class
+     */
     public static class Builder {
         private final String title;          // required parameter
         private String amount;
@@ -65,12 +76,22 @@ public class PizzaBuilder {
         }
     }
 
+    // Get Title of the pizza
     public String getTitle() { return this.title; }
+    // Get Amount of the pizza
     public String getAmount() { return this.amount; }
+    // Get Cheese quantity
     public Integer getCheese() { return this.cheese; }
+    // Get Sausage quantity
     public Integer getSausage() { return this.sausage; }
+    // Get Mushroom quantity
     public Integer getMushroom() { return this.mushroom; }
 
+    /**
+     * Override toString() for better representation
+     *
+     * @return String representation of the PizzaBuilder object
+     */
     @Override
     public String toString() {
         return "Pizza{" +

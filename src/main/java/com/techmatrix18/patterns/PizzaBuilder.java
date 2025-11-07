@@ -23,7 +23,11 @@ public class PizzaBuilder {
     private final Integer mushroom;
 
     /**
-     * Private constructor to enforce object creation through the Builder
+     * Private constructor to enforce object creation through the Builder.
+     *
+     * @param builder Builder instance
+     * @return PizzaBuilder instance
+     * @throws IllegalArgumentException if required parameters are missing
      */
     private PizzaBuilder(Builder builder) {
         this.title = builder.title;          // required
@@ -34,7 +38,7 @@ public class PizzaBuilder {
     }
 
     /**
-     * Static nested Builder class
+     * Static nested Builder class.
      */
     public static class Builder {
         private final String title;          // required parameter
@@ -76,19 +80,43 @@ public class PizzaBuilder {
         }
     }
 
-    // Get Title of the pizza
+    /**
+     * Get Title of the pizza.
+     *
+     * @return title Title of the pizza
+     */
     public String getTitle() { return this.title; }
-    // Get Amount of the pizza
+
+    /**
+     * Get Amount of the pizza.
+     *
+     * @return amount Amount of the pizza
+     */
     public String getAmount() { return this.amount; }
-    // Get Cheese quantity
+
+    /**
+     * Get cheese quantity.
+     *
+     * @return cheese Cheese quantity
+     */
     public Integer getCheese() { return this.cheese; }
-    // Get Sausage quantity
+
+    /**
+     * Get Sausage quantity.
+     *
+     * @return sausage Sausage quantity
+     */
     public Integer getSausage() { return this.sausage; }
-    // Get Mushroom quantity
+
+    /**
+     * Get Mushroom quantity.
+     *
+     * @return mushroom Mushroom quantity
+     */
     public Integer getMushroom() { return this.mushroom; }
 
     /**
-     * Override toString() for better representation
+     * Override toString() for better representation.
      *
      * @return String representation of the PizzaBuilder object
      */

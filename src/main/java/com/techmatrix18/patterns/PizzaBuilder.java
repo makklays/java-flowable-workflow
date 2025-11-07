@@ -4,7 +4,7 @@ package com.techmatrix18.patterns;
  * Pattern - "Builder"
  *
  * @author Alexander Kuziv
- * @since 12.10.2025
+ * @since 07.11.2025
  * @company TechMatrix18
  * @version 0.0.1
  */

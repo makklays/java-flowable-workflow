@@ -123,16 +123,32 @@ Separation of Concerns (Разделение ответственностей) �
 Общие принципы тестирования
 
 - AAA (Arrange, Act, Assert) — структура теста: подготовка, действие, проверка.
-Каждый тест состоит из трёх частей:
-// Arrange
-User user = new User("Alice", 25);
-UserService service = new UserService();
+  Каждый тест состоит из трёх частей:
+  // Arrange
+  User user = new User("Alice", 25);
+  UserService service = new UserService();
 
-// Act
-boolean result = service.isAdult(user);
+  // Act
+  boolean result = service.isAdult(user);
 
-// Assert
-assertTrue(result);
+  // Assert
+  assertTrue(result);
+- Хороший стиль написания тестов
+  Используй Given–When–Then стиль:
+  // Given
+  Order order = new Order("123", 50);
+  DiscountService service = new DiscountService();
+
+  // When
+  double discount = service.calculateDiscount(order);
+
+  // Then
+  assertEquals(5.0, discount);
+
+  Используй assertThat() из AssertJ:
+  assertThat(discount)
+      .isPositive()
+      .isLessThan(10);
 
 - Изолированность — тесты не должны зависеть друг от друга.
 - Повторяемость — тесты должны давать одинаковый результат при каждом запуске.

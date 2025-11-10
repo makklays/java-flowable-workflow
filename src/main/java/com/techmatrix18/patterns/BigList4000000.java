@@ -33,7 +33,7 @@ public class BigList4000000 {
 
 class Threads4000000 {
     private static final int TOTAL = 4_000_000;
-    private static final int THREADS = 8;
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
     private static final List<Integer> list = new ArrayList<>();
     private static final ReentrantLock lock = new ReentrantLock();
 
@@ -67,6 +67,7 @@ class Threads4000000 {
         System.out.println("First element: " + list.get(0));
         System.out.println("Last element: " + (list.size() - 1));
         System.out.println("Time: " + (end - start) + " ms");
+        System.out.println("Threads (cores) used: " + THREADS);
     }
 }
 

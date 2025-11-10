@@ -1,5 +1,6 @@
 package com.techmatrix18.patterns;
 
+import java.lang.Runtime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,6 +67,52 @@ class Threads4000000 {
         System.out.println("First element: " + list.get(0));
         System.out.println("Last element: " + (list.size() - 1));
         System.out.println("Time: " + (end - start) + " ms");
+    }
+}
+
+class Threads4000000Optimized {
+    private static final int TOTAL = 4_000_000;
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
+
+    public static void main(String[] args) throws InterruptedException {
+        List<List<Integer>> partialLists = new ArrayList<>();
+
+        Thread[] workers = new Thread[THREADS];
+        int chunk = TOTAL / THREADS;
+        long start = System.currentTimeMillis();
+
+        for(int t = 0; t < THREADS; t++) {
+            final int startIdx = t * chunk;
+            final int endIdx = (t + 1) * chunk;
+            final List<Integer> localList = new ArrayList<>(chunk);
+
+            partialLists.add(localList);
+
+            workers[t] = new Thread(() -> {
+                for (int i = startIdx; i < endIdx; i++) {
+                    localList.add(i);
+                }
+            });
+            workers[t].start();
+        }
+
+        for (Thread worker : workers) {
+            worker.join();
+        }
+
+        // Union all local lists into the final list
+        List<Integer> finalList = new ArrayList<>(TOTAL);
+        for (List<Integer> l : partialLists) {
+            finalList.addAll(l);
+        }
+
+        long end = System.currentTimeMillis();
+
+        System.out.println("List size: " + finalList.size());
+        System.out.println("First element: " + finalList.get(0));
+        System.out.println("Last element: " + (finalList.size() - 1));
+        System.out.println("Time: " + (end - start) + " ms");
+        System.out.println("Threads (cores) used: " + THREADS);
     }
 }
 

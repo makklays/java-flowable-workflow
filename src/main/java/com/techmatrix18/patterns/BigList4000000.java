@@ -196,6 +196,14 @@ class Threads4000000ExecutorOptimized {
 
 /**
  * Простой пример использования ExecutorService и Future<T>
+ *
+ * Основные методы Future:
+ * Метод	                               - Назначение
+ * get()	                               - Блокируется и ждёт результат.
+ * get(long timeout, TimeUnit unit)	       - Ждёт ограниченное время, потом бросает TimeoutException.
+ * isDone()	                               - Проверяет, завершена ли задача.
+ * isCancelled()	                       - Проверяет, отменена ли задача.
+ * cancel(boolean mayInterruptIfRunning)   - Отменяет задачу (если возможно).
  */
 class MySimpleExecutorService {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
@@ -215,4 +223,28 @@ class MySimpleExecutorService {
         executor.shutdown();
     }
 }
+
+/**
+ * Runnable — не возвращает результат и не может выбросить проверяемое исключение.
+ *
+ * Runnable task = () -> {
+ *     System.out.println("Выполняется поток: " + Thread.currentThread().getName());
+ * };
+ * можешь запустить его так:
+ * new Thread(task).start();
+ *
+ * Callable<T> — возвращает результат типа T и может выбросить проверяемое исключение.
+ *
+ * Callable<Integer> task = () -> {
+ *     System.out.println("Считаю...");
+ *     Thread.sleep(1000);
+ *     return 42;
+ * };
+ * можешь запустить его так:
+ * ExecutorService executor = Executors.newSingleThreadExecutor();
+ * Future<Integer> future = executor.submit(task);
+ *
+ * System.out.println("Результат: " + future.get()); // => 42
+ * executor.shutdown();
+ */
 

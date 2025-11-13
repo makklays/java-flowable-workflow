@@ -52,4 +52,6 @@ class AdapterDemo {
 
 // Результат:
 // Freelancer выполняет задачу: Разработать REST API
+//
+//
 

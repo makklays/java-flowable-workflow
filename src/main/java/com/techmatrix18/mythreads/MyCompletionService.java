@@ -5,6 +5,13 @@ import java.util.concurrent.*;
 /**
  * My Completion Service - пример использования CompletionService
  *
+ * Он идеально подходит для собеседований, когда нужно показать получение результатов в порядке завершения задач,
+ * а не в порядке отправки.
+ *
+ * ExecutorCompletionService — ключевой элемент
+ * Он складывает завершённые задачи во внутреннюю очередь. Туда ты и обращаешься, когда хочешь получить следующий
+ * готовый результат.
+ *
  * @author Alexander Kuziv
  * @since 14.11.2025
  * @company TechMatrix18
@@ -24,6 +31,7 @@ public class MyCompletionService {
         for (int i = 1; i <= 5; i++) {
             int id = i;
 
+            // submit(Callable) — отправка задачи на выполнение
             completionService.submit(() -> {
                 // имитация работы: задачи завершаются в разное время
                 long sleep = (long) (Math.random() * 2000);
@@ -32,14 +40,17 @@ public class MyCompletionService {
             });
         }
 
+        // take() - взять завершённый результат с блокировкой
+        // poll() - взять завершённый результат без блокировки
+
         // Получаем результаты по мере готовности
         for (int i = 0; i < 5; i++) {
-            Future<String> future = completionService.take(); // блокируется пока нет результата
-            String result = future.get();
+            Future<String> future = completionService.take(); // взять следующий завершённый результат с блокировкой
+            String result = future.get(); // получить результат из Future
             System.out.println(result);
         }
 
-        executor.shutdown();
+        executor.shutdown(); // завершение пула
     }
 }
 

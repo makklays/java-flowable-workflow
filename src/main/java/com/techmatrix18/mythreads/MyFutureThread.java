@@ -14,7 +14,6 @@ import java.util.concurrent.*;
  */
 
 public class MyFutureThread {
-
     public static void main(String[] args) throws Exception {
 
         // Создаём пул потоков (4 потока)

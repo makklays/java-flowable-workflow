@@ -1,0 +1,34 @@
+package com.techmatrix18.mythreads;
+
+/**
+ * Task1 class - Техзадание №1 — “Пул потоков обрабатывает заказы”
+ *
+ * 📌 Описание
+ * Написать программу, которая:
+ * Создаёт пул из 3 потоков.
+ * Есть список из 10 заказов (например, ID от 1 до 10).
+ * Каждый заказ — это отдельная задача, которая:
+ * выводит:
+ * Поток <имя_потока> обрабатывает заказ <id>
+ * спит от 200 до 1000 мс (рандом).
+ * Все задачи должны выполняться в пуле потоков.
+ * После выполнения всех задач — программа должна красиво завершиться.
+ *
+ * 🧩 Требования
+ * Использовать:
+ * ExecutorService, submit(), shutdown() или shutdownAwaitTermination — на выбор.
+ * Использовать Callable или Runnable (как тебе удобнее).
+ * Рандомное время — через ThreadLocalRandom.current().nextInt().
+ *
+ * @author Alexander Kuziv
+ * @since 14.11.2025
+ * @company TechMatrix18
+ * @version 0.0.1
+ */
+
+public class Task1 {
+    public static void main(String[] args) throws InterruptedException {
+        // code
+    }
+}
+

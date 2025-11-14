@@ -20,6 +20,11 @@ package com.techmatrix18.mythreads;
  * Использовать Callable или Runnable (как тебе удобнее).
  * Рандомное время — через ThreadLocalRandom.current().nextInt().
  *
+ * ⚡ Усложнение (не обязательно)
+ * Сделать так, чтобы заказы возвращали результат:
+ * "Заказ <id> выполнен за X ms"
+ * и собрать эти результаты в список.
+ *
  * @author Alexander Kuziv
  * @since 14.11.2025
  * @company TechMatrix18

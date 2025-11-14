@@ -1,5 +1,7 @@
 package com.techmatrix18.mythreads;
 
+import java.util.concurrent.*;
+
 /**
  * Task1 class - Техзадание №1 — “Пул потоков обрабатывает заказы”
  *
@@ -34,6 +36,32 @@ package com.techmatrix18.mythreads;
 public class Task1 {
     public static void main(String[] args) throws InterruptedException {
         // code
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        for(int i = 1; i <= 10; i++) {
+            int number = i;
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    int sleep = ThreadLocalRandom.current().nextInt(200, 1000);
+                    System.out.println("Поток " + Thread.currentThread().getName() + " обрабатывает заказ " + number + " (спит " + sleep + " ms)");
+                    try {
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            };
+            executor.submit(runnable);
+        }
+
+        executor.shutdown();
+        boolean finished = executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        if (finished) {
+            System.out.println("Все задачи выполнены.");
+        } else {
+            System.out.println("Не все задачи успели выполниться за 5 секунд.");
+        }
     }
 }
 

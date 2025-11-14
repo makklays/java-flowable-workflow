@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -13,8 +14,8 @@ import java.util.concurrent.*;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class Task2 {
-
     public static void main(String[] args) throws InterruptedException {
         final List<Integer> myList = new ArrayList<Integer>();
 
@@ -41,4 +42,6 @@ public class Task2 {
         System.out.println("Размер: " + myList.size());
     }
 }
+
+// Размер: 5000
 

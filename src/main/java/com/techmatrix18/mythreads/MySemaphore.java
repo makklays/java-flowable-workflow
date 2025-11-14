@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -11,6 +12,7 @@ import java.util.concurrent.Semaphore;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class MySemaphore {
     public static void main(String[] args) {
 
@@ -36,4 +38,17 @@ public class MySemaphore {
         }
     }
 }
+
+/*
+Поток 2 начал работу
+Поток 1 начал работу
+Поток 2 завершил работу
+Поток 1 завершил работу
+Поток 3 начал работу
+Поток 5 начал работу
+Поток 3 завершил работу
+Поток 5 завершил работу
+Поток 4 начал работу
+Поток 4 завершил работу
+*/
 

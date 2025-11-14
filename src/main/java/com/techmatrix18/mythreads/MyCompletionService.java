@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
 /**
@@ -18,6 +19,7 @@ import java.util.concurrent.*;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class MyCompletionService {
     public static void main(String[] args) throws Exception {
 
@@ -53,4 +55,12 @@ public class MyCompletionService {
         executor.shutdown(); // завершение пула
     }
 }
+
+/*
+Задача 3 завершилась за 1339 ms
+Задача 1 завершилась за 1416 ms
+Задача 5 завершилась за 144 ms
+Задача 2 завершилась за 1579 ms
+Задача 4 завершилась за 1641 ms
+*/
 

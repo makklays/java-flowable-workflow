@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -13,6 +14,7 @@ import java.util.concurrent.*;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class MyFutureThread {
     public static void main(String[] args) throws Exception {
 
@@ -45,4 +47,27 @@ public class MyFutureThread {
         executor.shutdown();
     }
 }
+
+/*
+pool-1-thread-1 обрабатывает 1
+pool-1-thread-3 обрабатывает 3
+pool-1-thread-4 обрабатывает 4
+pool-1-thread-2 обрабатывает 2
+pool-1-thread-2 обрабатывает 5
+pool-1-thread-4 обрабатывает 6
+pool-1-thread-1 обрабатывает 7
+pool-1-thread-3 обрабатывает 8
+Результат: 1
+Результат: 4
+Результат: 9
+Результат: 16
+Результат: 25
+pool-1-thread-4 обрабатывает 10
+pool-1-thread-2 обрабатывает 9
+Результат: 36
+Результат: 49
+Результат: 64
+Результат: 81
+Результат: 100
+*/
 

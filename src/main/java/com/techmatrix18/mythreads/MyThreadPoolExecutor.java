@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
 /**
@@ -11,6 +12,7 @@ import java.util.concurrent.*;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class MyThreadPoolExecutor {
     public static void main(String[] args) {
 

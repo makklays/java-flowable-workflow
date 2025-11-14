@@ -1,5 +1,6 @@
 package com.techmatrix18.mythreads;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
 /**
@@ -33,6 +34,7 @@ import java.util.concurrent.*;
  * @version 0.0.1
  */
 
+@ThreadSafe
 public class Task1 {
     public static void main(String[] args) throws InterruptedException {
         // code
@@ -64,4 +66,18 @@ public class Task1 {
         }
     }
 }
+
+/*
+Поток pool-1-thread-1 обрабатывает заказ 1 (спит 689 ms)
+Поток pool-1-thread-3 обрабатывает заказ 3 (спит 318 ms)
+Поток pool-1-thread-2 обрабатывает заказ 2 (спит 989 ms)
+Поток pool-1-thread-3 обрабатывает заказ 4 (спит 316 ms)
+Поток pool-1-thread-3 обрабатывает заказ 5 (спит 404 ms)
+Поток pool-1-thread-1 обрабатывает заказ 6 (спит 885 ms)
+Поток pool-1-thread-2 обрабатывает заказ 7 (спит 816 ms)
+Поток pool-1-thread-3 обрабатывает заказ 8 (спит 416 ms)
+Поток pool-1-thread-3 обрабатывает заказ 9 (спит 646 ms)
+Поток pool-1-thread-1 обрабатывает заказ 10 (спит 354 ms)
+Все задачи выполнены.
+*/
 

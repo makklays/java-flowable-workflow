@@ -1,0 +1,42 @@
+
+Вопросы на собеседовании в Google для Java-разработчика включают как технические, так и поведенческие вопросы.
+К техническим относятся вопросы по структурам данных, алгоритмам, многопоточности, идиомам Java, а также по работе
+с базами данных и системами контроля версий.
+Поведенческие вопросы направлены на оценку soft skills: например, "Что вы считаете самым сложным в работе
+программиста?" или "Как ваши навыки могут помочь команде?".
+
+Технические вопросы
+
+    Java Collections:
+        What is a "Collection"? GitHub
+        What are the main JCF interfaces and their implementations? GitHub
+        What is the difference between fail-fast and fail-safe behavior? GitHub
+        How to avoid ConcurrentModificationException? GitHub
+    Алгоритмы и структуры данных:
+        What is Big-O notation? Reddit
+        What is the difference between ArrayList and LinkedList? GitHub
+        Describe the time complexity of your solution.
+    Многопоточность:
+        What is a thread and what is a process?
+        What is the difference between synchronized and volatile?
+    SQL и базы данных:
+        Write a SQL query to find the Nth highest salary.
+        What are different types of joins?
+
+Поведенческие вопросы (Soft skills)
+
+    Tell me about a time you disagreed with a team member.
+    What are your strengths and weaknesses?
+    Why do you want to work at Google? Тверской государственный университет
+    What motivates you as a programmer? JavaRush
+    Tell me about a challenging project you worked on and how you solved it.
+    How do you handle tight deadlines?
+    What would you do if you were stuck on a problem for a long time?
+
+Общие вопросы
+
+    What is the most recent language you learned? JavaRush
+    How do you keep your technical skills up to date?
+    Tell me about yourself.
+
+

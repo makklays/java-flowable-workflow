@@ -39,4 +39,296 @@
     How do you keep your technical skills up to date?
     Tell me about yourself.
 
+---
+
+Частые вопросы обычно касаются следующих тем:
+
+Ваша профессиональная история
+Why did you choose to work in IT?
+Why did you choose this company?
+How did you get started in IT?
+What was the most interesting project you’ve ever done?
+What were the biggest challenges you had to solve in one of your recent projects?
+
+Ваша текущая работа
+What are your current responsibilities?
+What do you like most about your current position?
+What are your biggest strengths?
+Are you trying to learn anything new at the moment?
+
+Ваши планы на будущее
+Where do you see yourself in the future?
+Do you have any long term/short term plans?
+What would be your ideal job?
+
+Как вы проводите свободное время
+What are your interests?
+What do you like to do outside of work hours?
+What are your favorite movies/books?
+
+Потренируйтесь отвечать на 5 популярных вопросов
+1. Tell me about yourself
+
+I am a full-stack developer with over 5 years of experience. In my most recent job, I was involved in a number of
+e-commerce projects where I was in charge of implementing web design solutions as well as maintaining the database.
+
+I started out as a front-end developer but soon started taking on database and server management tasks. I have a strong
+background in Ruby on Rails and Bootstrap as well as MySQL and MongoDB. I am proficient in JavaScript, CSS, Ruby, and Java.
+I am also skilled at using Git. I’m always working towards updating my skills and keeping up with the industry.
+This is why I’ve recently started taking AngularJS courses. So far, I love the experience.
+
+2. What are your biggest strengths and weaknesses?
+
+I’ve always considered myself an organized and result-driven person. I make sure that the tools and approaches we choose
+are right for the project and will result in a product that satisfies the customer’s needs. I’m all about delivering
+solutions in a timely manner and I don’t like to overcomplicate things. For instance, I try to keep my code clean and
+easy to read so that another person can take over my work if need be or, if I have to go back and make some changes,
+I don’t get mixed up and confused. I think a big part of being organized is being able to look at the big picture and
+asking yourself what may come in the future.
+
+I actually think my English could use some improvement. In the past, my fear of communicating in English has prevented
+me from taking an active part in meetings. I also used to lack the confidence to write to my colleagues or the client
+team, because, I think, there were a few instances when they thought I was a bit impolite over email. However, it is
+something I am working on at the moment. I’ve been attending English classes for three months now and I feel like I’m
+getting over my fear of talking in meetings. I am still working on writing good emails, and I think I’m making progress.
+
+3. Why did you leave your last job? / Why are you leaving your current position / Why do you want to work here?
+
+While I’m grateful to my previous employer for giving me the opportunity to learn and grow in my career, I feel like,
+at this point, I’m not fully satisfied withthe work I’m doing. I would love to do something more meaningfuland useful
+and get more involved into working on a diverse range of projects where I cancollaboratewith passionate people and learn
+new approaches and technologies. I would love to work at a cutting-edge company that tries to make a positive impactin
+the world.
+
+4. Tell me about the biggest challenge you’ve ever had.
+
+It’s hard to point it out off the top of my head. Well, there was this one time, when we had to work with a client who
+did not provide clear requirements which caused a lot of confusion. Once he asked to add a certain feature three weeks
+before the deadline and we had very little time for testing it. (situation) I had to run all the needed tests and make
+sure the product was ready to be released. (task) Because the process was very time-consuming and we were on a very
+tight deadline, I decided to eliminate the most critical bugs and issues first. We held a meeting with the team to
+determine which issues we should prioritize and got to work. In the end, we managed to deliver a functioning product
+and the client was happy with it.
+
+5. Do you have any questions for me?
+
+Вот несколько вопросов для примера:
+
+        Why do you like working here?
+        Where do you see this company in 5 years?
+        What kinds of qualities are you looking for in people?
+        What is your culture like?
+        How do you evaluate performance?
+
+
+Статті · 16 квітня 2019, 13:48 170034
+Anna Gandrabura, Founder в English For IT
+Job interview in English: как готовиться и что отвечать
+
+Привет! Меня зовут Анна Гандрабура, вот уже почти 7 лет я преподаю корпоративный английский в IT-компаниях и помогаю с
+проверкой английского при собеседованиях. Из опыта скажу, что у большинства IT-специалистов практически всегда есть
+запрос на подготовку к собеседованию на английском или пройти английский тест при приеме на работу. За прошлый год мы с
+командой проверили знание языка у более чем 200 кандидатов. В этой статье расскажу про их боли и дам советы, как пройти
+собеседование на определение уровня английского.
+Определите свои слабые места
+
+Собеседование на английском — это, как правило, разговор о вас, ваших компетенциях и карьерных планах с целью определить,
+насколько хорошо вы способны улавливать устную речь и излагать мысли по английски. Процесс подготовки будет зависеть от
+вашего уровня, временных рамок и т. д. Однако в любом случае основной упор следует сделать именно на практику ваших speaking skills.
+
+Главной болью IT-специалиста в плане английского чаще всего является то, что он/она может читать, воспринимать речь на
+слух и даже выражать мысли в письменной форме, но в силу отсутствия разговорной практики, живое общение без подготовки
+оказывается устрашающей задачей. Естественно, если вы придете на собеседование, не помня, когда вы в последний раз сказали
+по-английски что-то более сложное, чем “no problem”, вам будет чрезвычайно трудно продемонстрировать свой реальный уровень.
+
+Поэтому, прежде чем тянуться за учебником грамматики, словарем или включать “Друзей” на английском, попрактикуйте ответы
+на частые вопросы, желательно записывая их на диктофон. Проверьте свой текущий уровень и определите, с чем у вас возникает
+больше всего трудностей (не хватает грамматической базы, трудно строить предложения, вылетают слова из головы, чувствуете,
+что страдает произношение и т. д.).
+
+Ваша цель — убрать ощущение странности, научиться чувствовать себя максимально комфортно и формулировать связные мысли,
+используя те знания, которые у вас есть.
+
+Частые вопросы обычно касаются следующих тем:
+
+Ваша профессиональная история
+Why did you choose to work in IT?
+Why did you choose this company?
+How did you get started in IT?
+What was the most interesting project you’ve ever done?
+What were the biggest challenges you had to solve in one of your recent projects?
+
+Ваша текущая работа
+What are your current responsibilities?
+What do you like most about your current position?
+What are your biggest strengths?
+Are you trying to learn anything new at the moment?
+
+Ваши планы на будущее
+Where do you see yourself in the future?
+Do you have any long term/short term plans?
+What would be your ideal job?
+
+Как вы проводите свободное время
+What are your interests?
+What do you like to do outside of work hours?
+What are your favorite movies/books?
+
+После того, как вы потренировались и определили свои слабости, можете повторять необходимую грамматику и заучивать слова
+и тут же опять применять эти знания на практике.
+Потренируйтесь отвечать на 5 популярных вопросов
+1. Tell me about yourself
+
+Будьте готовы к тому, что это будет первый вопрос, который вам зададут. Не спешите рассказывать про хобби и семью.
+Вместо этого подумайте, какими профессиональными качествами вы можете похвастаться. Чтобы ответить на этот вопрос
+максимально эффективно, можно разбить ваш ответ на две части.
+
+Часть 1. Кто вы?
+
+    I am a full-stack developer with over 5 years of experience. In my most recent job, I was involved in a number of
+    e-commerce projects where I was in charge of implementing web design solutions as well as maintaining the database.
+
+Часть 2. Почему вы подходите на эту должность? (здесь можно упомянуть о тех проектах, обязанностях и скиллах, которые,
+по вашему мнению, покажутся наиболее интересными).
+
+    I started out as a front-end developer but soon started taking on database and server management tasks. I have a
+    strong background in Ruby on Rails and Bootstrap as well as MySQL and MongoDB. I am proficient in JavaScript, CSS,
+    Ruby, and Java. I am also skilled at using Git. I’m always working towards updating my skills and keeping up with
+    the industry. This is why I’ve recently started taking AngularJS courses. So far, I love the experience.
+
+2. What are your biggest strengths and weaknesses?
+
+Начнем с сильных сторон. Как описать их, не вдаваясь в излишние хвастовство? Прежде всего, проанализируйте описание
+вакансии и определите, какие заявленные требования совпадают с тем, что есть у вас. Также будьте максимально конкретны
+и не злоупотребляйте общими фразами. “I am a self-motivated, responsible person. I am a great team player and have very
+good communication and interpersonal skills”. Такой ответ в самом деле будет звучать как необоснованное хвастовство.
+Поэтому лучше выделите две или три черты, которые вы можете поддержать примерами из вашего прошлого опыта и расскажите о них.
+
+    I’ve always considered myself an organized and result-driven person. I make sure that the tools and approaches we
+    choose are right for the project and will result in a product that satisfies the customer’s needs. I’m all about
+    delivering solutions in a timely manner and I don’t like to overcomplicate things. For instance, I try to keep my
+    code clean and easy to read so that another person can take over my work if need be or, if I have to go back and
+    make some changes, I don’t get mixed up and confused. I think a big part of being organized is being able to look
+    at the big picture and asking yourself what may come in the future.
+
+Говоря о слабостях, важно помнить две вещи. Слабость  - это не черта характера, которую трудно или невозможно исправить,
+поэтому не спешите отвечать: “I am an emotional person” или “I don’t really like talking to people”. Также — это не
+завуалированный комплимент самому себе, поэтому ответы вроде “I’m a perfectionist and, sometimes, I just worry about
+the project success too much” прозвучат как “humblebrag” (скромничанье).
+
+    I actually think my English could use some improvement. In the past, my fear of communicating in English has prevented
+    me from taking an active part in meetings. I also used to lack the confidence to write to my colleagues or the client
+    team, because, I think, there were a few instances when they thought I was a bit impolite over email. However, it is
+    something I am working on at the moment. I’ve been attending English classes for three months now and I feel like
+    I’m getting over my fear of talking in meetings. I am still working on writing good emails, and I think I’m making
+    progress.
+
+3. Why did you leave your last job? / Why are you leaving your current position / Why do you want to work here?
+
+Здесь важно показать, чего именно вы ждете от желаемой должности и какие ваши цели и планы на будущее. Помните, как бы
+не обстояла ситуация с вашей прошлой или теперешней работой, не стоит плохо отзываться о работодателе или коллегах.
+Например, не стоит говорить: “I hate my managers” или “My current workplace is terrible”.
+
+    While I’m grateful to my previous employer for giving me the opportunity to learn and grow in my career, I feel like,
+    at this point, I’m not fully satisfied withthe work I’m doing. I would love to do something more meaningfuland useful
+    and get more involved into working on a diverse range of projects where I cancollaboratewith passionate people and
+    learn new approaches and technologies. I would love to work at a cutting-edge company that tries to make a positive
+    impactin the world.
+
+4. Tell me about the biggest challenge you’ve ever had.
+
+Вас могут попросить рассказать о каких-либо трудностях, с которыми вам пришлось столкнуться. В случаях, когда нужно
+рассказать такую историю из личного опыта, можно применять “STAR technique”. STAR значит:
+
+    Situation — опишите конкретную ситуацию или проблему.
+    Task — задача, которая перед вами стояла.
+    Action — что вы сделали, чтобы выполнить эту задачу и решить проблему.
+    Result — каков был конечный результат.
+
+    It’s hard to point it out off the top of my head. Well, there was this one time, when we had to work with a client
+    who did not provide clear requirements which caused a lot of confusion. Once he asked to add a certain feature three
+    weeks before the deadline and we had very little time for testing it. (situation) I had to run all the needed tests
+    and make sure the product was ready to be released. (task) Because the process was very time-consuming and we were
+    on a very tight deadline, I decided to eliminate the most critical bugs and issues first. We held a meeting with the
+    team to determine which issues we should prioritize and got to work. In the end, we managed to deliver a functioning
+    product and the client was happy with it.
+
+5. Do you have any questions for me?
+
+Если вам зададут этот вопрос, отвечайте “нет” только в том случае, когда вы уверены, что эта компания и должность вам
+совсем не подходят, и вам просто не терпится “get out of there.” Если же вы заинтересованы в работе, подумайте, что бы
+вам хотелось о ней узнать.
+Вот несколько вопросов для примера:
+
+        Why do you like working here?
+        Where do you see this company in 5 years?
+        What kinds of qualities are you looking for in people?
+        What is your culture like?
+        How do you evaluate performance?
+
+Just a few tips в догонку:
+
+    Используйте bullet point approach, когда готовитесь к собеседованию. Вместо того, чтобы записывать и заучивать целые
+    предложения, выделите основные тезисные пункты и потренируйте свой ответ в разговоре с другом или просто перед зеркалом.
+    Ваша цель — звучать легко и естественно.
+    Не избегайте small talk. Покажите, что вы умеете поддерживать непринужденный разговор на различные темы. Будьте
+    готовы поговорить о том, чем вы занимаетесь помимо работы, ваших любимых книгах, хобби и т. д. Будьте приветливы и
+    на вопрос “How are you?” отвечайте: “I’m great/very well/doing good. What about yourself?”, а не “Normal” (что,
+    по сути, неправильно) или “Not bad.”
+    Поблагодарите интервьюера, отправив follow-up имейл после собеседования. Это поможет вам выделиться из толпы
+    кандидатов и заодно покажет, что вы знакомы с англоязычной культурой общения.
+
+Как сделать так, чтобы ваш английский казался лучше, чем есть
+Это может показаться очевидным, но главный показатель вашего уровня на собеседовании — это, во-первых, то, что вы
+говорите, а не из вас вытягивают слова. Во-вторых, связная речь без запинок, заикания и пауз. Следите за темпом речи.
+Лучше говорить более медленно, но размеренно, чем быстро и сбивчиво.
+Старайтесь давать развернутые ответы, ведь если вы отвечаете на все вопросы односложно, ваш уровень никак не смогут
+оценить. Никто не поймет, upper вы или inter, если каждый ваш ответ — это одно слово.
+Практикуйте active listening —  слушайте собеседника и реагируйте на его комментарии. Таким образом вы покажете
+не только заинтересованность в беседе, но и то, что вы в курсе, как общаются носители языка. То есть никто никогда
+не припишет вам Pre-Intermediate, даже если вы сказали will после if :)
+“Повысить” свой уровень в ускоренном режиме и без особых усилий можно с помощью некоторых общих фраз, которые часто
+используют носители языка (но мы часто игнорируем). Например:
+Кроме этого, разнообразить свой словарный запас и создать впечатление беглого английского помогают слова, заменяющие
+выражения с “very”:
+
+Very good = amazing, awesome, fantastic, top-notch
+Very bad = awful, terrible, lame (informal)
+Very interesting = fascinating
+Very boring = dull
+Like very much = love
+Very big = huge
+Very small = tiny
+Very important = crucial, critical, key
+
+И еще помогают так называемые “filler words”, то есть слова, которые ничего, по большому счету, не значат, но делают речь
+более плавной и выигрывают вам дополнительное время подумать над вопросом. Например:
+
+I would say that...
+Let me see...
+You know...
+I mean...
+It’s hard to remember off the top of my head...
+
+В плане грамматики лучше сконцентрироваться на основах и не забивать голову новыми правилами за день до собеседования.
+Из основ вам больше всего понадобятся:
+
+    Past Simple — о прошлых проектах, предыдущих местах работы, первых шагах и т. д. Всегда используется, когда ваше
+    предложение отвечает на вопрос: “Когда именно в прошлом?” e.g. I designed my first app when I was in university.
+    Present Perfect — о результатах на данный момент e.g. “I’ve worked at my current company for 6 years”.
+    Going to — для планов на будущее e.g. “I’m going to take a PMI exam this spring”.
+    Present Simple — для тех действий, которые происходят с какой-то частотой в настоящем e.g. “I very rarely travel abroad”.
+    Также такие темы, как Gerunds and Infinitives, First and Second Conditionals и Prepositions.
+
+Secret grammar tip: практически всегда вас спросят: “How long have you been working as ...?” И тут многие проваливают
+тест на английский, потому что отвечают не в том времени: “I work/I’m working as a developer for 5 year”. This is wrong!
+В английском все просто: в каком времени вопрос, в таком времени ответ (зачастую). Плюс у вас есть маркер времени for,
+поэтому если вы не используете время Present Perfect Continuous, как было в вопросе, ваш уровень для собеседника едва
+дотянет до weak Intermediate.
+
+Произношению нужно также определить особое внимание. Проверьте свое произношение самых часто используемых вами слов
+(например, в Google dictionary). Можно начать с этого списка:
+
+Practice makes perfect! Всегда репетируйте перед собеседованием. Да, как в фильмах американцы стоят в ванной перед
+зеркалом и повторяют свою речь. Но не заучивайте ничего, вы должны говорить максимально непринужденно и естественно.
 

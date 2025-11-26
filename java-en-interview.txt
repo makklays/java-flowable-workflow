@@ -1,0 +1,148 @@
+
+Реалистичный список вопросов на английском, которые могут встретиться на собеседовании Java-разработчика
+в банковском секторе Испании (Banco de España, Santander, BBVA, CaixaBank и др.).
+Фокус — Java Core, Concurrency, Spring, архитектура, безопасность, интеграции.
+
+🇬🇧 Java Interview Questions for Banco de España / Spanish Banking Sector
+1. Core Java
+
+What is the difference between == and .equals() in Java?
+Explain the concept of immutability. Why is String immutable?
+What are the main features introduced in the latest Java versions you’ve used?
+What is the difference between a List, Set, and Map?
+How does Java’s memory model work? (heap, stack, GC generations)
+What is the difference between checked and unchecked exceptions?
+How does Java Garbage Collection work? What GC types have you used?
+Explain the SOLID principles and how you apply them in your code.
+
+2. Concurrency & Multithreading
+
+(Banks ask this very often)
+Explain the difference between a thread and a process.
+What is a deadlock? How do you prevent it?
+What is the difference between synchronized and Lock?
+What is a volatile variable and when would you use it?
+How does the Java Memory Model guarantee visibility?
+Explain the difference between parallelism and concurrency.
+Have you used CompletableFuture or Java’s reactive programming (Project Reactor / RxJava)?
+
+3. Spring Framework / Spring Boot
+
+What is Dependency Injection and how is it implemented in Spring?
+What are the scopes of Spring beans?
+Explain the difference between @Component, @Service, and @Repository.
+How does Spring Security work? What is a security filter chain?
+What is the difference between authentication and authorization?
+Explain @Transactional and transaction propagation levels.
+What is the difference between REST and SOAP?
+Why are banks often still using SOAP?
+
+4. Databases
+
+Explain the difference between SQL and NoSQL in terms of banking requirements.
+What is the difference between optimistic and pessimistic locking?
+How would you design a table to store financial transactions safely?
+Have you worked with Flyway or Liquibase?
+How to optimize slow SQL queries?
+
+5. Architecture (Very important for banking systems)
+
+Explain layered architecture vs hexagonal architecture.
+What is CQRS and when would you use it?
+What is eventual consistency and is it acceptable in financial operations?
+What is a message broker? (Kafka, RabbitMQ)
+Explain the concept of idempotency in financial APIs.
+
+6. Microservices
+
+What are the pros and cons of microservices in the financial sector?
+How do you handle distributed transactions?
+What patterns have you used?
+(Circuit breaker, retry, saga, outbox)
+How do you secure communication between microservices?
+
+7. Testing & Quality
+
+How do you write unit tests using JUnit and Mockito?
+Explain the difference between unit, integration, and E2E tests.
+What is TDD and when do you apply it?
+How do you ensure code quality in critical systems?
+
+8. Security (high priority in banks)
+
+Explain OWASP Top 10.
+What is CSRF and how do you prevent it in Spring?
+How does HTTPS / TLS work?
+What is encryption at rest vs encryption in transit?
+What is role-based access control (RBAC)?
+
+9. Financial / Banking Domain Questions
+
+What is a settlement? What is clearing?
+Explain ACID and why it is important for banking operations.
+What is PSD2 and how does it affect API design?
+What is AML/KYC and how does software support compliance?
+What are typical requirements for transaction auditing?
+
+10. Behavioral Questions (Spain-specific)
+
+Describe a critical production incident you resolved.
+How do you work under strict regulatory requirements?
+How do you communicate with stakeholders in a multilingual environment?
+What motivates you to work in the banking sector of Spain?
+
+--------------------------------------------------------------
+
+1. What is the difference between == and .equals() in Java?
+
+== compares references (memory addresses).
+It checks whether two variables point to the same object.
+
+.equals() compares values (content).
+It checks whether two objects are meaningfully equal, according to the implementation of the equals() method.
+
+2. Explain the concept of immutability. Why is String immutable?
+
+Immutability means that once an object is created, its internal state cannot be changed.
+If you modify it, you actually create a new instance.
+String is immutable because:
+
+Security
+Strings are used in class loading, security keys, database URLs, file paths — immutability prevents tampering.
+Thread-safety
+Immutable objects are naturally thread-safe and require no synchronization.
+
+String pool optimization
+The JVM uses the String Pool to reuse String objects.
+This works only because Strings cannot change.
+
+Caching hashCode
+Since a String never changes, its hashCode can be cached → faster Map/Set operations.
+
+3. What are the main features introduced in the latest Java versions you’ve used?
+
+A strong answer depends on your last Java version, но я дам универсальный ответ, который подходит для Java 11 → Java 21 (часто в банках).
+
+Java 11
+var can be used in lambda parameters.
+New HTTP Client (non-blocking, async, HTTP/2).
+Performance improvements to GC.
+
+Java 17 (LTS — very common in banks)
+Sealed classes.
+Pattern matching for instanceof.
+Records (data classes with minimal boilerplate).
+Enhanced switch (switch expressions).
+Strong encapsulation of JDK internals.
+
+Java 21 (latest LTS)
+Virtual Threads (Project Loom) — huge concurrency improvement.
+Pattern matching for switch.
+Sequenced collections.
+String templates (preview).
+Improved garbage collectors (ZGC, G1 improvements).
+
+A perfect interview summary:
+“The main features I used recently include Records for reducing boilerplate, pattern matching for cleaner control flow,
+the new HttpClient for async communication, and Virtual Threads in Java 21 for highly scalable concurrency.”
+

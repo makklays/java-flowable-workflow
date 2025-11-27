@@ -145,7 +145,58 @@ Cloud-native apps
 4. Explain garbage collectors in the JVM.
 5. Design a scalable system used by millions of users.
 
------
+--------------------------------------------------------------------------------
+
+Detailed answers to Core Java topics for Oracle Java Developer interview.
+1. Encapsulation, inheritance, polymorphism, abstraction
+
+Encapsulation
+Encapsulation means bundling data and methods that operate on that data into a single unit (a class), and restricting
+direct access to the internal state via getters/setters. It helps maintain data integrity and hides implementation details.
+
+Inheritance
+Inheritance allows a class to acquire the properties and behaviors of another class. It promotes code reuse and supports hierarchical classification.
+
+Polymorphism
+Polymorphism allows objects to be treated as instances of their parent type while executing their overridden behavior at runtime.
+It mainly appears as method overriding and method overloading.
+
+Abstraction
+Abstraction focuses on exposing only the essential features of an object while hiding complex internal details.
+Абстракция фокусируется на выявлении только основных особенностей объекта, скрывая при этом сложные внутренние детали.
+It is achieved using abstract classes and interfaces.
+
+2. Interfaces vs abstract classes
+
+Interfaces
+Define a contract with method signatures (and default/static methods since Java 8).
+A class can implement multiple interfaces.
+No state except public static final constants.
+Best for defining capabilities/behaviors.
+
+Abstract classes
+Can have both abstract and concrete methods.
+Can hold state (fields), constructors, and protected members.
+A class can extend only one abstract class.
+Best for sharing base implementation among related classes.
+
+Short version:
+Use interfaces for capabilities; use abstract classes for shared behavior and state.
+
+3. Composition vs inheritance
+
+Inheritance (is-a relationship)
+One class extends another. Reuses behavior but creates tight coupling and can lead to fragile hierarchies.
+Example: Car extends Vehicle.
+
+Composition (has-a relationship)
+A class contains another class as a field and delegates work to it. More flexible and supports better encapsulation.
+Example: Car has an Engine.
+
+Short version:
+Prefer composition over inheritance because it leads to more maintainable and flexible designs.
+
+--------------------------------------------------------------------------------
 
 Частые вопросы и образцовые ответы на английском для собеседования Java Developer в Oracle.
 
@@ -257,5 +308,5 @@ Answer:
 Microservices break a large application into independent services communicating via REST or messaging.
 They enable scalability, resilience, and independent deployment.
 
-------
+--------------------------------------------------------------------------------
 

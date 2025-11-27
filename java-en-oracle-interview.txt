@@ -1,0 +1,261 @@
+
+Полный список тем для технического собеседования на английском на должность Java Developer в Oracle. \
+Oracle обычно спрашивает глубоко, структурировано и любит задачки по архитектуре.
+
+✅ 1. Core Java (must-know topics)
+
+✔ OOP principles
+Encapsulation, inheritance, polymorphism, abstraction
+Interfaces vs abstract classes
+Composition vs inheritance
+
+✔ Java basics
+Difference between == and .equals()
+String, StringBuilder, StringBuffer
+Immutability and why String is immutable
+Autoboxing/unboxing
+var keyword
+
+✔ Exceptions
+Checked vs unchecked
+Custom exceptions
+try-with-resources
+Best practices for error handling
+
+✔ Generics
+Type erasure
+Wildcards: ?, ? extends, ? super
+Generic methods and classes
+
+✅ 2. Collections & Data Structures
+
+✔ Java Collections Framework
+Oracle любит спрашивать детали реализации:
+ArrayList, LinkedList, HashMap, LinkedHashMap, TreeMap
+How HashMap works internally
+Hashing, equals()/hashCode() contract
+Fail-fast iterators
+Concurrency issues in collections
+
+✔ Streams API
+Intermediate vs terminal operations
+map(), filter(), flatMap(), collect()
+Parallel streams — when NOT to use
+
+✅ 3. Java Concurrency & Multithreading
+Oracle очень любит эти вопросы — обязательно готовиться.
+
+✔ Thread basics
+Thread lifecycle
+Synchronized methods/blocks
+Race conditions
+Deadlock, livelock, starvation
+
+✔ Modern concurrency API
+ExecutorService, thread pools
+CompletableFuture
+Semaphore, CountDownLatch, CyclicBarrier
+ConcurrentHashMap (внутреннее устройство)
+
+✔ Java Memory Model
+volatile
+happens-before
+atomicity
+
+✅ 4. JVM & Performance (Oracle спрашивает глубоко)
+
+JVM architecture
+Heap, stack
+Garbage collectors (G1, ZGC, Shenandoah)
+Memory leaks
+Class loaders
+JIT compiler
+Profiling with JFR / VisualVM
+
+✅ 5. Databases & SQL
+
+ACID
+Isolation levels
+Transactions
+Joins
+Indexes
+N+1 problem
+Stored procedures
+
+✅ 6. JPA / Hibernate
+
+Entity lifecycle
+Fetch types (LAZY vs EAGER)
+Cascading
+1:1, 1:N, M:N mapping
+JPQL vs Criteria API
+Caching (L1/L2)
+
+✅ 7. Spring Framework / Spring Boot
+
+Oracle любит практические вопросы:
+IoC & Dependency Injection
+Beans lifecycle
+AOP basics
+Spring Security (authentication vs authorization)
+REST controllers
+Filters & interceptors
+Actuator
+Spring Boot autoconfiguration
+
+✅ 8. Microservices & Distributed Systems
+
+REST principles
+JSON vs XML
+Circuit breaker (Resilience4j)
+Message brokers (Kafka, RabbitMQ)
+Idempotency
+Distributed transactions
+CAP theorem
+Event-driven architecture
+
+✅ 9. System Design
+
+Oracle почти всегда просит спроектировать сервис.
+Типичные задачи:
+Design a URL Shortener
+Design a scalable notification system
+Design a high-load REST API
+Design a payment service
+Спрашивают про:
+Load balancing
+Caching (Redis)
+Horizontal scaling
+Database partitioning
+API versioning
+
+✅ 10. Cloud (Oracle Cloud, AWS)
+
+Минимум базовые знания:
+Docker
+Kubernetes
+CI/CD
+Terraform (желательно)
+Cloud-native apps
+
+❗ BONUS: вопросы, которые Oracle почти всегда задаёт
+1. Explain how HashMap works internally.
+2. What is the difference between concurrency and parallelism?
+3. What is the Java Memory Model?
+4. Explain garbage collectors in the JVM.
+5. Design a scalable system used by millions of users.
+
+-----
+
+Частые вопросы и образцовые ответы на английском для собеседования Java Developer в Oracle.
+
+✅ Java Interview Questions & Answers — Oracle Style
+
+1. What are the main principles of Object-Oriented Programming?
+
+Answer:
+The four main OOP principles are Encapsulation, Inheritance, Polymorphism, and Abstraction.
+Encapsulation hides internal data by exposing behavior through public methods.
+Inheritance allows classes to reuse logic from parent classes.
+Polymorphism lets objects be treated as instances of their parent type.
+Abstraction hides unnecessary details and focuses on the essential behavior.
+
+2. What is the difference between an interface and an abstract class?
+
+Answer:
+An interface defines a contract and can contain abstract, default, and static methods. A class can implement multiple interfaces.
+An abstract class can define fields, constructors, and both abstract and non-abstract methods.
+Use an abstract class when you need shared state; use interfaces for capabilities or roles.
+
+3. Explain the concept of immutability in Java. Why is String immutable?
+
+Answer:
+An immutable object cannot change its state after creation.
+String is immutable because it is stored in the String Pool and widely used in security-sensitive contexts like class loading; immutability avoids data corruption, improves caching, and ensures thread-safety.
+
+4. What is the difference between == and .equals()?
+
+Answer:
+== compares references for objects and values for primitives.
+.equals() compares logical equality, meaning the actual content of the object.
+
+5. How does JVM work? Explain ClassLoader, Memory Model, and JIT.
+
+Answer:
+The ClassLoader loads bytecode into the JVM.
+The JVM Memory Model includes heap, stack, metaspace, code cache.
+The JIT Compiler optimizes frequently executed bytecode into native machine code to improve performance.
+
+6. What are the main features introduced in recent Java versions?
+
+Answer:
+Examples (Java 17–23):
+Records
+Sealed classes
+Pattern matching (switch, instanceof)
+Virtual threads (Project Loom)
+Enhanced garbage collectors (ZGC, Shenandoah)
+
+7. What is a thread-safe class? Give examples.
+
+Answer:
+A thread-safe class ensures correct behavior when accessed by multiple threads simultaneously.
+Examples: ConcurrentHashMap, AtomicInteger, CopyOnWriteArrayList.
+
+8. What is the difference between a process and a thread?
+
+Answer:
+A process has its own memory and resources, while threads share memory inside the same process.
+Threads are lightweight and used for concurrency.
+
+9. Explain the SOLID principles.
+
+Answer:
+Single Responsibility — one responsibility per class
+Open/Closed — open for extension, closed for modification
+Liskov — subclasses must behave like their parent
+Interface Segregation — many small interfaces
+Dependency Inversion — depend on abstractions
+
+10. What is dependency injection and why is it useful?
+
+Answer:
+Dependency injection provides required objects externally rather than creating them internally.
+This improves testability, decoupling, and maintainability.
+Spring is the most commonly used DI framework.
+
+11. What is the difference between HashMap and ConcurrentHashMap?
+
+Answer:
+HashMap is not thread-safe; concurrent access may lead to data corruption.
+ConcurrentHashMap uses lock-striping and concurrent buckets, allowing safe multi-threaded access.
+
+12. Explain REST principles.
+
+Answer:
+REST uses stateless communication, resource-based URIs, HTTP verbs (GET, POST, PUT, DELETE), and supports caching and layered architecture.
+
+13. What is a transaction? What is ACID?
+
+Answer:
+A transaction is a sequence of operations executed as a single unit.
+ACID stands for:
+Atomicity
+Consistency
+Isolation
+Durability
+
+14. What is Garbage Collection and how does it work?
+
+Answer:
+GC automatically manages memory by removing objects that are no longer reachable.
+Modern collectors include G1, ZGC, Shenandoah.
+
+15. Explain microservices architecture.
+
+Answer:
+Microservices break a large application into independent services communicating via REST or messaging.
+They enable scalability, resilience, and independent deployment.
+
+------
+

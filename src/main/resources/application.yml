@@ -61,7 +61,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
+        include: *, prometheus
+        exclude: []
   endpoint:
     prometheus:
       enabled: true

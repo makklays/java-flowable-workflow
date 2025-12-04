@@ -1,0 +1,204 @@
+
+🔥 I. Java Core (глубина уровня Oracle)
+1. Difference between == and .equals()?
+
+Хотят услышать:
+== сравнивает ссылки (reference equality)
+equals() – логическое равенство
+контракт equals/hashCode
+Коротко:
+== → reference
+equals() → value
+equals() требует переопределения hashCode().
+
+2. What is String immutability and why is String immutable?
+
+Хотят услышать:
+безопасность (ClassLoader, Security)
+кеширование (String pool)
+потокобезопасность
+снижение количества багов
+
+3. Explain the memory model of Java (JMM).
+
+Хотят:
+happens-before
+visibility vs atomicity
+volatile semantics
+reordering
+
+4. What are the differences between Heap and Stack?
+
+Хотят:
+Stack = frames, primitives, references
+Heap = objects, GC
+Stack → LIFO
+Heap fragmentation and GC
+
+5. What is escape analysis?
+
+Хотят:
+JVM может определить, что объект не выходит из метода → сделать:
+stack allocation
+scalar replacement
+remove synchronization
+Коротко:
+Escape analysis = оптимизация JIT для размещения объектов в стеке.
+
+🔥 II. Collections & Generics
+6. How does HashMap work internally?
+
+Oracle любит глубину:
+Хотят:
+hash → spread → index = (n - 1) & hash
+bucket → Node/TreeNode
+коллизии → linked list → Red-Black Tree (>=8 nodes)
+resize
+fail-fast iterator
+почему нет synchronized
+
+7. Difference between HashMap, LinkedHashMap and ConcurrentHashMap.
+
+Ты уже готов — мы это разбирали.
+
+8. What is type erasure?
+
+Хотят:
+Erasure → runtime нет generic типов
+List<String> = List<Integer>
+мостовые методы (bridge methods)
+нельзя new T[]
+
+🔥 III. Multithreading & Concurrency (очень важный блок для Oracle)
+9. Difference between synchronized, Lock, ReentrantLock, and StampedLock?
+
+Хотят:
+synchronized → блокировка монитором, no fairness
+Lock → гибкость, tryLock(), interruptible
+ReentrantLock → fairness, condition variables
+StampedLock → read/write + optimistic read
+
+10. What is a deadlock? How to avoid it?
+
+Хотят:
+4 условия deadlock
+способы: lock ordering, timeouts, avoidance
+
+11. Explain volatile keyword.
+
+Хотят три вещи:
+visibility (flush to main memory)
+ordering (happens-before)
+NOT atomic except for longs/doubles (до JDK5)
+
+12. What is the difference between CountDownLatch and CyclicBarrier?
+
+Уже знаешь:
+Latch → одноразовый
+Barrier → многоразовый
+
+🔥 IV. JVM & GC (Oracle любит это)
+13. Explain how garbage collectors work (G1, ZGC, Shenandoah).
+
+Хотят:
+G1:
+region-based
+concurrent marking
+pause prediction
+evacuation
+
+ZGC/Shenandoah:
+near-zero pauses
+colored pointers
+load barriers
+
+14. What are soft, weak, phantom references?
+
+Хотят:
+Soft → кеш
+Weak → WeakHashMap
+Phantom → post-mortem cleanup
+
+15. What is classloader delegation model?
+
+Хотят:
+parent-first delegation
+bootstrap → extension → application
+how to break / override
+
+🔥 V. Spring, REST, Microservices
+16. Difference between @Component, @Service, @Repository.
+
+Хотят:
+разные слои
+Repository → translation exceptions
+Service → business
+Component → generic
+
+17. Explain transaction isolation levels.
+
+Хотят:
+read uncommitted / committed / repeatable read / serializable
+что предотвращается:
+dirty reads
+non-repeatable reads
+phantom reads
+
+18. Explain how Spring Security filter chain works.
+
+Хотят:
+DelegatingFilterProxy
+SecurityFilterChain
+AuthenticationManager
+Providers
+Filters order
+
+19. What is idempotency in REST?
+
+Хотят:
+safe methods
+PUT is idempotent, POST is not
+идемпотентные операции на backend
+
+🔥 VI. Databases + SQL
+20. Difference between join types (INNER, LEFT, RIGHT, FULL, CROSS).
+
+Хотят уверенные ответы.
+
+21. What is optimistic vs pessimistic locking?
+
+Хотят:
+optimistic → version column
+pessimistic → SELECT FOR UPDATE
+
+22. Explain indexing types (B-Tree, Hash, GIN, GiST).
+
+Хотят понимание, когда что использовать.
+
+🔥 VII. System Design (особенно на Senior+ в Oracle)
+23. How would you design a high-load system for X?
+
+Пример:
+design a rate limiter
+design notifications system
+design ordering service
+
+Хотят:
+scalability
+API design
+fault-tolerance
+idempotency
+caching
+load balancing
+
+24. CAP theorem?
+
+Хотят:
+consistency
+availability
+partition tolerance
+
+25. CQRS vs Event Sourcing
+
+Хотят, чтобы ты мог объяснить разницу, преимущества и минусы.
+

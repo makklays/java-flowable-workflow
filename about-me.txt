@@ -1,0 +1,27 @@
+
+Short Summary of My Experience (Java Software Engineer)
+
+--
+I am a Software Engineer with strong experience in Java development, Spring Boot, and building scalable backend
+services. I have worked with relational databases such as MySQL and have hands-on experience with designing RESTful
+APIs, integrating external services, and applying clean architecture principles, including Hexagonal Architecture and
+TDD practices.
+
+I have practical knowledge of Kubernetes (including deploying Java applications with MySQL and Flyway in Minikube),
+CI/CD workflows, and containerization with Docker.
+
+In my projects, I focus on writing clean, maintainable code, applying SOLID principles, and ensuring code quality
+through unit and integration testing (JUnit, Mockito). I am also familiar with Angular and frontend basics,
+which helps in understanding full-stack workflows.
+
+Additionally, I have experience working in international teams, including in Spain, and I am comfortable communicating
+in Spanish and in English at a B2 level.
+
+--
+I am a Software Engineer experienced in developing backend applications using Java, Spring Boot, and SQL databases.
+I have worked on designing and implementing business logic, building REST APIs, integrating external services,
+and optimizing application performance. I apply clean coding practices, unit and integration testing, and follow
+modern architectural approaches such as Hexagonal Architecture. I also have experience deploying applications
+in Kubernetes and working with CI/CD pipelines.
+--
+

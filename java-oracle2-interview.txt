@@ -1,0 +1,114 @@
+
+Вопросы для Java Middle / Senior собеседования в Oracle
+
+1. JVM, JDK, JIT, GC
+
+Oracle очень любит вопросы про внутренности JVM:
+JVM & Memory
+Как устроена память JVM? (Heap, Stack, Metaspace, TLAB, Code Cache)
+Что происходит при new? Как JVM выделяет память?
+Что такое Escape Analysis?
+Что такое TLAB? Зачем он нужен?
+Разница между stack frame и heap allocation?
+Garbage Collection
+Difference between G1, ZGC, Shenandoah.
+Как работает G1? Regions? Young / Old?
+Stop-the-world — когда и почему?
+Soft / Weak / Phantom references — отличие?
+Class Loading
+Как работает ClassLoader?
+Delegation model?
+Что такое Metaspace? Почему исчез PermGen?
+
+2. Java Collections — глубоко
+
+Oracle спрашивает не “что такое HashMap”, а как он работает внутри.
+Как работает HashMap?
+hash → spread → bucket → collision handling → resizing
+Что такое spread-функция (n - 1) & hash и зачем она нужна?
+Что будет при коллизии? LinkedList → TreeNode (RB-tree).
+Почему красно-чёрное дерево?
+ConcurrentHashMap:
+Как он устроен внутри?
+Что такое CAS и где используется?
+Почему там нет сегментов после Java 8?
+Разница между HashMap, LinkedHashMap, TreeMap, ConcurrentHashMap?
+CopyOnWriteArrayList — когда использовать?
+
+3. Multithreading & Concurrency
+
+Oracle смотрит на понимание низкоуровневой синхронизации.
+Что такое happens-before?
+Как работает volatile?
+Что делает synchronized внутри? Монитор, biased/ lightweight / heavyweight lock?
+Способы lock escalation.
+Разница между Lock и synchronized?
+ReentrantLock: особенности.
+StampedLock — зачем и где полезно?
+Как работает CAS? ABA-problem?
+CompletableFuture — чем лучше Future?
+ForkJoinPool — когда использовать?
+
+4. Spring / Frameworks
+
+Oracle обычно спрашивает архитектурно, не по аннотациям.
+Как работает Dependency Injection внутри?
+Что такое BeanFactory vs ApplicationContext?
+Жизненный цикл Spring bean.
+Что такое AOP? Где используется?
+Как работает транзакционность?
+@Transactional — propagation / isolation levels?
+Lazy vs Eager loading (Hibernate).
+N+1 problem — как решать?
+
+5. SQL, Databases, ORM (Hibernate/JPA)
+
+EntityManager vs Session?
+Разница между Persist / Merge / Update?
+First-level / second-level cache?
+Optimistic vs Pessimistic Locking.
+Как работает dirty checking?
+Почему Hibernate делает flush? Когда?
+
+6. Architecture & System Design
+
+Oracle требует уверенного понимания high-level архитектур.
+Монолит vs микросервисы.
+Что такое idempotency?
+CQRS, Event Sourcing — что это?
+Circuit Breaker — где нужен?
+Как спроектировать high-load сервис на Java?
+Шаблоны: Strategy, Factory, Builder, Observer, Proxy.
+Hexagonal Architecture — принципы, слои.
+Domain-driven design — что такое aggregates, bounded context?
+
+7. Networking
+
+TCP vs UDP.
+TLS handshake — как работает?
+Что такое backpressure?
+HTTP/2 vs HTTP/1.1 — ключевые отличия.
+
+8. Kubernetes / Cloud
+
+Middle/Senior в Oracle должен понимать:
+Как деплоить Java-приложение в K8s?
+Deployment vs StatefulSet.
+Liveness/Readiness probes.
+Horizontal Pod Autoscaler — как масштабируется?
+Что такое ConfigMap и Secret?
+
+9. CI/CD & DevOps
+
+GitFlow vs Trunk-based development.
+Canary deployment.
+Blue-green deployment.
+
+10. Java Language Specific
+
+var в Java.
+Records — где использовать / чем отличаются от Lombok @Data?
+Sealed classes.
+Pattern matching.
+Virtual threads (Project Loom).
+

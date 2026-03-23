@@ -1,7 +1,25 @@
 
+npm -v
+10.8.2
+npx -v
+10.8.2
+
+node -v
+v20.19.5
+
 Добавить роутинг в react:
 npm install react-router-dom
 
+// установка роутинга страниц
+npm install react-router-dom
+// установка иконок awesome
+npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
+// установка bootstrap
+npm install react-bootstrap bootstrap
+// установка языков
+npm install i18next react-i18next i18next-browser-languagedetector --legacy-peer-deps
+// установка флагов для языков
+npm install flag-icons --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

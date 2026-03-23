@@ -1,10 +1,9 @@
 import React from 'react';
-// Импортируем всё из роутера одной строкой
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 
 // Стили и компоненты Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Navbar, Container, NavDropdown, Button, Row, Col, Nav } from 'react-bootstrap';
+import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 
 // Иконки Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,9 +11,17 @@ import {
   faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake,
   faSitemap, faBriefcase, faUserShield, faUserGroup,
   faGear, faCircleInfo, faChartLine
-} from '@fortawesome/free-solid-svg-icons';
+}
+from '@fortawesome/free-solid-svg-icons';
 
-// Ваши страницы
+// Флаги для языков
+import "flag-icons/css/flag-icons.min.css";
+
+// Переводы текстов
+import i18n from './i18n';
+import { useTranslation } from 'react-i18next';
+
+// Импорты ваших страниц (убедитесь, что пути верны)
 import Dashboard from './pages/Dashboard';
 import Contacts from './pages/Contacts';
 import Activities from './pages/Activities';
@@ -28,146 +35,166 @@ import Trading from './pages/Trading';
 import Settings from './pages/Settings';
 import About from './pages/About';
 
-// 1. Импортируем файл (в начале файла App.js)
 import myLogo from './assets/fl-logo1.png';
 
-function Home() { return <h2>Главная страница</h2>; }
-
 function App() {
-  const isLoggedIn = false; // Состояние авторизации
+  const { t, i18n } = useTranslation();
+  const isLoggedIn = false;
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
+  // Вспомогательный стиль для активных ссылок
+  const activeLinkStyle = ({ isActive }) => ({
+    backgroundColor: isActive ? '#e9ecef' : 'transparent',
+    fontWeight: isActive ? 'bold' : 'normal',
+    color: '#000'
+  });
+
+  // Вспомогательная функция для получения кода страны
+  const getFlagClass = (lang) => {
+    if (lang === 'en') return 'fi fi-us'; // Для английского обычно ставят флаг США или Британии (gb)
+    if (lang === 'ru') return 'fi fi-ru';
+    if (lang === 'es') return 'fi fi-es';
+    return 'fi fi-ru'; // по умолчанию
+  };
 
   return (
     <Router>
-      <Container fluid className="p-0"> {/* p-0 убирает лишние отступы по бокам меню */}
-        {/* ВСТАВЛЯЕМ МЕНЮ СЮДА */}
-        <Navbar style={{ backgroundColor: '#e7e7e7' }} expand="lg" className="border-bottom px-3">
+      {/* Главный контейнер на всю высоту экрана */}
+      <div className="d-flex flex-column vh-100">
+
+        {/* 1. Верхняя навигация (Navbar) */}
+        <Navbar bg="white" expand="lg" className="border-bottom px-3 shadow-sm" style={{ zIndex: 1000 }}>
           <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-            <img src={myLogo} width="30" height="30" className="me-2" alt="L" />
-            <span className="fw-bold">CRM Flowable</span>
+            <img src={myLogo} width="30" height="30" className="me-2" alt="Logo" />
+            <span className="fw-bold text-primary">CRM Flowable</span>
           </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="top-nav" />
           <Navbar.Collapse id="top-nav">
             <Nav className="ms-auto align-items-center">
-              <NavDropdown title="RU" id="lang-drop" align="end" className="me-3">
-                  <NavDropdown.Item>RU</NavDropdown.Item>
-                  <NavDropdown.Item>EN</NavDropdown.Item>
-                  <NavDropdown.Item>ES</NavDropdown.Item>
+              <NavDropdown
+                title={
+                  <span>
+                    <span className={`${getFlagClass(i18n.language)} me-2`}></span>
+                    {i18n.language?.toUpperCase() || 'RU'}
+                  </span>
+                }
+                id="lang-drop"
+                align="end"
+                className="me-3"
+              >
+                <NavDropdown.Item onClick={() => changeLanguage('ru')}>
+                  <span className="fi fi-ru me-2"></span> RU
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={() => changeLanguage('en')}>
+                  <span className="fi fi-us me-2"></span> EN
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={() => changeLanguage('es')}>
+                  <span className="fi fi-es me-2"></span> ES
+                </NavDropdown.Item>
               </NavDropdown>
 
               {isLoggedIn ? (
-                  <Button variant="outline-dark" size="sm">Выход</Button>
+                  <Button variant="outline-danger" size="sm">{t('logout')}</Button>
               ) : (
-                  <Button variant="primary" size="sm">Логин</Button>
+                  <Button variant="primary" size="sm">{t('login')}</Button>
               )}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
 
-        <Row className="mx-0">
-            {/* Боковая панель */}
-            <Col xs={2} md={1} className="bg-light vh-100 border-end p-3">
-                <Nav className="flex-column">
-                    <Nav.Link as={Link} to="/">
-                        <FontAwesomeIcon icon={faHouse} className="me-2" /> Дашборд
-                    </Nav.Link>
+        {/* 2. Основная рабочая область (Sidebar + Content) */}
+        <div className="d-flex flex-grow-1 overflow-hidden">
 
-                    <Nav.Link as={Link} to="/contacts">
-                        <FontAwesomeIcon icon={faAddressBook} className="me-2" /> Контакты
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/activities">
-                        <FontAwesomeIcon icon={faHeartPulse} className="me-2" /> Активности
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/clients">
-                        <FontAwesomeIcon icon={faUsers} className="me-2" /> Клиенты
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/deals">
-                        <FontAwesomeIcon icon={faHandshake} className="me-2" /> Сделки
-                    </Nav.Link>
+          {/* ФИКСИРОВАННОЕ БОКОВОЕ МЕНЮ (260px) */}
+          <aside style={{
+            width: '260px',
+            minWidth: '260px',
+            maxWidth: '260px',
+            backgroundColor: '#f8f9fa',
+            borderRight: '1px solid #dee2e6',
+            overflowY: 'auto' // Прокрутка только внутри меню, если пунктов много
+          }}>
+            <Nav className="flex-column p-3 gap-1">
+              <Nav.Link as={NavLink} to="/" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faHouse} className="me-3 text-secondary" /> {t('dashboard')}
+              </Nav.Link>
 
-                    <hr className="my-3 opacity-25" /> {/* Разделитель для визуальной группировки */}
+              <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                {t('management')}
+              </div>
 
-                    <Nav.Link as={Link} to="/departments">
-                        <FontAwesomeIcon icon={faSitemap} className="me-2" /> Отделы
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/positions">
-                        <FontAwesomeIcon icon={faBriefcase} className="me-2" /> Должности
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/roles">
-                        <FontAwesomeIcon icon={faUserShield} className="me-2" /> Роли
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/users">
-                        <FontAwesomeIcon icon={faUserGroup} className="me-2" /> Пользователи
-                    </Nav.Link>
+              <Nav.Link as={NavLink} to="/contacts" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faAddressBook} className="me-3 text-secondary" /> {t('contacts')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/activities" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faHeartPulse} className="me-3 text-secondary" /> {t('activities')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/clients" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faUsers} className="me-3 text-secondary" /> {t('clients')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/deals" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faHandshake} className="me-3 text-secondary" /> {t('deals')}
+              </Nav.Link>
 
-                    <hr className="my-3 opacity-25" />
+              <hr className="my-2 opacity-25" />
 
-                    <Nav.Link as={Link} to="/trading">
-                        <FontAwesomeIcon icon={faChartLine} className="me-2" /> Торговля
-                    </Nav.Link>
+              <Nav.Link as={NavLink} to="/departments" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('departments')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/positions" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faBriefcase} className="me-3 text-secondary" /> {t('positions')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/users" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faUserGroup} className="me-3 text-secondary" /> {t('users')}
+              </Nav.Link>
 
-                    <hr className="my-3 opacity-25" />
+              <hr className="my-2 opacity-25" />
 
-                    <Nav.Link as={Link} to="/settings">
-                        <FontAwesomeIcon icon={faGear} className="me-2" /> Настройки
-                    </Nav.Link>
+              <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
+              </Nav.Link>
 
-                    <Nav.Link as={Link} to="/about">
-                        <FontAwesomeIcon icon={faCircleInfo} className="me-2" /> О нас
-                    </Nav.Link>
-                </Nav>
-            </Col>
+              <hr className="my-auto opacity-25" />
 
-            {/* Основной контент */}
-            <Col xs={10} md={11} className="p-4">
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/contacts" element={<Contacts />} />
-                    <Route path="/activities" element={<Activities />} />
-                    <Route path="/clients" element={<Clients />} />
-                    <Route path="/deals" element={<Deals />} />
+              <Nav.Link as={NavLink} to="/settings" style={activeLinkStyle} className="rounded px-3 py-2 text-dark mt-3">
+                  <FontAwesomeIcon icon={faGear} className="me-3 text-secondary" /> {t('settings')}
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/about" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faCircleInfo} className="me-3 text-secondary" /> {t('about')}
+              </Nav.Link>
+            </Nav>
+          </aside>
 
-                    <Route path="/departments" element={<Departments />} />
-                    <Route path="/positions" element={<Positions />} />
-                    <Route path="/roles" element={<Roles />} />
-                    <Route path="/users" element={<Users />} />
+          {/* ОБЛАСТЬ КОНТЕНТА (Занимает всё остальное место) */}
+          <main className="flex-grow-1 p-4 bg-white shadow-inner" style={{ overflowY: 'auto' }}>
+            <Container fluid>
+              <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/contacts" element={<Contacts />} />
+                  <Route path="/activities" element={<Activities />} />
+                  <Route path="/clients" element={<Clients />} />
+                  <Route path="/deals" element={<Deals />} />
+                  <Route path="/departments" element={<Departments />} />
+                  <Route path="/positions" element={<Positions />} />
+                  <Route path="/roles" element={<Roles />} />
+                  <Route path="/users" element={<Users />} />
+                  <Route path="/trading" element={<Trading />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
+              </Routes>
+            </Container>
+          </main>
 
-                    <Route path="/trading" element={<Trading />} />
-
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/about" element={<About />} />
-                </Routes>
-            </Col>
-        </Row>
-      </Container>
+        </div>
+      </div>
     </Router>
   );
 }
 
 export default App;
-
-/*import logo from './logo.svg';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-export default App;*/
 

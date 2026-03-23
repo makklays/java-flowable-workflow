@@ -78,23 +78,27 @@ function App() {
               <NavDropdown
                 title={
                   <span>
-                    <span className={`${getFlagClass(i18n.language)} me-2`}></span>
-                    {i18n.language?.toUpperCase() || 'RU'}
+                    <span className={`${getFlagClass(i18n.language)} me-1`}></span>
+                    {i18n.language?.toUpperCase().substring(0, 2)}
                   </span>
                 }
                 id="lang-drop"
                 align="end"
-                className="me-3"
+                /* Прокидываем стиль напрямую в выпадающий список */
+                style={{ '--bs-dropdown-min-width': '50px' }}
               >
-                <NavDropdown.Item onClick={() => changeLanguage('ru')}>
-                  <span className="fi fi-ru me-2"></span> RU
-                </NavDropdown.Item>
-                <NavDropdown.Item onClick={() => changeLanguage('en')}>
-                  <span className="fi fi-us me-2"></span> EN
-                </NavDropdown.Item>
-                <NavDropdown.Item onClick={() => changeLanguage('es')}>
-                  <span className="fi fi-es me-2"></span> ES
-                </NavDropdown.Item>
+                {/* Эта обертка заставит пункты быть узкими */}
+                <div style={{ width: '50px', minWidth: '70px' }}>
+                  <NavDropdown.Item onClick={() => changeLanguage('ru')} className="d-flex justify-content-center py-1 px-0 border-0">
+                    <span className="fi fi-ru me-1"></span> RU
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => changeLanguage('en')} className="d-flex justify-content-center py-1 px-0 border-0">
+                    <span className="fi fi-us me-1"></span> EN
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => changeLanguage('es')} className="d-flex justify-content-center py-1 px-0 border-0">
+                    <span className="fi fi-es me-1"></span> ES
+                  </NavDropdown.Item>
+                </div>
               </NavDropdown>
 
               {isLoggedIn ? (

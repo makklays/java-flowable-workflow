@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+/* Обращаемся к выпадающему меню, которое открывается от нашего ID */
+div#lang-drop + ul.dropdown-menu,
+ul.dropdown-menu[aria-labelledby="lang-drop"] {
+    --bs-dropdown-min-width: 50px !important;
+    width: 50px !important;
+}
+

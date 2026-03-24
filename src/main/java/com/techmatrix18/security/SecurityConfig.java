@@ -1,9 +1,12 @@
 package com.techmatrix18.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +17,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Alexander Kuziv
@@ -29,8 +38,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService; // если есть
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
     }
@@ -38,10 +46,10 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder())
-                .and()
-                .build();
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder())
+            .and()
+            .build();
     }
 
     @Bean
@@ -53,18 +61,45 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
+        /*http
+            // use AntPathRequestMatcher for REST API
+            .securityMatcher(new AntPathRequestMatcher("/api/**"))
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.disable()) // Включите, если фронтенд на другом порту
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                .anyRequest().authenticated()
+            )
+            // ДОБАВЬТЕ ЭТО:
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                })
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );*/
+
         http
-                // use AntPathRequestMatcher for REST API
-                .securityMatcher(new AntPathRequestMatcher("/api/**"))
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+            .securityMatcher(new AntPathRequestMatcher("/api/**"))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((req, res, ex2) ->
+                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/**", "OPTIONS")).permitAll()
+                .anyRequest().authenticated()
+            );
+
+        // ЕСЛИ есть JWT фильтр — ОБЯЗАТЕЛЬНО:
+        // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -74,31 +109,46 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
-                // all, except REST API
-                .securityMatcher(new NegatedRequestMatcher(new AntPathRequestMatcher("/api/**")))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/login"),
-                                new AntPathRequestMatcher("/actuator/**"),
-                                new AntPathRequestMatcher("/css/**"),
-                                new AntPathRequestMatcher("/js/**"),
-                                new AntPathRequestMatcher("/images/**")
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                );
+            // all, except REST API
+            //.securityMatcher(new NegatedRequestMatcher(new AntPathRequestMatcher("/api/**")))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    new AntPathRequestMatcher("/login"),
+                    new AntPathRequestMatcher("/actuator/**"),
+                    new AntPathRequestMatcher("/css/**"),
+                    new AntPathRequestMatcher("/js/**"),
+                    new AntPathRequestMatcher("/images/**")
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+            );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of("http://localhost:3001"));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }
 

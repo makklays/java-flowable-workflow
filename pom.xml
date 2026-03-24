@@ -247,5 +247,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Указываем основной класс вашего CRM бэкенда -->
+                    <mainClass>com.techmatrix18.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 

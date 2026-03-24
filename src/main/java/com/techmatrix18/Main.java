@@ -1,5 +1,6 @@
 package com.techmatrix18;
 
+import com.techmatrix18.patterns.HashSetUnique;
 import com.techmatrix18.patterns.PizzaBuilder;
 import com.techmatrix18.patterns.PizzaJavaBeans;
 import com.techmatrix18.service.RedisService;
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * This is Main class
@@ -31,6 +33,27 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Hello Flowable!");
+
+        // Запускаем контекст Spring Boot
+        ApplicationContext context = SpringApplication.run(Main.class, args);
+
+        // Проверка Redis (если сервер запущен)
+        try {
+            RedisService redisService = context.getBean(RedisService.class);
+            redisService.saveValue("key1", "Hello Redis");
+            System.out.println("REDIS TEST: " + redisService.getValue("key1"));
+        } catch (Exception e) {
+            System.out.println("Redis not available, but server is starting...");
+        }
+
+        /*Set<String> names1 = Set.of("Tom", "Alice", "Bob");
+        Set<String> names2 = Set.of("Larry", "Moe", "Curly");
+        Set res1 = HashSetUnique.union(names1, names2);
+
+        System.out.println("Union1: " + res1);
+
+        Set res2 = HashSetUnique.myFunc();
+        System.out.println("Union2: " + res2);*/
 
         /*int i = 3;
         byte b = 1;
@@ -102,8 +125,10 @@ public class Main {
         //String jwtToken = PasswordGenerator.generateToken();
         //System.out.println("----------- jwtToken ---------> " + jwtToken);
 
+
+
         // password to log
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        /*BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode("admin"); // хранить это в password
         //System.out.println("----------- password ---------> " + hashedPassword);
 
@@ -120,17 +145,17 @@ public class Main {
         // pattern - Builder
         PizzaBuilder pizza2 = new PizzaBuilder.Builder("Pepperoni").amount("Large").cheese(200).sausage(250).mushroom(100).build();
         System.out.println("Mi pizza2:");
-        System.out.println(pizza2);
+        System.out.println(pizza2);*/
 
         //SpringApplication.run(Main.class, args);
 
-        ApplicationContext context = SpringApplication.run(Main.class, args);
+        /*ApplicationContext context = SpringApplication.run(Main.class, args);
         RedisService redisService = context.getBean(RedisService.class);
 
         redisService.saveValue("key1", "Hello Redis");
         System.out.println("----------------------------------11");
         System.out.println("STRING: " + redisService.getValue("key1"));
-        System.out.println("----------------------------------22");
+        System.out.println("----------------------------------22");*/
     }
 }
 

@@ -15,14 +15,14 @@ const Login = () => {
         setLogin(value); // Сохраняем в состояние React
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); // Останавливаем перезагрузку страницы
         if (!login) {
             setError('Логин обязательно для заполнения!');
         } else if (!password) {
             setError('Пароль обязательный для заполнения!');
-        } else if (password.length <= 6) {
-            setError('Пароль должен быть длиннее 6 символов!');
+        } else if (password.length <= 4) {
+            setError('Пароль должен быть длиннее 4 символов!');
         } else {
             setError('');
             console.log("Успешные данные формы: ", login);
@@ -32,6 +32,45 @@ const Login = () => {
             localStorage.setItem('userName', login);
 
             navigate('/');
+        }
+
+        try {
+            // Теперь await будет работать корректно
+            const response = await fetch('http://localhost:8082/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: login,
+                    password: password
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Сохраняем реальный JWT токен из бэкенда
+                localStorage.setItem('token', data.token);
+                console.log("Получил токен: ", data.token);
+
+                localStorage.setItem('isAuth', 'true');
+                localStorage.setItem('userName', login);
+
+                console.log("Получил логин: ", login);
+
+                // Генерируем событие, чтобы App.js мгновенно обновил Navbar
+                window.dispatchEvent(new Event('authChange'));
+
+                setError('');
+                navigate('/');
+            } else {
+                // Если 401 или 403 (неверный логин/пароль)
+                setError('Неверный логин или пароль');
+            }
+        } catch (err) {
+            console.error("Ошибка запроса:", err);
+            setError('Сервер недоступен. Попробуйте позже.');
         }
     }
 
@@ -51,7 +90,7 @@ const Login = () => {
                 {/* Выводим ошибку, только если она есть */}
                 {error && <div className="text-danger mb-3" >{error}</div>}
 
-                <button type="submit" disabled={login.length <= 6} className="btn btn-primary w-100">Войти</button>
+                <button type="submit" disabled={login.length <= 4} className="btn btn-primary w-100">Войти</button>
             </form>
         </div>
     );

@@ -43,6 +43,15 @@ class TestApiKey {
 @Configuration
 class AiConfig {
     @Bean
+    public ChatClient chatClient(ChatClient.Builder builder) {
+        // Spring Boot автоматически создаст и настроит builder
+        // на основе ваших данных из application.yaml
+        return builder.build();
+    }
+}
+/*@Configuration
+class AiConfig {
+    @Bean
     public ChatClient chatClient(OpenAiApi openAiApi) {
         // ChatModel — интерфейс, OpenAiChatModel реализует его
         ChatModel model = OpenAiChatModel.builder()
@@ -52,7 +61,7 @@ class AiConfig {
         // Конструктор DefaultChatClient принимает ChatModel
         return new DefaultChatClient((DefaultChatClient.DefaultChatClientRequestSpec) model);
     }
-}
+}*/
 
 @RestController
 class ChatController {

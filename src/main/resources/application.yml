@@ -19,7 +19,7 @@ spring:
       static-locations: file:/home/alexander/IdeaProjects/java-flowable-workflow/src/main/resources/mystatic/
   jpa:
     show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     database: default
     generate-ddl: false
     properties:
@@ -56,12 +56,18 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:your_actual_key_here}
+      chat:
+        options:
+          model: gpt-3.5-turbo
 
 management:
   endpoints:
     web:
       exposure:
-        include: *, prometheus
+        include: "*"
         exclude: []
   endpoint:
     prometheus:
@@ -74,7 +80,7 @@ slack:
 flowable:
   rest:
     app:
-      enabled: true
+      enabled: false
   check-process-definitions: true
   cmmn:
     enabled: true
@@ -88,7 +94,7 @@ flowable:
     enabled: true # Identity обычно нужен для пользователей
 
 server:
-  port: 8081
+  port: 8082
 
 springdoc:
   info:

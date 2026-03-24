@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 
 // Стили и компоненты Bootstrap
@@ -40,7 +40,7 @@ import myLogo from './assets/fl-logo1.png';
 
 function App() {
   const { t, i18n } = useTranslation();
-  const isLoggedIn = false;
+  //const isLoggedIn = false;
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -53,6 +53,17 @@ function App() {
     color: '#000'
   });
 
+  // Создаем состояние для пользователя
+  const [currentUser, setCurrentUser] = useState(localStorage.getItem('userName'));
+
+  // Функция выхода
+  const handleLogout = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('isAuth');
+      setCurrentUser(null);
+  };
+
   // Вспомогательная функция для получения кода страны
   const getFlagClass = (lang) => {
     if (lang === 'en') return 'fi fi-us'; // Для английского обычно ставят флаг США или Британии (gb)
@@ -60,6 +71,18 @@ function App() {
     if (lang === 'es') return 'fi fi-es';
     return 'fi fi-ru'; // по умолчанию
   };
+
+  // Следим за изменениями в localStorage
+  useEffect(() => {
+      const handleStorageChange = () => {
+          setCurrentUser(localStorage.getItem('userName'));
+      };
+      // Слушаем событие входа (нужно будет вызвать его в Login.js)
+      window.addEventListener('authChange', handleStorageChange);
+      return () => {
+          window.removeEventListener('authChange', handleStorageChange);
+      };
+  }, []);
 
   return (
     <Router>
@@ -102,10 +125,21 @@ function App() {
                 </div>
               </NavDropdown>
 
-              {isLoggedIn ? (
-                  <Button variant="outline-danger" size="sm">{t('logout')}</Button>
+              {currentUser ? (
+                /* Если залогинен — показываем имя и кнопку выхода */
+                <div className="d-flex align-items-center ms-3">
+                    <span className="me-3 fw-bold text-secondary">
+                        <i className="bi bi-person-circle me-1"></i> {currentUser}
+                    </span>
+                    <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                        {t('logout')}
+                    </Button>
+                </div>
               ) : (
-                  <Button as={Link} to="/login" variant="primary" size="sm">{t('login')}</Button>
+                /* Если не залогинен — показываем кнопку войти */
+                <Button as={Link} to="/login" variant="primary" size="sm" className="ms-3">
+                    {t('login')}
+                </Button>
               )}
             </Nav>
           </Navbar.Collapse>
@@ -129,7 +163,7 @@ function App() {
               </Nav.Link>
 
               <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
-                {t('management')}
+                {t('crm')}
               </div>
 
               <Nav.Link as={NavLink} to="/contacts" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
@@ -145,7 +179,9 @@ function App() {
                   <FontAwesomeIcon icon={faHandshake} className="me-3 text-secondary" /> {t('deals')}
               </Nav.Link>
 
-              <hr className="my-2 opacity-25" />
+              <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                  {t('company')}
+              </div>
 
               <Nav.Link as={NavLink} to="/departments" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                   <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('departments')}

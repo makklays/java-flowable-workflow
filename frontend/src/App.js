@@ -34,6 +34,7 @@ import Users from './pages/Users';
 import Trading from './pages/Trading';
 import Settings from './pages/Settings';
 import About from './pages/About';
+import Login from './pages/Login';
 
 import myLogo from './assets/fl-logo1.png';
 
@@ -104,7 +105,7 @@ function App() {
               {isLoggedIn ? (
                   <Button variant="outline-danger" size="sm">{t('logout')}</Button>
               ) : (
-                  <Button variant="primary" size="sm">{t('login')}</Button>
+                  <Button as={Link} to="/login" variant="primary" size="sm">{t('login')}</Button>
               )}
             </Nav>
           </Navbar.Collapse>
@@ -189,6 +190,7 @@ function App() {
                   <Route path="/trading" element={<Trading />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/login" element={<Login />} />
                   <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
               </Routes>
             </Container>

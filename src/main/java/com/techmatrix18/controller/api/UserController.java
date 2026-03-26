@@ -24,6 +24,7 @@ import java.util.logging.Logger;
  * @version 0.0.1
  */
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173"}) // Разрешает запросы с твоего фронта
 @RestController
 @Tag(name = "Users", description = "User management API")
 @RequestMapping("/api/v1/users")

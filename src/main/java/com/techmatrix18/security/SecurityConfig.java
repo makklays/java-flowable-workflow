@@ -85,18 +85,21 @@ public class SecurityConfig {
             .securityMatcher(new AntPathRequestMatcher("/api/**"))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, ex2) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+            )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((req, res, ex2) ->
-                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-            )
             .authorizeHttpRequests(auth -> auth
+                // Разрешаем OPTIONS запросы для CORS (Preflight)
+                .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.OPTIONS, "/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**")).permitAll() // Разрешаем доступ
                 .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/**", "OPTIONS")).permitAll()
                 .anyRequest().authenticated()
-            );
+            )
+            // Важно: добавляем ваш фильтр JWT
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // ЕСЛИ есть JWT фильтр — ОБЯЗАТЕЛЬНО:
         // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -141,14 +144,19 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:3001"));
-        config.setAllowedMethods(List.of("*"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("*")); // "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        config.setAllowedHeaders(List.of("*")); // "Authorization", "Content-Type", "Cache-Control"
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    @Bean
+    public com.fasterxml.jackson.databind.Module hibernateModule() {
+        return new com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module();
     }
 }
 

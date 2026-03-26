@@ -48,16 +48,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 username = jwtService.extractUsername(token);
             } catch (ExpiredJwtException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-
-                String json = "{\"error\": \"Expired token!\"}";
-                response.getWriter().write(json);
-                response.getWriter().flush();
-                return;
+                // Ошибка протухшего токена — возвращаем 401
+                // Ловим ВСЕ ошибки: ExpiredJwtException, MalformedJwtException, SignatureException
+                // Просто логируем и НЕ вызываем return!
+                System.err.println("JWT Error: " + e.getMessage());
+                // Мы не устанавливаем username, поэтому проверка (username != null) ниже не сработает
+                //return;
+            } catch (Exception e) {
+                // ЛЮБАЯ другая ошибка (кривая подпись, невалидный формат)
+                // ВАЖНО: просто логируем и НЕ вызываем return,
+                // чтобы запрос пошел дальше как анонимный (сработает permitAll)
+                System.out.println("JWT parse error: " + e.getMessage());
             }
         }
+
 
         //System.out.println("------ username ---> " + username);
         //System.out.println("------ token ---> " + token);

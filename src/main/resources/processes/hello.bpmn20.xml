@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definitions — корневой элемент.
+     targetNamespace — просто логическая группировка, может быть любой строкой. -->
+<definitions xmlns="http://www.omg.org"
+             xmlns:flowable="http://flowable.org"
+             targetNamespace="Examples">
+
+    <!--
+      id="helloProcess" — это КЛЮЧ (Process Definition Key).
+      Именно по этому ID вы будете запускать процесс из Java-кода.
+      isExecutable="true" — говорит движку, что этот процесс можно исполнять.
+    -->
+    <process id="helloProcess" name="Мой первый процесс во Flowable" isExecutable="true">
+
+        <!-- 1. Событие начала: точка входа в процесс -->
+        <startEvent id="startEvent" name="Начало" />
+
+        <!-- Связь от старта к первой задаче -->
+        <sequenceFlow sourceRef="startEvent" targetRef="userTask" />
+
+        <!-- 2. User Task: задача, которая будет висеть в базе и ждать,
+          пока реальный человек (или вы через API) её не "завершит". -->
+        <userTask id="userTask" name="Одобрить отпуск сотруднику" flowable:assignee="admin" />
+
+        <!-- Связь от задачи к завершению -->
+        <sequenceFlow sourceRef="userTask" targetRef="endEvent" />
+
+        <!-- 3. Событие окончания: процесс удаляется из Runtime-таблиц и уходит в историю -->
+        <endEvent id="endEvent" name="Конец" />
+
+    </process>
+</definitions>

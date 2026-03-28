@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Definitions — корневой элемент.
-     targetNamespace — просто логическая группировка, может быть любой строкой. -->
-<definitions xmlns="http://www.omg.org"
-             xmlns:flowable="http://flowable.org"
-             targetNamespace="Examples">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef"
+             exporter="Flowable Open Source Modeler"
+             exporterVersion="6.8.0">
 
-    <!--
-      id="helloProcess" — это КЛЮЧ (Process Definition Key).
-      Именно по этому ID вы будете запускать процесс из Java-кода.
-      isExecutable="true" — говорит движку, что этот процесс можно исполнять.
-    -->
     <process id="helloProcess" name="Мой первый процесс во Flowable" isExecutable="true">
 
         <!-- 1. Событие начала: точка входа в процесс -->

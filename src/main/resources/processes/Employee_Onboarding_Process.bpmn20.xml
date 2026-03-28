@@ -3,12 +3,12 @@
   <process id="jobApplication" name="Job Application Process" isExecutable="true">
     <documentation>Job Application Process</documentation>
     <startEvent id="startEvent1" ></startEvent>
+    <sequenceFlow id="sid-24E51D7D-3034-43A8-91B6-C9B7DE3CB02F" sourceRef="startEvent1" targetRef="fillEmployeeForm"></sequenceFlow>
     <userTask id="fillEmployeeForm" name="Заполнить данные сотрудника" flowable:assignee="${initiator}" flowable:formKey="employeeForm" >
       <extensionElements>
         <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="sid-24E51D7D-3034-43A8-91B6-C9B7DE3CB02F" sourceRef="startEvent1" targetRef="fillEmployeeForm"></sequenceFlow>
     <sequenceFlow id="sid-83EDFA45-28AC-4556-B820-E29131DFA84F" sourceRef="fillEmployeeForm" targetRef="fillApproveRejectEmployeeForm"></sequenceFlow>
     <userTask id="fillApproveRejectEmployeeForm" name="Head (approve/reject)" flowable:assignee="${nextAssignee}" flowable:formKey="approveRejectEmployeeForm" >
       <extensionElements>
@@ -17,8 +17,8 @@
     </userTask>
     <sequenceFlow id="sid-2B5F9FE2-C10D-4970-AA39-BD16A168EFB2" sourceRef="fillApproveRejectEmployeeForm" targetRef="sendMessagesTask"></sequenceFlow>
     <serviceTask id="sendMessagesTask" name="Send Messages" flowable:delegateExpression="${sendMessagesDelegate}"></serviceTask>
-    <endEvent id="sid-B7680781-A545-43D8-8533-43863605124D"></endEvent>
     <sequenceFlow id="sid-6683C2DB-DD55-420A-B6FA-C11484E95F53" sourceRef="sendMessagesTask" targetRef="sid-B7680781-A545-43D8-8533-43863605124D"></sequenceFlow>
+    <endEvent id="sid-B7680781-A545-43D8-8533-43863605124D"></endEvent>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_employeeOnboarding">
     <bpmndi:BPMNPlane bpmnElement="employeeOnboarding" id="BPMNPlane_employeeOnboarding">

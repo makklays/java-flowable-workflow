@@ -1,4 +1,4 @@
-package com.techmatrix18.flowable.delegate;
+package com.techmatrix18.delegate;
 
 import com.techmatrix18.model.Department;
 import com.techmatrix18.model.Position;

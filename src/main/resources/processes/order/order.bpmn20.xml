@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef"
+             exporter="Flowable Open Source Modeler"
+             exporterVersion="6.8.0">
+
+    <process id="idProcessOrder" name="Оформление Заказа" >
+        <startEvent id="startEvent" name="Начало заказа" />
+        <sequenceFlow sourceRef="startEvent" targetRef="userTask" />
+
+        <!-- Создание товара -->
+        <userTask id="userTask" name="Создать товар" flowable:assignee="admin" />
+        <sequenceFlow sourceRef="userTask" targetRef="serviceTask" />
+
+        <!-- Проверка товара на складе -->
+        <serviceTask id="serviceTask" name="Проверить товар на складе" flowable:delegateExpression="${checkStockDelegate}" />
+        <sequenceFlow sourceRef="serviceTask" targetRef="gatewayTask" />
+
+        <!-- Валиден ли заказ? -->
+        <exclusiveGateway id="gatewayTask" name="Валиден ли заказ?" />
+
+        <!-- Ветка успеха -->
+        <sequenceFlow sourceRef="gatewayTask" targetRef="serviceTask2">
+            <conditionExpression xsi:type="tFormalExpression">${isValid == true}</conditionExpression>
+        </sequenceFlow>
+
+        <!-- Ветка отмены -->
+        <sequenceFlow sourceRef="gatewayTask" targetRef="cancelOrderEvent">
+            <conditionExpression xsi:type="tFormalExpression">${isValid == false}</conditionExpression>
+        </sequenceFlow>
+
+        <!-- Сервис отгрузки -->
+        <serviceTask id="serviceTask2" name="Отгрузить заказ" flowable:delegateExpression="${shipOrderDelegate}" />
+        <sequenceFlow sourceRef="serviceTask2" targetRef="endEvent" />
+
+        <!-- ФИНАЛЫ -->
+        <endEvent id="endEvent" name="Конец заказа (Успех)" />
+        <endEvent id="cancelOrderEvent" name="Заказ отменен (Отказ)" />
+
+    </process>
+</definitions>

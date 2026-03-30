@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake,
   faSitemap, faBriefcase, faUserShield, faUserGroup,
-  faGear, faCircleInfo, faChartLine
+  faGear, faCircleInfo, faChartLine, faLaptopCode
 }
 from '@fortawesome/free-solid-svg-icons';
 
@@ -35,6 +35,7 @@ import Trading from './pages/Trading';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import Login from './pages/Login';
+import Learn from './pages/Learn';
 
 import myLogo from './assets/fl-logo1.png';
 
@@ -198,6 +199,9 @@ function App() {
               <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                   <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
               </Nav.Link>
+              <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn')}
+              </Nav.Link>
 
               <hr className="my-auto opacity-25" />
 
@@ -227,6 +231,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/learn" element={<Learn />} />
                   <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
               </Routes>
             </Container>

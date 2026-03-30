@@ -23,7 +23,8 @@ i18n
           settings: "Настройки",
           about: "О нас",
           logout: "Выход",
-          login: "Логин"
+          login: "Логин",
+          learn: "Обучение"
         }
       },
       en: {
@@ -41,7 +42,8 @@ i18n
           settings: "Settings",
           about: "About",
           logout: "Logout",
-          login: "Login"
+          login: "Login",
+          learn: "Learn"
         }
       },
       es: {
@@ -59,7 +61,8 @@ i18n
           settings: "Ajustes",
           about: "Nosotros",
           logout: "Cerrar sesión",
-          login: "Acceder"
+          login: "Acceder",
+          learn: "Educación"
         }
       }
     }, // Закрываем resources здесь

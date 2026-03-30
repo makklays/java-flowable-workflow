@@ -22,6 +22,8 @@ npm install i18next react-i18next i18next-browser-languagedetector --legacy-peer
 npm install flag-icons --legacy-peer-deps
 // установка axios
 npm install axios --legacy-peer-deps
+// установка redux
+npm install @reduxjs/toolkit react-redux
 -----------------------------------------------------
 
 npm start

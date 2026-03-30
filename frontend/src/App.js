@@ -37,6 +37,9 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Learn from './pages/Learn';
 
+import TableView from './components/TableView';
+import UserAdd from './pages/UserAdd';
+
 import myLogo from './assets/fl-logo1.png';
 
 function App() {
@@ -226,7 +229,10 @@ function App() {
                   <Route path="/departments" element={<Departments />} />
                   <Route path="/positions" element={<Positions />} />
                   <Route path="/roles" element={<Roles />} />
+
                   <Route path="/users" element={<Users />} />
+                  <Route path="/users/add" element={<UserAdd />} />
+
                   <Route path="/trading" element={<Trading />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/about" element={<About />} />

@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import userService from '../services/userService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const TableView = () => {
 
     // 1. Состояние для пользователей
     const [users, setUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10); // элементов на странице
+    const [totalPages, setTotalPages] = useState(0);
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
@@ -15,46 +21,116 @@ const TableView = () => {
         // Создаем асинхронную функцию внутри useEffect
         const fetchUsers = async () => {
             try {
-                const response = await userService.getAllUsers();
+                const response = await userService.getAllUsers(currentPage - 1, pageSize);
                 // 3. Сохраняем данные в состояние (axios обычно возвращает данные в response.data)
                 const users = response.data;
                 if (users) {
                     setUsers(users); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
-                    console.log('Число пользователей: ' + users.length );
+                    console.log('---------- Число пользователей: ' + users.length );
+                } else {
+                    console.warn('---------- Ответ не содержит данных пользователей');
                 }
+                // Если ваш бэкенд (Spring/Node) возвращает объект Page, данные лежат в content
+                setUsers(response.data.content || response.data);
+                setTotalPages(response.data.totalPages || 1);
             } catch (error) {
-                console.error("Ошибка при загрузке пользователей:", error);
+                console.error("---------- Ошибка при загрузке пользователей:", error);
             }
         }
 
         fetchUsers(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
 
-    }, []); // Массив зависимостей
+    }, [currentPage, pageSize]); // Массив зависимостей
 
     return (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <tr>
-                <th><input type="checkbox" name="checkbox_all" /></th>
-                <th>ID</th>
-                <th>Username</th>
-                <th>E-mail</th>
-                <th>Actions</th>
-            </tr>
+        <>
+            <div className="row align-items-center mb-3">
+                {/* Заголовок */}
+                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>Пользователи</div>
+                {/* Кнопка */}
+                <div className="col-md-6" style={{ textAlign: 'right' }}>
+                    <Link to="/users/add" className="btn btn-primary">
+                        <FontAwesomeIcon icon={faPlus} className="me-2" /> Добавить
+                    </Link>
+                </div>
+            </div>
+            <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
+                <thead>
+                    <tr>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
+                        <th style={{verticalAlign: 'middle'}}>Display name</th>
+                        <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>Username</th>
+                        <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>Full name</th>
+                        <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>Phone</th>
+                        <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>E-mail</th>
+                        <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Age</th>
+                        <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Photo</th>
+                        <th style={{width: '200px', textAlign: 'center', verticalAlign: 'middle'}}>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.length > 0 ? users.map(user => (
+                        <tr key={user.id}>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={user.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.id}</td>
+                            <td style={{verticalAlign: 'middle'}}>
+                                <a href="#"  >{user.displayname}</a>
+                            </td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.username}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.firstname} {user.lastname}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.phone}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.email}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.age ? user.age : '-'}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.is_picture_set ? 'да' : 'нет'}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="View">
+                                    <FontAwesomeIcon icon={faEye} />
+                                </a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="Edit">
+                                    <FontAwesomeIcon icon={faPenToSquare} />
+                                </a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="Delete" >
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                </a>
+                            </td>
+                        </tr>
+                    )) : (
+                        <tr><td colSpan="5" style={{textAlign: 'center', marginTop: '20px', verticalAlign: 'middle'}}>Загрузка пользователей...</td></tr>
+                    )}
+                </tbody>
+            </table>
 
-            {users.map(user => (
-                <tr key={user.id}>
-                    <td><input type="checkbox" name="checkbox_all" value={user.id} /></td>
-                    <td>{user.id}</td>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td>
-                        <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} >view</a> |
-                        <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} >edit</a> |
-                        <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} >delete</a>
-                    </td>
-                </tr>
-            ))}
-        </table>
+            <nav aria-label="Page navigation" className="mt-4">
+                <ul className="pagination justify-content-center">
+                    {/* Кнопка Назад */}
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                            &laquo;
+                        </button>
+                    </li>
+
+                    {/* Генерация номеров страниц */}
+                    {[...Array(totalPages)].map((_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                            <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => setCurrentPage(pageNumber)}>
+                                    {pageNumber}
+                                </button>
+                            </li>
+                        );
+                    })}
+
+                    {/* Кнопка Вперед */}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                            &raquo;
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </>
     );
 }
 

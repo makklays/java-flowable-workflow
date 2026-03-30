@@ -3,13 +3,11 @@ import authHeader from './authHeader'; // Импортируем вашу фун
 
 const API_URL = 'http://localhost:8082/api/v1/users';
 
-const getAllUsers = async () => {
+// get list of users with pagination
+const getAllUsers = async (page, size) => {
     // Передаем токены вторым аргументом в объект config
-    const response = await axios.get(API_URL, { headers: authHeader() });
-
-    // Просто возвращаем данные, ничего не сохраняя в localStorage
-    return response.data;
-}
+    return await axios.get(`${API_URL}?page=${page}&size=${size}`, { headers: authHeader() });
+};
 
 export default { getAllUsers };
 

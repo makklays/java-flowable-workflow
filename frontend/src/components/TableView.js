@@ -96,40 +96,43 @@ const TableView = () => {
                             </td>
                         </tr>
                     )) : (
-                        <tr><td colSpan="5" style={{textAlign: 'center', marginTop: '20px', verticalAlign: 'middle'}}>Загрузка пользователей...</td></tr>
+                        <tr><td colSpan="10" style={{textAlign: 'center', marginTop: '20px', verticalAlign: 'middle'}}>Нет данных...</td></tr>
                     )}
                 </tbody>
             </table>
 
-            <nav aria-label="Page navigation" className="mt-4">
-                <ul className="pagination justify-content-center">
-                    {/* Кнопка Назад */}
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
-                            &laquo;
-                        </button>
-                    </li>
+            {/* Проверяем, есть ли пользователи и больше ли одной страницы */}
+            {users.length > 0 && totalPages > 1 && (
+                <nav aria-label="Page navigation" className="mt-4">
+                    <ul className="pagination justify-content-center">
+                        {/* Кнопка Назад */}
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                                &laquo;
+                            </button>
+                        </li>
 
-                    {/* Генерация номеров страниц */}
-                    {[...Array(totalPages)].map((_, index) => {
-                        const pageNumber = index + 1;
-                        return (
-                            <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                                <button className="page-link" onClick={() => setCurrentPage(pageNumber)}>
-                                    {pageNumber}
-                                </button>
-                            </li>
-                        );
-                    })}
+                        {/* Генерация номеров страниц */}
+                        {[...Array(totalPages)].map((_, index) => {
+                            const pageNumber = index + 1;
+                            return (
+                                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => setCurrentPage(pageNumber)}>
+                                        {pageNumber}
+                                    </button>
+                                </li>
+                            );
+                        })}
 
-                    {/* Кнопка Вперед */}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
-                            &raquo;
-                        </button>
-                    </li>
-                </ul>
-            </nav>
+                        {/* Кнопка Вперед */}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                                &raquo;
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            )}
         </>
     );
 }

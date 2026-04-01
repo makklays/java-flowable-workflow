@@ -44,3 +44,10 @@ ul.dropdown-menu[aria-labelledby="lang-drop"] {
     width: 50px !important;
 }
 
+/* Добавляет красную звездочку после текста внутри label с классом required */
+.form-label.required::after {
+    content: " *";
+    color: #dc3545; /* Стандартный красный цвет Bootstrap (text-danger) */
+    font-weight: bold;
+}
+

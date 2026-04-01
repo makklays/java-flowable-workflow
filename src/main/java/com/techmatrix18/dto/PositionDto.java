@@ -2,6 +2,14 @@ package com.techmatrix18.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Position Dto
+ *
+ * @author Alexander Kuziv
+ * @since 01.04.2025
+ * @company TechMatrix18
+ * @version 0.0.1
+ */
 public class PositionDto {
 
     private Long id;

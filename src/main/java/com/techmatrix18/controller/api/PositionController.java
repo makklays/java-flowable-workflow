@@ -7,6 +7,7 @@ import com.techmatrix18.service.PositionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
  * @version 0.0.1
  */
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173"}) // Разрешает запросы с твоего фронта
 @RestController
 @Tag(name = "Positions", description = "Position management API")
 @RequestMapping("/api/v1/positions")
@@ -43,6 +45,16 @@ public class PositionController {
         log.info("Fetching all positions");
         List<Position> positions = positionService.getAll();
         return ResponseEntity.ok(PositionMapper.toDtoList(positions));
+    }
+
+    @GetMapping(params = {"page", "size"})
+    @Operation(summary = "Get all positions by pages", description = "Returns list of all positions by pages")
+    public ResponseEntity<Page<PositionDto>> getAllByPages(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        log.info("Fetching all positions by pages");
+        Page<Position> positions = positionService.getAllPaginated(page, size);
+        // Transform every Entity to Dto in Page
+        Page<PositionDto> positionsDto = positions.map(position -> PositionMapper.toDto(position));
+        return ResponseEntity.ok(positionsDto);
     }
 
     @GetMapping("/{id}")

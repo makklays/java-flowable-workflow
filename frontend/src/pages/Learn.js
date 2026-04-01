@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+// Переводы текстов
+import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 // Короткая запись компонента - стрелочная функция
 const Learn = () => {
     const [count, setCount] = useState(0);
+    const { t, i18n } = useTranslation();
 
     function handleClickPlus() {
         setCount(count + 1);

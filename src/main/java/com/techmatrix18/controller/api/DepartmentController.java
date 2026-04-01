@@ -6,6 +6,7 @@ import com.techmatrix18.model.Department;
 import com.techmatrix18.service.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
  * @version 0.0.1
  */
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173"}) // Разрешает запросы с твоего фронта
 @RestController
 @Tag(name = "Departments", description = "Department management API")
 @RequestMapping("/api/v1/departments")
@@ -42,6 +44,15 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentDto>> getAllDepartment() {
         List<Department> departments = departmentService.getAll();
         return ResponseEntity.ok(DepartmentMapper.toDtoList(departments));
+    }
+
+    @GetMapping(params = {"page", "size"})
+    @Operation(summary = "Get all departments by pages", description = "Returns list of all departments by pages")
+    public ResponseEntity<Page<DepartmentDto>> getAllDepartmentByPages(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<Department> departments = departmentService.getAllPaginated(page, size);
+        // Transform every Entity to Dto in Page
+        Page<DepartmentDto> departmentsDto = departments.map(department -> DepartmentMapper.toDto(department));
+        return ResponseEntity.ok(departmentsDto);
     }
 
     @GetMapping("/{id}")

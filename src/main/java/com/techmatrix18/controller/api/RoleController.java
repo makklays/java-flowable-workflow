@@ -7,6 +7,7 @@ import com.techmatrix18.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
  * @version 0.0.1
  */
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173"}) // Разрешает запросы с твоего фронта
 @RestController
 @Tag(name = "Roles", description = "Role management API")
 @RequestMapping("/api/v1/roles")
@@ -43,6 +45,15 @@ public class RoleController {
         log.info("Fetching all roles");
         List<Role> roles = roleService.getAll();
         return ResponseEntity.ok(RoleMapper.toDtoList(roles));
+    }
+
+    @GetMapping(params = {"page", "size"})
+    @Operation(summary = "Get all roles by pages", description = "Returns list of all roles by pages")
+    public ResponseEntity<Page<RoleDto>> getAllByPages(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        log.info("Fetching all roles");
+        Page<Role> roles = roleService.getAllPaginated(page, size);
+        Page<RoleDto> rolesDto = roles.map(role -> RoleMapper.toDto(role));
+        return ResponseEntity.ok(rolesDto);
     }
 
     @GetMapping("/{id}")

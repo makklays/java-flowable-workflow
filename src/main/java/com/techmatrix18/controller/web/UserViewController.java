@@ -2,6 +2,9 @@ package com.techmatrix18.controller.web;
 
 import com.techmatrix18.dto.UserDto;
 import com.techmatrix18.metrics.CustomMetrics;
+import com.techmatrix18.model.Department;
+import com.techmatrix18.model.Position;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.model.User;
 import com.techmatrix18.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -149,9 +152,20 @@ public class UserViewController {
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
         user.setDisplayname(userDto.getDisplayname());
-        user.setDepartment(userDto.getDepartment());
-        user.setPosition(userDto.getPosition());
-        user.setRole(userDto.getRole());
+
+        if (userDto.getDepartmentId() != null) {
+            Department dept = departmentService.getById(userDto.getDepartmentId());
+            user.setDepartment(dept);
+        }
+        if (userDto.getPositionId() != null) {
+            Position pos = positionService.getById(userDto.getPositionId());
+            user.setPosition(pos);
+        }
+        if (userDto.getRoleId() != null) {
+            Role role = roleService.getById(userDto.getRoleId());
+            user.setRole(role);
+        }
+
         user.setTenantId("1");
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
@@ -196,9 +210,20 @@ public class UserViewController {
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
         user.setDisplayname(userDto.getDisplayname());
-        user.setDepartment(userDto.getDepartment());
-        user.setPosition(userDto.getPosition());
-        user.setRole(userDto.getRole());
+
+        if (userDto.getDepartmentId() != null) {
+            Department dept = departmentService.getById(userDto.getDepartmentId());
+            user.setDepartment(dept);
+        }
+        if (userDto.getPositionId() != null) {
+            Position pos = positionService.getById(userDto.getPositionId());
+            user.setPosition(pos);
+        }
+        if (userDto.getRoleId() != null) {
+            Role role = roleService.getById(userDto.getRoleId());
+            user.setRole(role);
+        }
+
         user.setTenantId("1");
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());

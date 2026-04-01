@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
+// Переводы текстов
+import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 const Trading = () => {
     const chartContainerRef = useRef(null);
@@ -7,6 +10,8 @@ const Trading = () => {
     const seriesRef = useRef(null);
     const maSeriesRef = useRef(null);
     const socketRef = useRef(null);
+
+    const { t, i18n } = useTranslation();
 
     const [pair, setPair] = useState('solusdt');
     const [timeframe, setTimeframe] = useState('1m');

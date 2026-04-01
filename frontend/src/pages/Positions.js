@@ -55,7 +55,7 @@ const Positions = () => {
 
             <div className="row align-items-center mb-3">
                 {/* Заголовок */}
-                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>Отделения</div>
+                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('positions')}</div>
                 {/* Кнопка */}
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
                     <Link to="/positions/add" className="btn btn-primary">

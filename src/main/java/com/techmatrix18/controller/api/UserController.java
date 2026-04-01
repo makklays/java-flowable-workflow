@@ -2,11 +2,18 @@ package com.techmatrix18.controller.api;
 
 import com.techmatrix18.dto.UserDto;
 import com.techmatrix18.mapper.UserMapper;
+import com.techmatrix18.model.Department;
+import com.techmatrix18.model.Position;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.model.User;
+import com.techmatrix18.service.DepartmentService;
+import com.techmatrix18.service.PositionService;
+import com.techmatrix18.service.RoleService;
 import com.techmatrix18.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -30,10 +37,19 @@ import java.util.logging.Logger;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+    private final DepartmentService departmentService;
+    private final PositionService positionService;
+    private final RoleService roleService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    public UserController(DepartmentService departmentService, PositionService positionService, RoleService roleService,
+                          UserService userService, UserMapper userMapper) {
+        this.departmentService = departmentService;
+        this.positionService = positionService;
+        this.roleService = roleService;
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     private static final Logger log = Logger.getLogger(UserController.class.getName());
@@ -42,7 +58,15 @@ public class UserController {
     @Operation(summary = "Get all users", description = "Returns list of all users")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<User> users = userService.getAll();
-        return ResponseEntity.ok(UserMapper.toDtoList(users));
+        return ResponseEntity.ok(userMapper.toDtoList(users));
+    }
+
+    @GetMapping(params = {"page", "size"})
+    @Operation(summary = "Get all users by pages", description = "Returns list of all users by pages")
+    public ResponseEntity<Page<UserDto>> getAllUsersByPages(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<User> users = userService.getAllPaginated(page, size);
+        Page<UserDto> usersDto = users.map(user -> userMapper.toDto(user));
+        return ResponseEntity.ok(usersDto);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +74,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         User user = userService.getById(id);
         if (user != null) {
-            return ResponseEntity.ok(UserMapper.toDto(user));
+            return ResponseEntity.ok(userMapper.toDto(user));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -60,11 +84,11 @@ public class UserController {
     @Operation(summary = "Create new user", description = "Adds a new user to the system")
     public ResponseEntity addUser(@Valid @RequestBody UserDto userDto) {
         log.info("Creating new user ID = " + userDto.getDisplayname());
-        User user = UserMapper.toEntity(userDto);
+        User user = userMapper.toEntity(userDto);
         User saved = userService.addUser(user);
         return ResponseEntity
                 .created(URI.create("/api/v1/users/" + saved.getId()))
-                .body(UserMapper.toDto(saved));
+                .body(userMapper.toDto(saved));
     }
 
     @PutMapping("/{id}")
@@ -80,9 +104,20 @@ public class UserController {
         user.setLastname(userDto.getLastname());
         user.setUsername(userDto.getUsername());
         user.setDisplayname(userDto.getDisplayname());
-        user.setRole(userDto.getRole());
-        user.setDepartment(userDto.getDepartment());
-        user.setPosition(userDto.getPosition());
+
+        if (userDto.getDepartmentId() != null) {
+            Department dept = departmentService.getById(userDto.getDepartmentId());
+            user.setDepartment(dept);
+        }
+        if (userDto.getPositionId() != null) {
+            Position pos = positionService.getById(userDto.getPositionId());
+            user.setPosition(pos);
+        }
+        if (userDto.getRoleId() != null) {
+            Role role = roleService.getById(userDto.getRoleId());
+            user.setRole(role);
+        }
+
         user.setEmail(userDto.getEmail());
         user.setPhone(userDto.getPhone());
         user.setAge(userDto.getAge());
@@ -93,7 +128,7 @@ public class UserController {
 
         User updated = userService.updateUser(user);
 
-        return ResponseEntity.ok(UserMapper.toDto(updated));
+        return ResponseEntity.ok(userMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")

@@ -24,7 +24,9 @@ i18n
           about: "О нас",
           logout: "Выход",
           login: "Логин",
-          learn: "Обучение"
+          learn: "Обучение",
+          big: "Увеличить",
+          less: "Уменьшить"
         }
       },
       en: {
@@ -43,7 +45,9 @@ i18n
           about: "About",
           logout: "Logout",
           login: "Login",
-          learn: "Learn"
+          learn: "Learn",
+          big: "Increase",
+          less: "Decrease"
         }
       },
       es: {
@@ -62,7 +66,9 @@ i18n
           about: "Nosotros",
           logout: "Cerrar sesión",
           login: "Acceder",
-          learn: "Educación"
+          learn: "Educación",
+          big: "Aumentar",
+          less: "Disminuir"
         }
       }
     }, // Закрываем resources здесь

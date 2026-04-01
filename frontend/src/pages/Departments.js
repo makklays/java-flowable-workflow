@@ -81,7 +81,7 @@ const Departments = () => {
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#"  >{depart.title}</a>
                             </td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.created_at}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
                                 <a href="#" onClick={(e) => { e.preventDefault(); handleClick(depart.id) }} title="View">
                                     <FontAwesomeIcon icon={faEye} />

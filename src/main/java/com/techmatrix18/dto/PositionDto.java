@@ -17,12 +17,13 @@ public class PositionDto {
     @NotBlank(message = "Title is required")
     private String title;
 
+    private String createdAt;
+
     // getters/setters
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -30,9 +31,11 @@ public class PositionDto {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }
 

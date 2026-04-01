@@ -81,7 +81,7 @@ const Positions = () => {
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#"  >{position.title}</a>
                             </td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.created_at}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
                                 <a href="#" onClick={(e) => { e.preventDefault(); handleClick(position.id) }} title="View">
                                     <FontAwesomeIcon icon={faEye} />

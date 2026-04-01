@@ -19,6 +19,7 @@ public class DepartmentMapper {
         dto.setId(department.getId());
         dto.setTitle(department.getTitle());
         dto.setDescription(department.getDescription());
+        dto.setCreatedAt(String.valueOf(department.getCreatedAt()));
         return dto;
     }
 
@@ -31,6 +32,7 @@ public class DepartmentMapper {
         department.setId(departmentDto.getId());
         department.setTitle(departmentDto.getTitle());
         department.setDescription(departmentDto.getDescription());
+        department.setCreatedAt(departmentDto.getCreatedAt() != null ? java.time.LocalDateTime.parse(departmentDto.getCreatedAt()) : null);
         return department;
     }
 }

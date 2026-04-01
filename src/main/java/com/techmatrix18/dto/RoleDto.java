@@ -12,12 +12,13 @@ public class RoleDto {
     @NotBlank(message = "Description is required")
     private String description;
 
+    private String createdAt;
+
     // getters/setters
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -25,7 +26,6 @@ public class RoleDto {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -33,9 +33,11 @@ public class RoleDto {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }
 

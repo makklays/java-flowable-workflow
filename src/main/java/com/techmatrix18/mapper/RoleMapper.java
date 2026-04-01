@@ -19,6 +19,7 @@ public class RoleMapper {
         dto.setId(role.getId());
         dto.setTitle(role.getTitle());
         dto.setDescription(role.getDescription());
+        dto.setCreatedAt(String.valueOf(role.getCreatedAt()));
         return dto;
     }
 
@@ -31,6 +32,7 @@ public class RoleMapper {
         role.setId(roleDto.getId());
         role.setTitle(roleDto.getTitle());
         role.setDescription(roleDto.getDescription());
+        role.setCreatedAt(roleDto.getCreatedAt() != null ? java.time.LocalDateTime.parse(roleDto.getCreatedAt()) : null);
         return role;
     }
 }

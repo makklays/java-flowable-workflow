@@ -24,7 +24,8 @@ const Learn = () => {
 
             <div style={{ fontSize: '24px', fontWeight: 'bold' }} >{count}</div>
             <div style={{ marginTop: '20px' }} >
-                <button onClick={handleClickPlus} >Увеличить</button> <button onClick={handleClickMinus} >Уменьшить</button>
+                <button className="btn btn-primary" style={{ marginRight: '10px' }} onClick={handleClickPlus} >{t('big')}</button>
+                <button className="btn btn-primary" onClick={handleClickMinus} >{t('less')}</button>
             </div>
         </>
     );

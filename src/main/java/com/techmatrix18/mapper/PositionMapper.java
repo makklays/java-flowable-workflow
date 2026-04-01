@@ -18,6 +18,7 @@ public class PositionMapper {
         PositionDto dto = new PositionDto();
         dto.setId(position.getId());
         dto.setTitle(position.getTitle());
+        dto.setCreatedAt(String.valueOf(position.getCreatedAt()));
         return dto;
     }
 
@@ -29,6 +30,7 @@ public class PositionMapper {
         Position position = new Position();
         position.setId(positionDto.getId());
         position.setTitle(positionDto.getTitle());
+        position.setCreatedAt(positionDto.getCreatedAt() != null ? java.time.LocalDateTime.parse(positionDto.getCreatedAt()) : null);
         return position;
     }
 }

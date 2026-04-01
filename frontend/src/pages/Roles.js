@@ -32,7 +32,8 @@ const Roles = () => {
                 const roles = response.data;
                 if (roles) {
                     setRoles(roles); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
-                    console.log('---------- Число отделений: ' + roles.length );
+                    console.log('---------- Число отделений: ' + roles );
+                    console.table(roles);
                 } else {
                     console.warn('---------- Ответ не содержит данных отделений');
                 }
@@ -81,7 +82,7 @@ const Roles = () => {
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#"  >{role.title}</a>
                             </td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.created_at}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
                                 <a href="#" onClick={(e) => { e.preventDefault(); handleClick(role.id) }} title="View">
                                     <FontAwesomeIcon icon={faEye} />

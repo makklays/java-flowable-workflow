@@ -28,8 +28,11 @@ import Activities from './pages/Activities';
 import Clients from './pages/Clients';
 import Deals from './pages/Deals';
 import Departments from './pages/Departments';
+import DepartmentAdd from './pages/DepartmentAdd';
 import Positions from './pages/Positions';
+import PositionAdd from './pages/PositionAdd';
 import Roles from './pages/Roles';
+import RoleAdd from './pages/RoleAdd';
 import Users from './pages/Users';
 import Trading from './pages/Trading';
 import Settings from './pages/Settings';
@@ -193,6 +196,9 @@ function App() {
               <Nav.Link as={NavLink} to="/positions" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                   <FontAwesomeIcon icon={faBriefcase} className="me-3 text-secondary" /> {t('positions')}
               </Nav.Link>
+              <Nav.Link as={NavLink} to="/roles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                  <FontAwesomeIcon icon={faUserShield} className="me-3 text-secondary" /> {t('roles')}
+              </Nav.Link>
               <Nav.Link as={NavLink} to="/users" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                   <FontAwesomeIcon icon={faUserGroup} className="me-3 text-secondary" /> {t('users')}
               </Nav.Link>
@@ -226,9 +232,15 @@ function App() {
                   <Route path="/activities" element={<Activities />} />
                   <Route path="/clients" element={<Clients />} />
                   <Route path="/deals" element={<Deals />} />
+
                   <Route path="/departments" element={<Departments />} />
+                  <Route path="/departments/add" element={<DepartmentAdd />} />
+
                   <Route path="/positions" element={<Positions />} />
+                  <Route path="/positions/add" element={<PositionAdd />} />
+
                   <Route path="/roles" element={<Roles />} />
+                  <Route path="/roles/add" element={<RoleAdd />} />
 
                   <Route path="/users" element={<Users />} />
                   <Route path="/users/add" element={<UserAdd />} />

@@ -12,6 +12,7 @@ const Users = () => {
     return (
         <div>
             <h1>{t('users')}</h1>
+
             {/* Вызываем ваш компонент с таблицей */}
             <TableView />
         </div>

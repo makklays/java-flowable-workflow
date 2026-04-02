@@ -59,7 +59,7 @@ public class DepartmentController {
     @Operation(summary = "Get department by ID", description = "Returns a department by its unique ID")
     public ResponseEntity<DepartmentDto> getDepartment(@PathVariable Long id) {
         Department department = departmentService.getById(id);
-        if (department != null) {
+        if (department == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(DepartmentMapper.toDto(department));

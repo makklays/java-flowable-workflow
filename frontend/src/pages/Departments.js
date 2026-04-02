@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 import departmentService from '../services/departmentService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +17,38 @@ const Departments = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
         console.log("Клик по ID:", id);
     };
+
+    // Просмотр роли по ID
+    const handleView = (id) => {
+        navigate(`/departments/${id}`);
+    };
+
+    // Редактирование роли по ID
+    const handleEdit = (e, id) => {
+        e.preventDefault();
+        navigate(`/departments/${id}/edit`);
+    };
+
+    // Удаляем роль по ID
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        if (!window.confirm("Вы уверены, что хотите удалить отделение c ID:" + id + " ?")) return;
+        console.log("Удалить ID:", id);
+        try {
+            await departmentService.deleteDepartment(id);
+            console.log("Отделение успешно удалено");
+            // После удаления можно обновить список, например, вызвав функцию загрузки данных
+            setDepartments(prevDepartments => prevDepartments.filter(department => department.id !== id));
+        } catch (error) {
+            console.error("Ошибка при удалении отделения", error);
+        }
+    }
 
     useEffect(() => {
         // Создаем асинхронную функцию внутри useEffect
@@ -79,17 +106,17 @@ const Departments = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={depart.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#"  >{depart.title}</a>
+                                <a href="#" onClick={() => handleView(depart.id)} >{depart.title}</a>
                             </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(depart.id) }} title="View">
+                                <a href="#" onClick={() => handleView(depart.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(depart.id) }} title="Edit">
+                                <a href="#" onClick={(e) => { handleEdit(e, depart.id) }} title="Edit" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faPenToSquare} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(depart.id) }} title="Delete" >
+                                <a href="#" onClick={(e) => handleDelete(e, depart.id)} title="Delete" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faTrashCan} />
                                 </a>
                             </td>
@@ -137,3 +164,4 @@ const Departments = () => {
 };
 
 export default Departments;
+

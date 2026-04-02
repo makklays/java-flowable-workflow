@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 import positionService from '../services/positionService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +17,38 @@ const Positions = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
         console.log("Клик по ID:", id);
     };
+
+    // Просмотр роли по ID
+    const handleView = (id) => {
+        navigate(`/positions/${id}`);
+    };
+
+    // Редактирование роли по ID
+    const handleEdit = (e, id) => {
+        e.preventDefault();
+        navigate(`/positions/${id}/edit`);
+    };
+
+    // Удаляем роль по ID
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        if (!window.confirm("Вы уверены, что хотите удалить должность c ID:" + id + " ?")) return;
+        console.log("Удалить ID:", id);
+        try {
+            await positionService.deletePosition(id);
+            console.log("Должность успешно удалена");
+            // После удаления можно обновить список, например, вызвав функцию загрузки данных
+            setPositions(prevPositions => prevPositions.filter(position => position.id !== id));
+        } catch (error) {
+            console.error("Ошибка при удалении должности", error);
+        }
+    }
 
     useEffect(() => {
         // Создаем асинхронную функцию внутри useEffect
@@ -79,17 +106,17 @@ const Positions = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={position.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#"  >{position.title}</a>
+                                <a href="#" onClick={() => handleView(position.id)} >{position.title}</a>
                             </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(position.id) }} title="View">
+                                <a href="#" onClick={() => handleView(position.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(position.id) }} title="Edit">
+                                <a href="#" onClick={(e) => { handleEdit(e, position.id) }} title="Edit" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faPenToSquare} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(position.id) }} title="Delete" >
+                                <a href="#" onClick={(e) => handleDelete(e, position.id)} title="Delete" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faTrashCan} />
                                 </a>
                             </td>

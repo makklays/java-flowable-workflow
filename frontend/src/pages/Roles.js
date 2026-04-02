@@ -96,7 +96,6 @@ const Roles = () => {
                         <span className="input-group-text"><FontAwesomeIcon icon={faSearch} /></span>
                         <input type="text" className="form-control" placeholder="Поиск по названию..." />
                     </div>
-
                     {/* Массовое действие (скрыто, если selected.length === 0) */}
                     {selectedItems.length > 0 && (
                         <button className="btn btn-danger animate__animated animate__fadeIn">
@@ -105,11 +104,6 @@ const Roles = () => {
                         </button>
                     )}
                 </div>
-
-                <button className="btn btn-primary">
-                    <FontAwesomeIcon icon={faPlus} className="me-2" />
-                    Добавить
-                </button>
             </div>
 
             <div className="row align-items-center mb-3">

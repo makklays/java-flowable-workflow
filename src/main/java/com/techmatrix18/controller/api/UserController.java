@@ -73,10 +73,10 @@ public class UserController {
     @Operation(summary = "Get user by ID", description = "Returns a user by its unique ID")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         User user = userService.getById(id);
-        if (user != null) {
-            return ResponseEntity.ok(userMapper.toDto(user));
-        } else {
+        if (user == null) {
             return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(userMapper.toDto(user));
         }
     }
 

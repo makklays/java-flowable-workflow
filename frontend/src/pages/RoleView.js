@@ -23,7 +23,8 @@ const RoleView = () => {
 
     return (
         <div>
-            <h2>Role details</h2>
+            <h1>Role details</h1>
+
             <p><b>Title:</b> {role.title}</p>
             <p><b>Description:</b> {role.description}</p>
         </div>

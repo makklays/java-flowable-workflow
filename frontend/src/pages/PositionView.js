@@ -23,9 +23,9 @@ const PositionView = () => {
 
     return (
         <div>
-            <h2>Position details</h2>
+            <h1>Position details</h1>
+
             <p><b>Title:</b> {position.title}</p>
-            <p><b>Description:</b> {position.description}</p>
         </div>
     );
 };

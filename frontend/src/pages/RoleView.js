@@ -34,6 +34,8 @@ const RoleView = () => {
                 <div className="col-md-6">
                     <p><b>Title:</b> {role.title}</p>
                     <p><b>Description:</b> {role.description}</p>
+
+                    <p><b>Created at:</b> {role.createdAt != null ? role.createdAt : '-'}</p>
                 </div>
             </div>
 

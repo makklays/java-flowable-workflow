@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 import userService from '../services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const TableView = () => {
 
@@ -12,10 +12,38 @@ const TableView = () => {
     const [pageSize, setPageSize] = useState(10); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
 
+    const navigate = useNavigate();
+
     // 2. Исправленная функция клика
     const handleClick = (id) => {
         console.log("Клик по ID:", id);
     };
+
+    // Просмотр роли по ID
+    const handleView = (id) => {
+        navigate(`/users/${id}`);
+    };
+
+    // Редактирование роли по ID
+    const handleEdit = (e, id) => {
+        e.preventDefault();
+        navigate(`/users/${id}/edit`);
+    };
+
+    // Удаляем роль по ID
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        if (!window.confirm("Вы уверены, что хотите удалить пользователя c ID:" + id + " ?")) return;
+        console.log("Удалить ID:", id);
+        try {
+            await userService.deleteUser(id);
+            console.log("Пользователь успешно удален");
+            // После удаления можно обновить список, например, вызвав функцию загрузки данных
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+        } catch (error) {
+            console.error("Ошибка при удалении пользователя", error);
+        }
+    }
 
     useEffect(() => {
         // Создаем асинхронную функцию внутри useEffect
@@ -75,7 +103,7 @@ const TableView = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={user.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#"  >{user.displayname}</a>
+                                <a href="#" onClick={() => handleView(user.id)} >{user.displayname}</a>
                             </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.username}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.firstname} {user.lastname}</td>
@@ -84,13 +112,13 @@ const TableView = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.age ? user.age : '-'}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.is_picture_set ? 'да' : 'нет'}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="View">
+                                <a href="#" onClick={() => handleView(user.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="Edit">
+                                <a href="#" onClick={(e) => { handleEdit(e, user.id) }} title="Edit" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faPenToSquare} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(user.id) }} title="Delete" >
+                                <a href="#" onClick={(e) => handleDelete(e, user.id)} title="Delete" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faTrashCan} />
                                 </a>
                             </td>

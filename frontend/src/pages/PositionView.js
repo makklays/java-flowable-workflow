@@ -33,6 +33,8 @@ const PositionView = () => {
             <div className="row" >
                 <div className="col-md-6">
                     <p><b>Title:</b> {position.title}</p>
+
+                    <p><b>Created at:</b> {position.createdAt != null ? position.createdAt : '-'}</p>
                 </div>
             </div>
 

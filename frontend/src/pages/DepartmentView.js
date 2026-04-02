@@ -34,6 +34,8 @@ const DepartmentView = () => {
                 <div className="col-md-6">
                     <p><b>Title:</b> {department.title}</p>
                     <p><b>Description:</b> {department.description}</p>
+
+                    <p><b>Created at:</b> {department.createdAt != null ? department.createdAt : '-'}</p>
                 </div>
             </div>
 

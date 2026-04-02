@@ -3,6 +3,7 @@ import userService from '../services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { user, useApp } from '../context/AppContext';
 
 const TableView = () => {
 
@@ -13,6 +14,7 @@ const TableView = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const navigate = useNavigate();
+    const { user } = useApp();
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
@@ -46,6 +48,13 @@ const TableView = () => {
     }
 
     useEffect(() => {
+        // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
+        if (!user) {
+            setUsers([]);
+            navigate('/login');
+            return; // Дальше код не пойдет
+        }
+
         // Создаем асинхронную функцию внутри useEffect
         const fetchUsers = async () => {
             try {
@@ -68,7 +77,7 @@ const TableView = () => {
 
         fetchUsers(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
 
-    }, [currentPage, pageSize]); // Массив зависимостей
+    }, [currentPage, pageSize, user, navigate]); // Массив зависимостей
 
     return (
         <>

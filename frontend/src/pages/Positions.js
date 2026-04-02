@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
+import { useApp } from '../context/AppContext';
 
 // Короткая запись компонента - стрелочная функция
 const Positions = () => {
@@ -18,6 +19,7 @@ const Positions = () => {
 
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const { user } = useApp();
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
@@ -51,6 +53,13 @@ const Positions = () => {
     }
 
     useEffect(() => {
+        // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
+        if (!user) {
+            setPositions([]);
+            navigate('/login');
+            return; // Дальше код не пойдет
+        }
+
         // Создаем асинхронную функцию внутри useEffect
         const fetchPositions = async () => {
             try {

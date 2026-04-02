@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
+import { user, useApp } from '../context/AppContext';
 
 // Короткая запись компонента - стрелочная функция
 const Roles = () => {
@@ -18,6 +19,7 @@ const Roles = () => {
 
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const { user } = useApp();
 
     const [selectedItems, setSelectedItems] = useState([]);
 
@@ -53,6 +55,13 @@ const Roles = () => {
     }
 
     useEffect(() => {
+        // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
+        if (!user) {
+            setRoles([]);
+            navigate('/login');
+            return; // Дальше код не пойдет
+        }
+
         // Создаем асинхронную функцию внутри useEffect
         const fetchRoles = async () => {
             try {
@@ -82,7 +91,7 @@ const Roles = () => {
 
         fetchRoles(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
 
-    }, [currentPage, pageSize]);
+    }, [currentPage, pageSize, user, navigate]); // Массив зависимостей
 
     return (
         <div>

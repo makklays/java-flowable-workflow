@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
+import Header from './components/Header';
+
+// context для глобального состояния
+import { AppProvider } from './context/AppContext';
 
 // Стили и компоненты Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -61,6 +65,8 @@ function App() {
   const { t, i18n } = useTranslation();
   //const isLoggedIn = false;
 
+
+
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
@@ -73,15 +79,15 @@ function App() {
   });
 
   // Создаем состояние для пользователя
-  const [currentUser, setCurrentUser] = useState(localStorage.getItem('userName'));
+  //const [currentUser, setCurrentUser] = useState(localStorage.getItem('userName'));
 
   // Функция выхода
-  const handleLogout = () => {
+  /*const handleLogout = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('userName');
       localStorage.removeItem('isAuth');
       setCurrentUser(null);
-  };
+  };*/
 
   // Вспомогательная функция для получения кода страны
   const getFlagClass = (lang) => {
@@ -92,7 +98,7 @@ function App() {
   };
 
   // Следим за изменениями в localStorage
-  useEffect(() => {
+  /*useEffect(() => {
       const handleStorageChange = () => {
           setCurrentUser(localStorage.getItem('userName'));
       };
@@ -101,183 +107,132 @@ function App() {
       return () => {
           window.removeEventListener('authChange', handleStorageChange);
       };
-  }, []);
+  }, []);*/
 
   return (
-    <Router>
-      {/* Главный контейнер на всю высоту экрана */}
-      <div className="d-flex flex-column vh-100">
+    <AppProvider>
+        <Router>
+          {/* Главный контейнер на всю высоту экрана */}
+          <div className="d-flex flex-column vh-100">
 
-        {/* 1. Верхняя навигация (Navbar) */}
-        <Navbar bg="white" expand="lg" className="border-bottom px-3 shadow-sm" style={{ zIndex: 1000 }}>
-          <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-            <img src={myLogo} width="30" height="30" className="me-2" alt="Logo" />
-            <span className="fw-bold text-primary">CRM Flowable</span>
-          </Navbar.Brand>
+            <Header /> {/* Теперь Header внутри провайдера и видит контекст! */}
 
-          <Navbar.Toggle aria-controls="top-nav" />
-          <Navbar.Collapse id="top-nav">
-            <Nav className="ms-auto align-items-center">
-              <NavDropdown
-                title={
-                  <span>
-                    <span className={`${getFlagClass(i18n.language)} me-1`}></span>
-                    {i18n.language?.toUpperCase().substring(0, 2)}
-                  </span>
-                }
-                id="lang-drop"
-                align="end"
-                /* Прокидываем стиль напрямую в выпадающий список */
-                style={{ '--bs-dropdown-min-width': '50px' }}
-              >
-                {/* Эта обертка заставит пункты быть узкими */}
-                <div style={{ width: '50px', minWidth: '70px' }}>
-                  <NavDropdown.Item onClick={() => changeLanguage('ru')} className="d-flex justify-content-center py-1 px-0 border-0">
-                    <span className="fi fi-ru me-1"></span> RU
-                  </NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => changeLanguage('en')} className="d-flex justify-content-center py-1 px-0 border-0">
-                    <span className="fi fi-us me-1"></span> EN
-                  </NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => changeLanguage('es')} className="d-flex justify-content-center py-1 px-0 border-0">
-                    <span className="fi fi-es me-1"></span> ES
-                  </NavDropdown.Item>
-                </div>
-              </NavDropdown>
+            {/* 2. Основная рабочая область (Sidebar + Content) */}
+            <div className="d-flex flex-grow-1 overflow-hidden">
 
-              {currentUser ? (
-                /* Если залогинен — показываем имя и кнопку выхода */
-                <div className="d-flex align-items-center ms-3">
-                    <span className="me-3 fw-bold text-secondary">
-                        <i className="bi bi-person-circle me-1"></i> {currentUser}
-                    </span>
-                    <Button variant="outline-danger" size="sm" onClick={handleLogout}>
-                        {t('logout')}
-                    </Button>
-                </div>
-              ) : (
-                /* Если не залогинен — показываем кнопку войти */
-                <Button as={Link} to="/login" variant="primary" size="sm" className="ms-3">
-                    {t('login')}
-                </Button>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+              {/* ФИКСИРОВАННОЕ БОКОВОЕ МЕНЮ (260px) */}
+              <aside style={{
+                width: '260px',
+                minWidth: '260px',
+                maxWidth: '260px',
+                backgroundColor: '#f8f9fa',
+                borderRight: '1px solid #dee2e6',
+                overflowY: 'auto' // Прокрутка только внутри меню, если пунктов много
+              }}>
+                <Nav className="flex-column p-3 gap-1">
+                  <Nav.Link as={NavLink} to="/" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faHouse} className="me-3 text-secondary" /> {t('dashboard')}
+                  </Nav.Link>
 
-        {/* 2. Основная рабочая область (Sidebar + Content) */}
-        <div className="d-flex flex-grow-1 overflow-hidden">
+                  <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                    {t('crm')}
+                  </div>
 
-          {/* ФИКСИРОВАННОЕ БОКОВОЕ МЕНЮ (260px) */}
-          <aside style={{
-            width: '260px',
-            minWidth: '260px',
-            maxWidth: '260px',
-            backgroundColor: '#f8f9fa',
-            borderRight: '1px solid #dee2e6',
-            overflowY: 'auto' // Прокрутка только внутри меню, если пунктов много
-          }}>
-            <Nav className="flex-column p-3 gap-1">
-              <Nav.Link as={NavLink} to="/" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faHouse} className="me-3 text-secondary" /> {t('dashboard')}
-              </Nav.Link>
+                  <Nav.Link as={NavLink} to="/contacts" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faAddressBook} className="me-3 text-secondary" /> {t('contacts')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/activities" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faHeartPulse} className="me-3 text-secondary" /> {t('activities')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/clients" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faUsers} className="me-3 text-secondary" /> {t('clients')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/deals" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faHandshake} className="me-3 text-secondary" /> {t('deals')}
+                  </Nav.Link>
 
-              <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
-                {t('crm')}
-              </div>
+                  <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                      {t('company')}
+                  </div>
 
-              <Nav.Link as={NavLink} to="/contacts" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faAddressBook} className="me-3 text-secondary" /> {t('contacts')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/activities" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faHeartPulse} className="me-3 text-secondary" /> {t('activities')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/clients" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faUsers} className="me-3 text-secondary" /> {t('clients')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/deals" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faHandshake} className="me-3 text-secondary" /> {t('deals')}
-              </Nav.Link>
+                  <Nav.Link as={NavLink} to="/departments" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('departments')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/positions" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faBriefcase} className="me-3 text-secondary" /> {t('positions')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/roles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faUserShield} className="me-3 text-secondary" /> {t('roles')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/users" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faUserGroup} className="me-3 text-secondary" /> {t('users')}
+                  </Nav.Link>
 
-              <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
-                  {t('company')}
-              </div>
+                  <hr className="my-2 opacity-25" />
 
-              <Nav.Link as={NavLink} to="/departments" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('departments')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/positions" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faBriefcase} className="me-3 text-secondary" /> {t('positions')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/roles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faUserShield} className="me-3 text-secondary" /> {t('roles')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/users" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faUserGroup} className="me-3 text-secondary" /> {t('users')}
-              </Nav.Link>
+                  <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn')}
+                  </Nav.Link>
 
-              <hr className="my-2 opacity-25" />
+                  <hr className="my-auto opacity-25" />
 
-              <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn')}
-              </Nav.Link>
+                  <Nav.Link as={NavLink} to="/settings" style={activeLinkStyle} className="rounded px-3 py-2 text-dark mt-3">
+                      <FontAwesomeIcon icon={faGear} className="me-3 text-secondary" /> {t('settings')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/about" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faCircleInfo} className="me-3 text-secondary" /> {t('about')}
+                  </Nav.Link>
+                </Nav>
+              </aside>
 
-              <hr className="my-auto opacity-25" />
+              {/* ОБЛАСТЬ КОНТЕНТА (Занимает всё остальное место) */}
+              <main className="flex-grow-1 p-4 bg-white shadow-inner" style={{ overflowY: 'auto' }}>
+                <Container fluid>
+                  <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/activities" element={<Activities />} />
+                      <Route path="/clients" element={<Clients />} />
+                      <Route path="/deals" element={<Deals />} />
 
-              <Nav.Link as={NavLink} to="/settings" style={activeLinkStyle} className="rounded px-3 py-2 text-dark mt-3">
-                  <FontAwesomeIcon icon={faGear} className="me-3 text-secondary" /> {t('settings')}
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/about" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                  <FontAwesomeIcon icon={faCircleInfo} className="me-3 text-secondary" /> {t('about')}
-              </Nav.Link>
-            </Nav>
-          </aside>
+                      <Route path="/departments" element={<Departments />} />
+                      <Route path="/departments/add" element={<DepartmentAdd />} />
+                      <Route path="/departments/:id" element={<DepartmentView />} />
+                      <Route path="/departments/:id/edit" element={<DepartmentEdit />} />
 
-          {/* ОБЛАСТЬ КОНТЕНТА (Занимает всё остальное место) */}
-          <main className="flex-grow-1 p-4 bg-white shadow-inner" style={{ overflowY: 'auto' }}>
-            <Container fluid>
-              <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/contacts" element={<Contacts />} />
-                  <Route path="/activities" element={<Activities />} />
-                  <Route path="/clients" element={<Clients />} />
-                  <Route path="/deals" element={<Deals />} />
+                      <Route path="/positions" element={<Positions />} />
+                      <Route path="/positions/add" element={<PositionAdd />} />
+                      <Route path="/positions/:id" element={<PositionView />} />
+                      <Route path="/positions/:id/edit" element={<PositionEdit />} />
 
-                  <Route path="/departments" element={<Departments />} />
-                  <Route path="/departments/add" element={<DepartmentAdd />} />
-                  <Route path="/departments/:id" element={<DepartmentView />} />
-                  <Route path="/departments/:id/edit" element={<DepartmentEdit />} />
+                      <Route path="/roles" element={<Roles />} />
+                      <Route path="/roles/add" element={<RoleAdd />} />
+                      <Route path="/roles/:id" element={<RoleView />} />
+                      <Route path="/roles/:id/edit" element={<RoleEdit />} />
 
-                  <Route path="/positions" element={<Positions />} />
-                  <Route path="/positions/add" element={<PositionAdd />} />
-                  <Route path="/positions/:id" element={<PositionView />} />
-                  <Route path="/positions/:id/edit" element={<PositionEdit />} />
+                      <Route path="/users" element={<Users />} />
+                      <Route path="/users/add" element={<UserAdd />} />
+                      <Route path="/users/:id" element={<UserView />} />
+                      <Route path="/users/:id/edit" element={<UserEdit />} />
 
-                  <Route path="/roles" element={<Roles />} />
-                  <Route path="/roles/add" element={<RoleAdd />} />
-                  <Route path="/roles/:id" element={<RoleView />} />
-                  <Route path="/roles/:id/edit" element={<RoleEdit />} />
+                      <Route path="/trading" element={<Trading />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/learn" element={<Learn />} />
+                      <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
+                  </Routes>
+                </Container>
+              </main>
 
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/users/add" element={<UserAdd />} />
-                  <Route path="/users/:id" element={<UserView />} />
-                  <Route path="/users/:id/edit" element={<UserEdit />} />
+            </div>
+          </div>
+        </Router>
 
-                  <Route path="/trading" element={<Trading />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/learn" element={<Learn />} />
-                  <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
-              </Routes>
-            </Container>
-          </main>
-
-        </div>
-      </div>
-    </Router>
+    </AppProvider>
   );
 }
 

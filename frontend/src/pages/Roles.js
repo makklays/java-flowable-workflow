@@ -29,11 +29,17 @@ const Roles = () => {
             try {
                 const response = await roleService.getAllRolesByPages(currentPage - 1, pageSize);
                 // 3. Сохраняем данные в состояние (axios обычно возвращает данные в response.data)
-                const roles = response.data;
-                if (roles) {
-                    setRoles(roles); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
-                    console.log('---------- Число отделений: ' + roles );
-                    console.table(roles);
+                const page = response.data;
+                if (page) {
+
+                    console.log("Весь ответ:", page);
+                    console.log("Контент:", page.content);
+                    console.log("Количество элементов:", page.content.length);
+                    console.log("Всего страниц:", page.totalPages);
+
+                    setRoles(page.content); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
+                    console.log('---------- Число отделений: ' + page.content.length );
+                    //console.table(page.content);
                 } else {
                     console.warn('---------- Ответ не содержит данных отделений');
                 }

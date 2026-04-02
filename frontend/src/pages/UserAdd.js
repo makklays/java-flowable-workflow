@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import userService from '../services/userService';
 import { faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot, faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 //
@@ -19,7 +20,7 @@ const UserAdd = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -89,7 +90,15 @@ const UserAdd = () => {
         // Если ошибок нет — очищаем стейт и отправляем данные
         setErrors({});
 
-        // Здесь вызов userService.createUser(userData)
+        // Здесь вызов userService.postUser(userData)
+        //userService.postUser(userData);
+        try {
+            const response = await userService.postUser(userData);
+            console.log("Ответ сервера:", response);
+            console.log("Роль успешно сохранена");
+        } catch (error) {
+            console.error("Ошибка при сохранении пользователь", error);
+        }
         console.log("Данные для сохранения:", userData);
         navigate('/users'); // Возврат к списку после успеха
     };

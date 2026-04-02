@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import positionService from '../services/positionService';
 import {
          faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
          faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus
@@ -18,7 +19,7 @@ const PositionAdd = () => {
 
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -39,7 +40,15 @@ const PositionAdd = () => {
         // Если ошибок нет — очищаем стейт и отправляем данные
         setErrors({});
 
-        // Здесь вызов positionService.createPosition(positionData)
+        // Здесь вызов positionService.postPosition(positionData)
+        try {
+            const response = await positionService.postPosition(positionData);
+            console.log("Ответ сервера:", response);
+            console.log("Роль успешно сохранена");
+        } catch (error) {
+            console.error("Ошибка при сохранении должности", error);
+        }
+
         console.log("Данные для сохранения:", positionData);
         navigate('/positions'); // Возврат к списку после успеха
     };

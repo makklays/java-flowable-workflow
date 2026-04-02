@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import departmentService from '../services/departmentService';
 import {
          faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
          faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus
@@ -18,7 +19,7 @@ const DepartmentAdd = () => {
 
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -39,7 +40,14 @@ const DepartmentAdd = () => {
         // Если ошибок нет — очищаем стейт и отправляем данные
         setErrors({});
 
-        // Здесь вызов departmentService.createDepartment(departData)
+        // Здесь вызов departmentService.postDepartment(departData)
+        try {
+            const response = await departmentService.postDepartment(departData);
+            console.log("Ответ сервера:", response);
+            console.log("Роль успешно сохранена");
+        } catch (error) {
+            console.error("Ошибка при сохранении отделения", error);
+        }
         console.log("Данные для сохранения:", departData);
         navigate('/departments'); // Возврат к списку после успеха
     };

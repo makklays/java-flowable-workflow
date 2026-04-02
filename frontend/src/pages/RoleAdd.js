@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import roleService from '../services/roleService';
 import {
          faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
          faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus
@@ -18,7 +19,7 @@ const RoleAdd = () => {
 
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -39,8 +40,16 @@ const RoleAdd = () => {
         // Если ошибок нет — очищаем стейт и отправляем данные
         setErrors({});
 
-        // Здесь вызов roleService.createRole(roleData)
-        console.log("Данные для сохранения:", roleData);
+        // Здесь вызов roleService.postRole(roleData)
+        try {
+            const response = await roleService.postRole(roleData);
+            console.log("Ответ сервера:", response);
+            console.log("Роль успешно сохранена");
+        } catch (error) {
+            console.error("Ошибка при сохранении роли", error);
+        }
+
+        console.log("Данные для сохранения2:", roleData);
         navigate('/roles'); // Возврат к списку после успеха
     };
 

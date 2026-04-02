@@ -15,5 +15,42 @@ const getAllPositionsByPages = async (page, size) => {
     return await axios.get(`${API_URL}?page=${page}&size=${size}`, { headers: authHeader() });
 };
 
-export default { getAllPositions, getAllPositionsByPages };
+// get position by id
+const getPositionById = async (id) => {
+    return await axios.get(`${API_URL}/${id}`, {
+        headers: authHeader()
+    });
+};
+
+// send data to backend (add a new position)
+const postPosition = async (data) => {
+    // Передаем токены вторым аргументом в объект config
+    return await axios.post(API_URL, data, {
+        headers: authHeader()
+    });
+};
+
+// send data to backend (add a new position)
+// PUT → полное обновление объекта
+const putPosition = async (id, data) => {
+    return await axios.put(`${API_URL}/${id}`, data, {
+        headers: authHeader()
+    });
+};
+
+// PATCH → частичное обновление объекта
+const patchPosition = async (id, data) => {
+    return await axios.patch(`${API_URL}/${id}`, data, {
+        headers: authHeader()
+    });
+};
+
+// delete position by id
+const deletePosition = async (id) => {
+    return await axios.delete(`${API_URL}/${id}`, {
+        headers: authHeader()
+    });
+};
+
+export default { getAllPositions, getAllPositionsByPages, getPositionById, postPosition, putPosition, patchPosition, deletePosition };
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import roleService from '../services/roleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +17,40 @@ const Roles = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+
+    const [selectedItems, setSelectedItems] = useState([]);
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
         console.log("Клик по ID:", id);
     };
+
+    // Просмотр роли по ID
+    const handleView = (id) => {
+        navigate(`/roles/${id}`);
+    };
+
+    // Редактирование роли по ID
+    const handleEdit = (e, id) => {
+        e.preventDefault();
+        navigate(`/roles/${id}/edit`);
+    };
+
+    // Удаляем роль по ID
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        if (!window.confirm("Вы уверены, что хотите удалить роль c ID:" + id + " ?")) return;
+        console.log("Удалить ID:", id);
+        try {
+            await roleService.deleteRole(id);
+            console.log("Роль успешно удалена");
+            // После удаления можно обновить список, например, вызвав функцию загрузки данных
+            setRoles(prevRoles => prevRoles.filter(role => role.id !== id));
+        } catch (error) {
+            console.error("Ошибка при удалении роли", error);
+        }
+    }
 
     useEffect(() => {
         // Создаем асинхронную функцию внутри useEffect
@@ -60,6 +89,29 @@ const Roles = () => {
             <h1>{t('roles')}</h1>
             <p>Здесь будет список ролей...</p>
 
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="d-flex gap-2">
+                    {/* Поиск */}
+                    <div className="input-group" style={{ width: '300px' }}>
+                        <span className="input-group-text"><FontAwesomeIcon icon={faSearch} /></span>
+                        <input type="text" className="form-control" placeholder="Поиск по названию..." />
+                    </div>
+
+                    {/* Массовое действие (скрыто, если selected.length === 0) */}
+                    {selectedItems.length > 0 && (
+                        <button className="btn btn-danger animate__animated animate__fadeIn">
+                            <FontAwesomeIcon icon={faTrashCan} className="me-2" />
+                            Удалить ({selectedItems.length})
+                        </button>
+                    )}
+                </div>
+
+                <button className="btn btn-primary">
+                    <FontAwesomeIcon icon={faPlus} className="me-2" />
+                    Добавить
+                </button>
+            </div>
+
             <div className="row align-items-center mb-3">
                 {/* Заголовок */}
                 <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('roles')}</div>
@@ -70,6 +122,7 @@ const Roles = () => {
                     </Link>
                 </div>
             </div>
+
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
@@ -86,17 +139,17 @@ const Roles = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={role.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#"  >{role.title}</a>
+                                <a href="#" onClick={() => handleView(role.id)} >{role.title}</a>
                             </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(role.id) }} title="View">
+                                <a href="#" onClick={() => handleView(role.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(role.id) }} title="Edit">
+                                <a href="#" onClick={(e) => { handleEdit(e, role.id) }} title="Edit" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faPenToSquare} />
                                 </a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); handleClick(role.id) }} title="Delete" >
+                                <a href="#" onClick={(e) => handleDelete(e, role.id)} title="Delete" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faTrashCan} />
                                 </a>
                             </td>

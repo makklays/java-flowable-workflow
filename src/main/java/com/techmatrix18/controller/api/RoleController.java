@@ -62,10 +62,9 @@ public class RoleController {
         log.info("Fetching role with ID = " + id);
         Role role = roleService.getById(id);
         if (role == null) {
-            return ResponseEntity.ok(RoleMapper.toDto(role));
-        } else {
             return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(RoleMapper.toDto(role));
     }
 
     @PostMapping

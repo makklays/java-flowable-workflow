@@ -27,12 +27,22 @@ import Contacts from './pages/Contacts';
 import Activities from './pages/Activities';
 import Clients from './pages/Clients';
 import Deals from './pages/Deals';
+
 import Departments from './pages/Departments';
 import DepartmentAdd from './pages/DepartmentAdd';
+import DepartmentEdit from './pages/DepartmentEdit';
+import DepartmentView from './pages/DepartmentView';
+
 import Positions from './pages/Positions';
 import PositionAdd from './pages/PositionAdd';
+import PositionEdit from './pages/PositionEdit';
+import PositionView from './pages/PositionView';
+
 import Roles from './pages/Roles';
 import RoleAdd from './pages/RoleAdd';
+import RoleEdit from './pages/RoleEdit';
+import RoleView from './pages/RoleView';
+
 import Users from './pages/Users';
 import Trading from './pages/Trading';
 import Settings from './pages/Settings';
@@ -42,6 +52,8 @@ import Learn from './pages/Learn';
 
 import TableView from './components/TableView';
 import UserAdd from './pages/UserAdd';
+import UserEdit from './pages/UserEdit';
+import UserView from './pages/UserView';
 
 import myLogo from './assets/fl-logo1.png';
 
@@ -235,15 +247,23 @@ function App() {
 
                   <Route path="/departments" element={<Departments />} />
                   <Route path="/departments/add" element={<DepartmentAdd />} />
+                  <Route path="/departments/:id" element={<DepartmentView />} />
+                  <Route path="/departments/:id/edit" element={<DepartmentEdit />} />
 
                   <Route path="/positions" element={<Positions />} />
                   <Route path="/positions/add" element={<PositionAdd />} />
+                  <Route path="/positions/:id" element={<PositionView />} />
+                  <Route path="/positions/:id/edit" element={<PositionEdit />} />
 
                   <Route path="/roles" element={<Roles />} />
                   <Route path="/roles/add" element={<RoleAdd />} />
+                  <Route path="/roles/:id" element={<RoleView />} />
+                  <Route path="/roles/:id/edit" element={<RoleEdit />} />
 
                   <Route path="/users" element={<Users />} />
                   <Route path="/users/add" element={<UserAdd />} />
+                  <Route path="/users/:id" element={<UserView />} />
+                  <Route path="/users/:id/edit" element={<UserEdit />} />
 
                   <Route path="/trading" element={<Trading />} />
                   <Route path="/settings" element={<Settings />} />

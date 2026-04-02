@@ -63,10 +63,9 @@ public class PositionController {
         log.info("Fetching position with ID = " + id);
         Position position = positionService.getById(id);
         if (position == null) {
-            return ResponseEntity.ok(PositionMapper.toDto(position));
-        } else {
             return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(PositionMapper.toDto(position));
     }
 
     @PostMapping

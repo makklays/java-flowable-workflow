@@ -60,10 +60,9 @@ public class DepartmentController {
     public ResponseEntity<DepartmentDto> getDepartment(@PathVariable Long id) {
         Department department = departmentService.getById(id);
         if (department != null) {
-            return ResponseEntity.ok(DepartmentMapper.toDto(department));
-        } else {
             return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(DepartmentMapper.toDto(department));
     }
 
     @PostMapping

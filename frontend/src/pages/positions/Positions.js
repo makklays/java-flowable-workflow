@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useReducer } from 'react';
-import roleService from '../services/roleService';
+import positionService from '../../services/positionService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
-import i18n from '../i18n';
+import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
-import { user, useApp } from '../context/AppContext';
+import { useApp } from '../../context/AppContext';
 
 // Короткая запись компонента - стрелочная функция
-const Roles = () => {
+const Positions = () => {
 
     // 1. Состояние для пользователей
-    const [roles, setRoles] = useState([]);
+    const [positions, setPositions] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
@@ -21,8 +21,6 @@ const Roles = () => {
     const navigate = useNavigate();
     const { user } = useApp();
 
-    const [selectedItems, setSelectedItems] = useState([]);
-
     // 2. Исправленная функция клика
     const handleClick = (id) => {
         console.log("Клик по ID:", id);
@@ -30,102 +28,77 @@ const Roles = () => {
 
     // Просмотр роли по ID
     const handleView = (id) => {
-        navigate(`/roles/${id}`);
+        navigate(`/positions/${id}`);
     };
 
     // Редактирование роли по ID
     const handleEdit = (e, id) => {
         e.preventDefault();
-        navigate(`/roles/${id}/edit`);
+        navigate(`/positions/${id}/edit`);
     };
 
     // Удаляем роль по ID
     const handleDelete = async (e, id) => {
         e.preventDefault();
-        if (!window.confirm("Вы уверены, что хотите удалить роль c ID:" + id + " ?")) return;
+        if (!window.confirm("Вы уверены, что хотите удалить должность c ID:" + id + " ?")) return;
         console.log("Удалить ID:", id);
         try {
-            await roleService.deleteRole(id);
-            console.log("Роль успешно удалена");
+            await positionService.deletePosition(id);
+            console.log("Должность успешно удалена");
             // После удаления можно обновить список, например, вызвав функцию загрузки данных
-            setRoles(prevRoles => prevRoles.filter(role => role.id !== id));
+            setPositions(prevPositions => prevPositions.filter(position => position.id !== id));
         } catch (error) {
-            console.error("Ошибка при удалении роли", error);
+            console.error("Ошибка при удалении должности", error);
         }
     }
 
     useEffect(() => {
         // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
         if (!user) {
-            setRoles([]);
+            setPositions([]);
             navigate('/login');
             return; // Дальше код не пойдет
         }
 
         // Создаем асинхронную функцию внутри useEffect
-        const fetchRoles = async () => {
+        const fetchPositions = async () => {
             try {
-                const response = await roleService.getAllRolesByPages(currentPage - 1, pageSize);
+                const response = await positionService.getAllPositionsByPages(currentPage - 1, pageSize);
                 // 3. Сохраняем данные в состояние (axios обычно возвращает данные в response.data)
-                const page = response.data;
-                if (page) {
-
-                    console.log("Весь ответ:", page);
-                    console.log("Контент:", page.content);
-                    console.log("Количество элементов:", page.content.length);
-                    console.log("Всего страниц:", page.totalPages);
-
-                    setRoles(page.content); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
-                    console.log('---------- Число отделений: ' + page.content.length );
-                    //console.table(page.content);
+                const positions = response.data;
+                if (positions) {
+                    setPositions(positions); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
+                    console.log('---------- Число отделений: ' + positions.length );
                 } else {
                     console.warn('---------- Ответ не содержит данных отделений');
                 }
                 // Если ваш бэкенд (Spring/Node) возвращает объект Page, данные лежат в content
-                setRoles(response.data.content || response.data);
+                setPositions(response.data.content || response.data);
                 setTotalPages(response.data.totalPages || 1);
             } catch (error) {
                 console.error("---------- Ошибка при загрузке отделений:", error);
             }
         }
 
-        fetchRoles(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
+        fetchPositions(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
 
-    }, [currentPage, pageSize, user, navigate]); // Массив зависимостей
+    }, [currentPage, pageSize]);
 
     return (
         <div>
-            <h1>{t('roles')}</h1>
-            <p>Здесь будет список ролей...</p>
-
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="d-flex gap-2">
-                    {/* Поиск */}
-                    <div className="input-group" style={{ width: '300px' }}>
-                        <span className="input-group-text"><FontAwesomeIcon icon={faSearch} /></span>
-                        <input type="text" className="form-control" placeholder="Поиск по названию..." />
-                    </div>
-                    {/* Массовое действие (скрыто, если selected.length === 0) */}
-                    {selectedItems.length > 0 && (
-                        <button className="btn btn-danger animate__animated animate__fadeIn">
-                            <FontAwesomeIcon icon={faTrashCan} className="me-2" />
-                            Удалить ({selectedItems.length})
-                        </button>
-                    )}
-                </div>
-            </div>
+            <h1>{t('positions')}</h1>
+            <p>Здесь будет список должностей компании...</p>
 
             <div className="row align-items-center mb-3">
                 {/* Заголовок */}
-                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('roles')}</div>
+                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('positions')}</div>
                 {/* Кнопка */}
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
-                    <Link to="/roles/add" className="btn btn-primary">
+                    <Link to="/positions/add" className="btn btn-primary">
                         <FontAwesomeIcon icon={faPlus} className="me-2" /> Добавить
                     </Link>
                 </div>
             </div>
-
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
@@ -137,22 +110,22 @@ const Roles = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {roles.length > 0 ? roles.map(role => (
-                        <tr key={role.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={role.id} /></td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.id}</td>
+                    {positions.length > 0 ? positions.map(position => (
+                        <tr key={position.id}>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={position.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#" onClick={() => handleView(role.id)} >{role.title}</a>
+                                <a href="#" onClick={() => handleView(position.id)} >{position.title}</a>
                             </td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.createdAt}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{position.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={() => handleView(role.id)} title="View" style={{ cursor: "pointer" }} >
+                                <a href="#" onClick={() => handleView(position.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
                                 </a>
-                                <a href="#" onClick={(e) => { handleEdit(e, role.id) }} title="Edit" style={{ cursor: "pointer" }} >
+                                <a href="#" onClick={(e) => { handleEdit(e, position.id) }} title="Edit" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faPenToSquare} />
                                 </a>
-                                <a href="#" onClick={(e) => handleDelete(e, role.id)} title="Delete" style={{ cursor: "pointer" }} >
+                                <a href="#" onClick={(e) => handleDelete(e, position.id)} title="Delete" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faTrashCan} />
                                 </a>
                             </td>
@@ -164,7 +137,7 @@ const Roles = () => {
             </table>
 
             {/* Проверяем, есть ли пользователи и больше ли одной страницы */}
-            {roles.length > 0 && totalPages > 1 && (
+            {positions.length > 0 && totalPages > 1 && (
                 <nav aria-label="Page navigation" className="mt-4">
                     <ul className="pagination justify-content-center">
                         {/* Кнопка Назад */}
@@ -199,4 +172,5 @@ const Roles = () => {
     );
 };
 
-export default Roles;
+export default Positions;
+

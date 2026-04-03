@@ -7,7 +7,7 @@ import myLogo from '../assets/fl-logo1.png';
 
 const Header = () => {
     const { t, i18n } = useTranslation();
-    const { user: currentUser, logout } = useApp(); // Берем данные из контекста
+    const { user: currentUser, role, logout } = useApp(); // Берем данные из контекста
 
     const changeLanguage = (lng) => i18n.changeLanguage(lng);
     const getFlagClass = (lang) => {
@@ -56,7 +56,7 @@ const Header = () => {
                     {currentUser ? (
                         <div className="d-flex align-items-center ms-3">
                             <span className="me-3 fw-bold text-secondary">
-                                <i className="bi bi-person-circle me-1"></i> {currentUser}
+                                <i className="bi bi-person-circle me-1"></i> {currentUser} [{role}]
                             </span>
                             <Button variant="outline-danger" size="sm" onClick={logout}>
                                 {t('logout')}

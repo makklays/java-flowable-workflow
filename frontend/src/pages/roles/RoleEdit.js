@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import roleService from "../services/roleService";
+import roleService from "../../services/roleService";
 
 const RoleEdit = () => {
     const { id } = useParams();

@@ -6,23 +6,34 @@ export const AppProvider = ({ children }) => {
     // Состояние для размера шрифта (наши "Увеличить/Уменьшить")
     const [fontSize, setFontSize] = useState(16);
     // Состояние для текущего пользователя (после логина)
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(localStorage.getItem('username') || null);
+    const [role, setRole] = useState(localStorage.getItem('role') || null);
 
     const increaseFont = () => setFontSize(prev => Math.min(prev + 2, 24));
     const decreaseFont = () => setFontSize(prev => Math.max(prev - 2, 12));
 
     const login = (userData) => {
-        //setUser(userData);
         setUser(userData.username);
+        setRole(userData.role);
+
         localStorage.setItem('username', userData.username);
+        localStorage.setItem('role', userData.role);
         localStorage.setItem('token', userData.token); // Сохраняем JWT для API
+
+        console.log("Пользователь:", userData);
+        console.log("Пользователь вошел:", userData.username);
+        console.log("Пользователя роль:", userData.role);
+        console.log("Пользователя token:", userData.token);
     };
 
     const logout = () => {
         // Очищаем всё
         setUser(null);
+        setRole(null);
+
         localStorage.removeItem('username');
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         // Можно добавить принудительный редирект, если импортировать useNavigate
         window.location.href = '/login';
     };
@@ -34,6 +45,7 @@ export const AppProvider = ({ children }) => {
             decreaseFont,
             user,
             setUser,
+            role,
             login,
             logout
         }}>

@@ -3,13 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import departmentService from "../services/departmentService";
+import positionService from "../../services/positionService";
 
-const DepartmentEdit = () => {
+const PositionEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [departmentData, setDepartmentData] = useState({
+    const [positionData, setPositionData] = useState({
         title: "",
         description: ""
     });
@@ -18,15 +18,15 @@ const DepartmentEdit = () => {
 
     // Загрузка роли при входе на страницу
     useEffect(() => {
-        fetchDepartment();
+        fetchPosition();
     }, []);
 
-    const fetchDepartment = async () => {
+    const fetchPosition = async () => {
         try {
-            const response = await departmentService.getDepartmentById(id);
-            setDepartmentData(response.data);
+            const response = await positionService.getPositionById(id);
+            setPositionData(response.data);
         } catch (error) {
-            console.error("Ошибка загрузки отделения:", error);
+            console.error("Ошибка загрузки роли:", error);
         }
     };
 
@@ -36,9 +36,9 @@ const DepartmentEdit = () => {
 
         // Валидация
         const newErrors = {};
-        if (!departmentData.title) {
+        if (!positionData.title) {
             newErrors.title = 'Поле обязательно для заполнения';
-        } else if (departmentData.title.length < 3) {
+        } else if (positionData.title.length < 3) {
             newErrors.title = 'Минимум 3 символа';
         }
         // Если есть ошибки — сохраняем их в state и выходим
@@ -50,10 +50,10 @@ const DepartmentEdit = () => {
         setErrors({});
 
         try {
-            await departmentService.putDepartment(id, departmentData);
-            navigate("/departments");
+            await positionService.putPosition(id, positionData);
+            navigate("/positions");
         } catch (error) {
-            console.error("Ошибка обновления отделения:", error);
+            console.error("Ошибка обновления должность:", error);
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
             }
@@ -64,7 +64,7 @@ const DepartmentEdit = () => {
         <div>
             <div className="row">
                 <div className="col-md-12">
-                    <h1>Редактирование роли</h1>
+                    <h1>Редактирование должности</h1>
                 </div>
             </div>
 
@@ -76,10 +76,10 @@ const DepartmentEdit = () => {
                             <input
                                 type="text"
                                 className="form-control"
-                                value={departmentData.title}
+                                value={positionData.title}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    setDepartmentData({ ...departmentData, title: val });
+                                    setPositionData({ ...positionData, title: val });
                                     if (val) setErrors(prev => ({ ...prev, title: null }));
                                 }}
                             />
@@ -94,22 +94,6 @@ const DepartmentEdit = () => {
 
                 <div className="row">
                     <div className="col-md-6">
-                        <div className="mb-3">
-                            <label className="form-label">Description</label>
-                            <textarea
-                                className="form-control"
-                                rows="8"
-                                value={departmentData.description || ""}
-                                onChange={(e) =>
-                                    setDepartmentData({ ...departmentData, description: e.target.value })
-                                }
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col-md-6">
                         <button type="submit" className="btn btn-success me-2">
                             <FontAwesomeIcon icon={faFloppyDisk} className="me-2" />
                             Сохранить
@@ -118,7 +102,7 @@ const DepartmentEdit = () => {
                         <button
                             type="button"
                             className="btn btn-secondary"
-                            onClick={() => navigate("/departments")}
+                            onClick={() => navigate("/positions")}
                         >
                             <FontAwesomeIcon icon={faTimes} className="me-2" />
                             Отмена
@@ -130,5 +114,5 @@ const DepartmentEdit = () => {
     );
 };
 
-export default DepartmentEdit;
+export default PositionEdit;
 

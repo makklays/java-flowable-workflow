@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import '../App.css';
+import '../../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import positionService from '../services/positionService';
+import roleService from '../../services/roleService';
 import {
          faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
          faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus
        } from '@fortawesome/free-solid-svg-icons';
 
 //
-const PositionAdd = () => {
+const RoleAdd = () => {
     const navigate = useNavigate();
 
     // Инициализируем все поля, чтобы избежать uncontrolled input warning
-    const [positionData, setPositionData] = useState({
+    const [roleData, setRoleData] = useState({
         title: '', description: ''
     });
 
@@ -25,9 +25,9 @@ const PositionAdd = () => {
         const newErrors = {};
 
         // Валидация Username
-        if (!positionData.title) {
+        if (!roleData.title) {
             newErrors.title = 'Поле обязательно для заполнения';
-        } else if (positionData.title.length < 3) {
+        } else if (roleData.title.length < 3) {
             newErrors.title = 'Минимум 3 символа';
         }
 
@@ -40,24 +40,24 @@ const PositionAdd = () => {
         // Если ошибок нет — очищаем стейт и отправляем данные
         setErrors({});
 
-        // Здесь вызов positionService.postPosition(positionData)
+        // Здесь вызов roleService.postRole(roleData)
         try {
-            const response = await positionService.postPosition(positionData);
+            const response = await roleService.postRole(roleData);
             console.log("Ответ сервера:", response);
             console.log("Роль успешно сохранена");
         } catch (error) {
-            console.error("Ошибка при сохранении должности", error);
+            console.error("Ошибка при сохранении роли", error);
         }
 
-        console.log("Данные для сохранения:", positionData);
-        navigate('/positions'); // Возврат к списку после успеха
+        console.log("Данные для сохранения2:", roleData);
+        navigate('/roles'); // Возврат к списку после успеха
     };
 
     return (
         <div>
             <div className="row">
                 <div className="col-md-12">
-                    <h1>Новая должность</h1>
+                    <h1>Новая роль</h1>
                 </div>
             </div>
 
@@ -66,10 +66,10 @@ const PositionAdd = () => {
                     <div className="col-md-6">
                         <div className="mb-3">
                             <label className="form-label required">Title</label>
-                            <input type="text" className="form-control" value={positionData.title}
+                            <input type="text" className="form-control" value={roleData.title}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    setPositionData({...positionData, title: val});
+                                    setRoleData({...roleData, title: val});
                                     // Очищаем ошибку при вводе, чтобы она не "висела"
                                     if (val) setErrors(prev => ({...prev, title: null}));
                                 }}
@@ -83,6 +83,15 @@ const PositionAdd = () => {
                         </div>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Description</label>
+                            <textarea className="form-control" value={roleData.description} rows="8"
+                                onChange={(e) => setRoleData({...roleData, description: e.target.value})} />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="row">
                     <div className="col-md-6">
@@ -90,7 +99,7 @@ const PositionAdd = () => {
                             <FontAwesomeIcon icon={faFloppyDisk} className="me-2" />
                             Сохранить
                         </button>
-                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/positions')}>
+                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/roles')}>
                             <FontAwesomeIcon icon={faTimes} className="me-2" />
                             Отмена
                         </button>
@@ -101,5 +110,4 @@ const PositionAdd = () => {
     );
 };
 
-export default PositionAdd;
-
+export default RoleAdd;

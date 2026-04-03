@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import '../App.css';
+import '../../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import userService from '../services/userService';
+import userService from '../../services/userService';
 import { faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
     faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 

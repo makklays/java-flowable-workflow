@@ -27,37 +27,53 @@ import { useTranslation } from 'react-i18next';
 
 // Импорты ваших страниц (убедитесь, что пути верны)
 import Dashboard from './pages/Dashboard';
-import Contacts from './pages/Contacts';
-import Activities from './pages/Activities';
-import Clients from './pages/Clients';
-import Deals from './pages/Deals';
 
-import Departments from './pages/Departments';
-import DepartmentAdd from './pages/DepartmentAdd';
-import DepartmentEdit from './pages/DepartmentEdit';
-import DepartmentView from './pages/DepartmentView';
+import Contacts from './pages/contacts/Contacts';
+import ContactAdd from './pages/contacts/ContactAdd';
+import ContactEdit from './pages/contacts/ContactEdit';
+import ContactView from './pages/contacts/ContactView';
 
-import Positions from './pages/Positions';
-import PositionAdd from './pages/PositionAdd';
-import PositionEdit from './pages/PositionEdit';
-import PositionView from './pages/PositionView';
+import Activities from './pages/activities/Activities';
+import ActivityAdd from './pages/activities/ActivityAdd';
+import ActivityEdit from './pages/activities/ActivityEdit';
+import ActivityView from './pages/activities/ActivityView';
 
-import Roles from './pages/Roles';
-import RoleAdd from './pages/RoleAdd';
-import RoleEdit from './pages/RoleEdit';
-import RoleView from './pages/RoleView';
+import Clients from './pages/clients/Clients';
+import ClientAdd from './pages/clients/ClientAdd';
+import ClientEdit from './pages/clients/ClientEdit';
+import ClientView from './pages/clients/ClientView';
 
-import Users from './pages/Users';
+import Deals from './pages/deals/Deals';
+import DealAdd from './pages/deals/DealAdd';
+import DealEdit from './pages/deals/DealEdit';
+import DealView from './pages/deals/DealView';
+
+import Departments from './pages/departments/Departments';
+import DepartmentAdd from './pages/departments/DepartmentAdd';
+import DepartmentEdit from './pages/departments/DepartmentEdit';
+import DepartmentView from './pages/departments/DepartmentView';
+
+import Positions from './pages/positions/Positions';
+import PositionAdd from './pages/positions/PositionAdd';
+import PositionEdit from './pages/positions/PositionEdit';
+import PositionView from './pages/positions/PositionView';
+
+import Roles from './pages/roles/Roles';
+import RoleAdd from './pages/roles/RoleAdd';
+import RoleEdit from './pages/roles/RoleEdit';
+import RoleView from './pages/roles/RoleView';
+
+import TableView from './components/TableView';
+import Users from './pages/users/Users';
+import UserAdd from './pages/users/UserAdd';
+import UserEdit from './pages/users/UserEdit';
+import UserView from './pages/users/UserView';
+
 import Trading from './pages/Trading';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import Login from './pages/Login';
 import Learn from './pages/Learn';
-
-import TableView from './components/TableView';
-import UserAdd from './pages/UserAdd';
-import UserEdit from './pages/UserEdit';
-import UserView from './pages/UserView';
 
 import myLogo from './assets/fl-logo1.png';
 
@@ -193,15 +209,31 @@ function App() {
                 <Container fluid>
                   <Routes>
                       <Route path="/" element={<Dashboard />} />
+
                       <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/contacts/add" element={<ContactAdd />} />
+                      <Route path="/contacts/:id/edit" element={<ContactEdit />} />
+                      <Route path="/contacts/:id" element={<ContactView />} />
+
                       <Route path="/activities" element={<Activities />} />
+                      <Route path="/activities/add" element={<ActivityAdd />} />
+                      <Route path="/activities/:id/edit" element={<ActivityEdit />} />
+                      <Route path="/activities/:id" element={<ActivityView />} />
+
                       <Route path="/clients" element={<Clients />} />
+                      <Route path="/clients/add" element={<ClientAdd />} />
+                      <Route path="/clients/:id/edit" element={<ClientEdit />} />
+                      <Route path="/clients/:id" element={<ClientView />} />
+
                       <Route path="/deals" element={<Deals />} />
+                      <Route path="/deals/add" element={<DealAdd />} />
+                      <Route path="/deals/:id/edit" element={<DealEdit />} />
+                      <Route path="/deals/:id" element={<DealView />} />
 
                       <Route path="/departments" element={<Departments />} />
                       <Route path="/departments/add" element={<DepartmentAdd />} />
-                      <Route path="/departments/:id" element={<DepartmentView />} />
                       <Route path="/departments/:id/edit" element={<DepartmentEdit />} />
+                      <Route path="/departments/:id" element={<DepartmentView />} />
 
                       <Route path="/positions" element={<Positions />} />
                       <Route path="/positions/add" element={<PositionAdd />} />
@@ -210,13 +242,13 @@ function App() {
 
                       <Route path="/roles" element={<Roles />} />
                       <Route path="/roles/add" element={<RoleAdd />} />
-                      <Route path="/roles/:id" element={<RoleView />} />
                       <Route path="/roles/:id/edit" element={<RoleEdit />} />
+                      <Route path="/roles/:id" element={<RoleView />} />
 
                       <Route path="/users" element={<Users />} />
                       <Route path="/users/add" element={<UserAdd />} />
-                      <Route path="/users/:id" element={<UserView />} />
                       <Route path="/users/:id/edit" element={<UserEdit />} />
+                      <Route path="/users/:id" element={<UserView />} />
 
                       <Route path="/trading" element={<Trading />} />
                       <Route path="/settings" element={<Settings />} />

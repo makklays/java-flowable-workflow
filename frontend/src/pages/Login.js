@@ -57,7 +57,9 @@ const Login = () => {
                 // и оповестит все компоненты (включая Navbar), что юзер вошел.
                 login({
                     username: loginName,
-                    token: data.token
+                    token: data.token,
+                    role: data.role,
+                    loginTime: data.loginTime
                 });
 
                 setError('');

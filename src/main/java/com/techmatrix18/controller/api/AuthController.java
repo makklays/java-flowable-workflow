@@ -7,8 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +48,9 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(username, password)
         );
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
         //log.info("Authenticated? {}", authentication.isAuthenticated());
 
         // Generation JWT
@@ -53,6 +59,17 @@ public class AuthController {
         // Return the token as JSON
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
+        response.put("username", userDetails.getUsername());
+
+        // Получаем роль (обычно это первый элемент в Authorities)
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("USER");
+        response.put("role", role);
+
+        // Можно добавить любое другое поле, например время входа
+        response.put("loginTime", LocalDateTime.now().toString());
 
         return ResponseEntity.ok(response);
     }

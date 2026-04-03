@@ -1,8 +1,10 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next'; // 1. Импортируем хук
+// Переводы текстов
+import i18n from '../../i18n';
+import { useTranslation } from 'react-i18next';
 
 // Короткая запись компонента - стрелочная функция
-const Activities = () => {
+const ActivityView = () => {
 
     const { t } = useTranslation(); // 2. Инициализируем t
 
@@ -14,4 +16,4 @@ const Activities = () => {
     );
 };
 
-export default Activities;
+export default ActivityView;

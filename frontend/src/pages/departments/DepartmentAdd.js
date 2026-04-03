@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import '../App.css';
+import '../../App.css';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import departmentService from '../services/departmentService';
+import departmentService from '../../services/departmentService';
 import {
          faEye, faFloppyDisk, faPhone, faSitemap, faBriefcase, faUserShield, faEnvelope, faLocationDot,
          faEyeSlash, faPenToSquare, faTrashCan, faTimes, faPlus

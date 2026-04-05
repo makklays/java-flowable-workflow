@@ -26,7 +26,9 @@ i18n
           login: "Логин",
           learn: "Обучение",
           big: "Увеличить",
-          less: "Уменьшить"
+          less: "Уменьшить",
+          symbols: "Символы",
+          candles: "Свечи"
         }
       },
       en: {
@@ -47,7 +49,9 @@ i18n
           login: "Login",
           learn: "Learn",
           big: "Increase",
-          less: "Decrease"
+          less: "Decrease",
+          symbols: "Symbols",
+          candles: "Candles"
         }
       },
       es: {
@@ -68,7 +72,9 @@ i18n
           login: "Acceder",
           learn: "Educación",
           big: "Aumentar",
-          less: "Disminuir"
+          less: "Disminuir",
+          symbols: "Símbolos",
+          candles: "Velas"
         }
       }
     }, // Закрываем resources здесь

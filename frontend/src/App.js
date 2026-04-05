@@ -12,7 +12,7 @@ import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 // Иконки Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake,
+  faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake, faChartBar, faListUl, faCoins,
   faSitemap, faBriefcase, faUserShield, faUserGroup,
   faGear, faCircleInfo, faChartLine, faLaptopCode
 }
@@ -68,6 +68,12 @@ import Users from './pages/users/Users';
 import UserAdd from './pages/users/UserAdd';
 import UserEdit from './pages/users/UserEdit';
 import UserView from './pages/users/UserView';
+
+import Symbols from './pages/symbols/Symbols';
+import SymbolView from './pages/symbols/SymbolView';
+
+import Candles from './pages/candles/Candles';
+import CandleView from './pages/candles/CandleView';
 
 import Trading from './pages/Trading';
 import Settings from './pages/Settings';
@@ -168,6 +174,17 @@ function App() {
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                      {t('symbols')}
+                  </div>
+
+                  <Nav.Link as={NavLink} to="/symbols" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faCoins} className="me-3 text-secondary" /> {t('symbols')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/candles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faChartBar} className="me-3 text-secondary" /> {t('candles')}
+                  </Nav.Link>
+
+                  <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
                       {t('company')}
                   </div>
 
@@ -229,6 +246,12 @@ function App() {
                       <Route path="/deals/add" element={<DealAdd />} />
                       <Route path="/deals/:id/edit" element={<DealEdit />} />
                       <Route path="/deals/:id" element={<DealView />} />
+
+                      <Route path="/symbols" element={<Symbols />} />
+                      <Route path="/symbols/:id" element={<SymbolView />} />
+
+                      <Route path="/candles" element={<Candles />} />
+                      <Route path="/candles/:id" element={<CandleView />} />
 
                       <Route path="/departments" element={<Departments />} />
                       <Route path="/departments/add" element={<DepartmentAdd />} />

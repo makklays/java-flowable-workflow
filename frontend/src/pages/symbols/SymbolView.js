@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 //import departmentService from '../../services/departmentService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -15,7 +15,7 @@ const SymbolView = () => {
 
     return (
         <div>
-            <h1>{t('symbols')}</h1>
+            <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
             <p>Здесь будут свечи...</p>
         </div>
     );

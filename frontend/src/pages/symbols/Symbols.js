@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -23,7 +23,7 @@ const Symbols = () => {
     // 1. Состояние для пользователей
     const [symbols, setSymbols] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10); // элементов на странице
+    const [pageSize, setPageSize] = useState(100); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
 
     const { t, i18n } = useTranslation();
@@ -57,6 +57,18 @@ const Symbols = () => {
         }
     }
 
+    // 1. Создаем функцию запроса данных
+    const loadData = async () => {
+        try {
+            const response = await symbolService.getAllSymbolsByPages(currentPage - 1, pageSize);
+            const page = response.data;
+            setSymbols(page.content || page);
+            setTotalPages(page.totalPages || 1);
+        } catch (error) {
+            console.error("Ошибка при загрузке:", error);
+        }
+    };
+
     useEffect(() => {
         // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
         if (!user) {
@@ -64,41 +76,42 @@ const Symbols = () => {
             navigate('/login');
             return; // Дальше код не пойдет
         }
-
-        // Создаем асинхронную функцию внутри useEffect
-        const fetchSymbols = async () => {
-            try {
-                const response = await symbolService.getAllSymbolsByPages(currentPage - 1, pageSize);
-                // 3. Сохраняем данные в состояние (axios обычно возвращает данные в response.data)
-                const page = response.data;
-                if (page) {
-
-                    console.log("Весь ответ:", page);
-                    console.log("Контент:", page.content);
-                    console.log("Количество элементов:", page.content.length);
-                    console.log("Всего страниц:", page.totalPages);
-
-                    setSymbols(page.content); // ТЕПЕРЬ ДАННЫЕ ПОПАДУТ В ТАБЛИЦУ
-                    console.log('---------- Число отделений: ' + page.content.length );
-                    //console.table(page.content);
-                } else {
-                    console.warn('---------- Ответ не содержит данных отделений');
-                }
-                // Если ваш бэкенд (Spring/Node) возвращает объект Page, данные лежат в content
-                setSymbols(response.data.content || response.data);
-                setTotalPages(response.data.totalPages || 1);
-            } catch (error) {
-                console.error("---------- Ошибка при загрузке отделений:", error);
-            }
-        }
-
-        fetchSymbols(); // ОБЯЗАТЕЛЬНО вызываем функцию здесь
-
+        loadData();
     }, [currentPage, pageSize, user, navigate]); // Массив зависимостей
+
+    const handleUploadSpot = async (e) => {
+        e.preventDefault();
+        try {
+            console.log("Загрузить SPOT");
+            // Вызываем сервис загрузки
+            await symbolService.uploadSpot();
+            // После успешной загрузки обновляем список в таблице
+            await loadData();
+            console.log("Данные SPOT успешно обновлены");
+        } catch (error) {
+            console.error("Ошибка при загрузке SPOT:", error);
+            alert("Не удалось загрузить данные");
+        }
+    }
+
+    const handleUploadFutures = async (e) => {
+        e.preventDefault();
+        try {
+            console.log("Загрузить Futures");
+            // Вызываем сервис загрузки
+            await symbolService.uploadFutures();
+            // После успешной загрузки обновляем список в таблице
+            await loadData();
+            console.log("Данные Futures успешно обновлены");
+        } catch (error) {
+            console.error("Ошибка при загрузке Futures:", error);
+            alert("Не удалось загрузить данные");
+        }
+    }
 
     return (
         <div>
-            <h1>{t('symbols')}</h1>
+            <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
             <p>Здесь будет список ролей...</p>
 
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -123,8 +136,11 @@ const Symbols = () => {
                 <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('symbols')}</div>
                 {/* Кнопка */}
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
-                    <Link to="/symbols/add" className="btn btn-primary">
-                        <FontAwesomeIcon icon={faPlus} className="me-2" /> Добавить
+                    <Link to="/symbols/upload-spot" onClick={(e) => { handleUploadSpot(e) }} className="btn btn-primary" style={{ marginRight: '10px' }} >
+                        <FontAwesomeIcon icon={faCoins} className="me-2" /> Загрузить SPOT
+                    </Link>
+                    <Link to="/symbols/upload-futures" onClick={(e) => { handleUploadFutures(e) }} className="btn btn-primary">
+                        <FontAwesomeIcon icon={faCoins} className="me-2" /> Загрузить Futures
                     </Link>
                 </div>
             </div>
@@ -133,8 +149,15 @@ const Symbols = () => {
                 <thead>
                     <tr>
                         <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
-                        <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
-                        <th style={{verticalAlign: 'middle'}}>Title</th>
+                        <th style={{width: '80px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
+                        <th style={{verticalAlign: 'middle'}}>Symbol</th>
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Symbol Origin</th>
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Base</th>
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Quote</th>
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Market Type</th>
+
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Interval</th>
+
                         <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>
                         <th style={{width: '200px', textAlign: 'center', verticalAlign: 'middle'}}>Actions</th>
                     </tr>
@@ -145,8 +168,15 @@ const Symbols = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={symbol.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
-                                <a href="#" onClick={() => handleView(symbol.id)} >{symbol.title}</a>
+                                <a href="#" onClick={() => handleView(symbol.id)} >{symbol.symbol}</a>
                             </td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.originalSymbol}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.baseAsset}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.quoteAsset}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.marketType}</td>
+
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.historyStartTime} - {symbol.historyEndTime}</td>
+
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.createdAt}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(symbol.id)} title="View" style={{ cursor: "pointer" }} >

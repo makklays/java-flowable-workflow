@@ -63,7 +63,7 @@ class AiConfig {
     }
 }*/
 
-@RestController
+// @RestController
 class ChatController {
     private final ChatClient chatClient; // Используем интерфейс
 

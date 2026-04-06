@@ -33,6 +33,12 @@ public class Symbol {
     @Column(name = "original_symbol", nullable = false, length = 100)
     private String originalSymbol;
 
+    @Column(name = "base_asset", nullable = false, length = 20)
+    private String baseAsset;
+
+    @Column(name = "quote_asset", nullable = false, length = 20)
+    private String quoteAsset;
+
     @Column(name = "market_type", nullable = false, length = 20)
     private String marketType; // Можно использовать Enum с @Enumerated(EnumType.STRING)
 
@@ -41,6 +47,12 @@ public class Symbol {
 
     @Column(name = "quantity_precision", nullable = false)
     private Integer quantityPrecision;
+
+    @Column(name = "history_start_time")
+    private long historyStartTime;
+
+    @Column(name = "history_end_time")
+    private long historyEndTime;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -58,13 +70,17 @@ public class Symbol {
     public Symbol() { }
 
     public Symbol(Integer exchangeId, String symbol, String originalSymbol, String marketType,
-                  Integer pricePrecision, Integer quantityPrecision) {
+                  String baseAsset, String quoteAsset,
+                  Integer pricePrecision, Integer quantityPrecision, Boolean isActive) {
         this.exchangeId = exchangeId;
         this.symbol = symbol;
         this.originalSymbol = originalSymbol;
         this.marketType = marketType;
+        this.baseAsset = baseAsset;
+        this.quoteAsset = quoteAsset;
         this.pricePrecision = pricePrecision;
         this.quantityPrecision = quantityPrecision;
+        this.isActive = isActive;
     }
 
     // getters and setters
@@ -84,11 +100,23 @@ public class Symbol {
     public String getMarketType() { return marketType; }
     public void setMarketType(String marketType) { this.marketType = marketType; }
 
+    public String getBaseAsset() { return baseAsset; }
+    public void setBaseAsset(String baseAsset) { this.baseAsset = baseAsset; }
+
+    public String getQuoteAsset() { return quoteAsset; }
+    public void setQuoteAsset(String baseAsset) { this.quoteAsset = quoteAsset; }
+
     public Integer getPricePrecision() { return pricePrecision; }
     public void setPricePrecision(Integer pricePrecision) { this.pricePrecision = pricePrecision; }
 
     public Integer getQuantityPrecision() { return quantityPrecision; }
     public void setQuantityPrecision(Integer quantityPrecision) { this.quantityPrecision = quantityPrecision; }
+
+    public long getHistoryStartTime() { return historyStartTime; }
+    public void setHistoryStartTime(long historyStartTime) { this.historyStartTime = historyStartTime; }
+
+    public long getHistoryEndTime() { return historyEndTime; }
+    public void setHistoryEndTime(long history_end_time) { this.historyEndTime = historyEndTime; }
 
     public Boolean getActive() { return isActive; }
     public void setActive(Boolean active) { isActive = active; }
@@ -103,12 +131,12 @@ public class Symbol {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Symbol symbol1)) return false;
-        return getId().equals(symbol1.getId()) && getExchangeId().equals(symbol1.getExchangeId()) && getSymbol().equals(symbol1.getSymbol()) && getOriginalSymbol().equals(symbol1.getOriginalSymbol()) && getMarketType().equals(symbol1.getMarketType()) && getPricePrecision().equals(symbol1.getPricePrecision()) && getQuantityPrecision().equals(symbol1.getQuantityPrecision()) && isActive.equals(symbol1.isActive);
+        return historyStartTime == symbol1.historyStartTime && historyEndTime == symbol1.historyEndTime && getId().equals(symbol1.getId()) && getExchangeId().equals(symbol1.getExchangeId()) && getSymbol().equals(symbol1.getSymbol()) && getOriginalSymbol().equals(symbol1.getOriginalSymbol()) && getBaseAsset().equals(symbol1.getBaseAsset()) && getQuoteAsset().equals(symbol1.getQuoteAsset()) && getMarketType().equals(symbol1.getMarketType()) && getPricePrecision().equals(symbol1.getPricePrecision()) && getQuantityPrecision().equals(symbol1.getQuantityPrecision()) && isActive.equals(symbol1.isActive);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getExchangeId(), getSymbol(), getOriginalSymbol(), getMarketType(), getPricePrecision(), getQuantityPrecision(), isActive);
+        return Objects.hash(getId(), getExchangeId(), getSymbol(), getOriginalSymbol(), getBaseAsset(), getQuoteAsset(), getMarketType(), getPricePrecision(), getQuantityPrecision(), historyStartTime, historyEndTime, isActive);
     }
 
     @Override
@@ -119,8 +147,12 @@ public class Symbol {
                 ", symbol='" + symbol + '\'' +
                 ", originalSymbol='" + originalSymbol + '\'' +
                 ", marketType='" + marketType + '\'' +
+                ", baseAsset='" + baseAsset + '\'' +
+                ", quoteAsset='" + quoteAsset + '\'' +
                 ", pricePrecision=" + pricePrecision +
                 ", quantityPrecision=" + quantityPrecision +
+                ", historyStartTime=" + historyStartTime +
+                ", historyEndTime=" + historyEndTime +
                 ", isActive=" + isActive +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

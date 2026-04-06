@@ -5,7 +5,7 @@
 -- Creating table 'symbols' for saving main data of symbols
 CREATE TABLE symbols (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    exchange_id INT(11) NOT NULL,           -- ID=1 Binance, ID=2 Bybit, etc.
+    exchange_id INT(11) NOT NULL,          -- ID=1 Binance, ID=2 Bybit, etc.
     symbol VARCHAR(50) NOT NULL,
     original_symbol VARCHAR(100) NOT NULL, -- как пришло с биржи (BNC-USDT и т.д.)
     base_asset VARCHAR(20) NOT NULL,       -- BTC
@@ -14,6 +14,9 @@ CREATE TABLE symbols (
 
     price_precision INTEGER NOT NULL,      -- Binance: Точность цены (кол-во знаков после запятой)
     quantity_precision INTEGER NOT NULL,   -- Binance: Точность количества (шаг лота)
+
+    history_start_time INTEGER DEFAULT 0,  -- Самая ранняя свеча в БД
+    history_end_time INTEGER DEFAULT 0,    -- Самая поздняя свеча (ваш last_sync)
 
     is_active BOOLEAN DEFAULT TRUE,
 

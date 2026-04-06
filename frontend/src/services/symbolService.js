@@ -15,6 +15,20 @@ const getAllSymbolsByPages = async (page, size) => {
     return await axios.get(`${API_URL}?page=${page}&size=${size}`, { headers: authHeader() });
 };
 
+// upload SPOT symbols from binance
+const uploadSpot = async () => {
+    return await axios.get(`${API_URL}/upload-binance?type=SPOT`, {
+        headers: authHeader()
+    });
+}
+
+// upload SPOT symbols from binance
+const uploadFutures = async () => {
+    return await axios.get(`${API_URL}/upload-binance?type=FUTURES`, {
+        headers: authHeader()
+    });
+}
+
 // get symbol by id
 const getSymbolById = async (id) => {
     return await axios.get(`${API_URL}/${id}`, {
@@ -52,5 +66,6 @@ const deleteSymbol = async (id) => {
     });
 };
 
-export default { getAllSymbols, getAllSymbolsByPages, getSymbolById, postSymbol, putSymbol, patchSymbol, deleteSymbol };
+export default { getAllSymbols, getAllSymbolsByPages, uploadSpot, uploadFutures,
+                 getSymbolById, postSymbol, putSymbol, patchSymbol, deleteSymbol };
 

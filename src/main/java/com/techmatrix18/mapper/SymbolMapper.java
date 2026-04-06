@@ -28,6 +28,8 @@ public class SymbolMapper {
         dto.setPricePrecision(symbol.getPricePrecision());
         dto.setQuantityPrecision(symbol.getQuantityPrecision());
         dto.setActive(symbol.getActive());
+        dto.setHistoryStartTime(symbol.getHistoryStartTime());
+        dto.setHistoryEndTime(symbol.getHistoryEndTime());
         dto.setCreatedAt(symbol.getCreatedAt());
         dto.setUpdatedAt(symbol.getUpdatedAt());
         return dto;
@@ -49,6 +51,8 @@ public class SymbolMapper {
         symbol.setPricePrecision(symbolDto.getPricePrecision());
         symbol.setQuantityPrecision(symbolDto.getQuantityPrecision());
         symbol.setActive(symbolDto.getActive());
+        symbol.setHistoryStartTime(symbolDto.getHistoryStartTime());
+        symbol.setHistoryEndTime(symbolDto.getHistoryEndTime());
         symbol.setCreatedAt(symbolDto.getCreatedAt() != null ? symbolDto.getCreatedAt() : null);
         symbol.setUpdatedAt(symbolDto.getUpdatedAt() != null ? symbolDto.getUpdatedAt() : null);
         return symbol;

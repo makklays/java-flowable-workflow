@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -25,10 +25,15 @@ const Symbols = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(100); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
 
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user } = useApp();
+
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState('id');
+    const [direction, setDirection] = useState('asc');
 
     const [selectedItems, setSelectedItems] = useState([]);
 
@@ -60,10 +65,16 @@ const Symbols = () => {
     // 1. Создаем функцию запроса данных
     const loadData = async () => {
         try {
-            const response = await symbolService.getAllSymbolsByPages(currentPage - 1, pageSize);
+            const response = await symbolService.getAllSymbolsByPages(
+                currentPage - 1,
+                pageSize,
+                search, // Поиск по Title
+                `${sortBy},${direction}` // Сортировка (формат Spring Data JPA)
+            );
             const page = response.data;
             setSymbols(page.content || page);
             setTotalPages(page.totalPages || 1);
+            setTotalElements(page.totalElements || 0);
         } catch (error) {
             console.error("Ошибка при загрузке:", error);
         }
@@ -77,7 +88,7 @@ const Symbols = () => {
             return; // Дальше код не пойдет
         }
         loadData();
-    }, [currentPage, pageSize, user, navigate]); // Массив зависимостей
+    }, [currentPage, pageSize, user, navigate, search, sortBy, direction]); // Массив зависимостей
 
     const handleUploadSpot = async (e) => {
         e.preventDefault();
@@ -109,31 +120,97 @@ const Symbols = () => {
         }
     }
 
+    // Функция, которая переключает сортировку при клике
+    const handleSort = (column) => {
+        if (sortBy === column) {
+            // Если та же колонка — инвертируем направление
+            setDirection(direction === 'asc' ? 'desc' : 'asc');
+        } else {
+            // Новая колонка — ставим её и сбрасываем на asc
+            setSortBy(column);
+            setDirection('asc');
+        }
+        console.log(column + ' ' + direction);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+        setCurrentPage(1); // Всегда возвращаемся на первую страницу при новом поиске
+    };
+
+    // форматирую интервал в удобный вид
+    const formatTimestamp = (ts) => {
+        if (!ts || ts === 0) return "—"; // Если 0, показываем прочерк
+        const date = new Date(ts);
+        return date.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).replace(',', '');
+    };
+
+    // форматирую дату в удобный вид
+    const formatMyDate = (str) => {
+        if (!str) return "-";
+        const d = new Date(str);
+        // Проверка на валидность даты
+        if (isNaN(d.getTime())) return str;
+
+        return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
+    // Постраничная навигация
+    const getPageNumbers = () => {
+        const pages = [];
+        const leftRange = 2; // Сколько страниц показывать слева от текущей
+        const rightRange = 2; // Сколько страниц показывать справа от текущей
+
+        for (let i = 1; i <= totalPages; i++) {
+            // Всегда показываем:
+            // 1. Первую страницу
+            // 2. Последнюю страницу
+            // 3. Текущую страницу и диапазон вокруг неё
+            if (
+                i === 1 ||
+                i === totalPages ||
+                (i >= currentPage - leftRange && i <= currentPage + rightRange)
+            ) {
+                pages.push(i);
+            }
+            // Если мы пропустили числа между 1 и началом диапазона
+            else if (i === 2 && currentPage - leftRange > 2) {
+                pages.push('...');
+            }
+            // Если мы пропустили числа между концом диапазона и последней страницей
+            else if (i === totalPages - 1 && currentPage + rightRange < totalPages - 1) {
+                pages.push('...');
+            }
+        }
+        return pages;
+    };
+
     return (
         <div>
             <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
-            <p>Здесь будет список ролей...</p>
-
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="d-flex gap-2">
-                    {/* Поиск */}
-                    <div className="input-group" style={{ width: '300px' }}>
-                        <span className="input-group-text"><FontAwesomeIcon icon={faSearch} /></span>
-                        <input type="text" className="form-control" placeholder="Поиск по названию..." />
-                    </div>
-                    {/* Массовое действие (скрыто, если selected.length === 0) */}
-                    {selectedItems.length > 0 && (
-                        <button className="btn btn-danger animate__animated animate__fadeIn">
-                            <FontAwesomeIcon icon={faTrashCan} className="me-2" />
-                            Удалить ({selectedItems.length})
-                        </button>
-                    )}
-                </div>
-            </div>
+            <p>Список всех символов ({totalElements})</p>
 
             <div className="row align-items-center mb-3">
-                {/* Заголовок */}
-                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>{t('symbols')}</div>
+                {/* Фильтр */}
+                <div className="col-md-6" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Поиск символа по названию..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
                 {/* Кнопка */}
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
                     <Link to="/symbols/upload-spot" onClick={(e) => { handleUploadSpot(e) }} className="btn btn-primary" style={{ marginRight: '10px' }} >
@@ -149,16 +226,86 @@ const Symbols = () => {
                 <thead>
                     <tr>
                         <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
-                        <th style={{width: '80px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
-                        <th style={{verticalAlign: 'middle'}}>Symbol</th>
-                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Symbol Origin</th>
-                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Base</th>
-                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Quote</th>
-                        <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Market Type</th>
+
+                        <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }} onClick={() => handleSort('id')} >
+                            ID
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'id' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
+                        <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('symbol')} >
+                            Symbol
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'symbol' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('originalSymbol')} >
+                            Symbol origin
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'originalSymbol' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('baseAsset')} >
+                            Base
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'baseAsset' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('quoteAsset')} >
+                            Quote
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'quoteAsset' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
+                        <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('marketType')} >
+                            Market Type
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'marketType' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
 
                         <th style={{ textAlign: 'center', verticalAlign: 'middle'}}>Interval</th>
 
-                        <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>
+                        <th style={{ width: '180px', textAlign: 'center', verticalAlign: 'middle' }} onClick={() => handleSort('createdAt')} >
+                            Created
+                            <span className="ms-2 text-muted">
+                                 {sortBy === 'createdAt' ? (
+                                     direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                 ) : (
+                                     <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                 )}
+                             </span>
+                        </th>
+
                         <th style={{width: '200px', textAlign: 'center', verticalAlign: 'middle'}}>Actions</th>
                     </tr>
                 </thead>
@@ -175,9 +322,17 @@ const Symbols = () => {
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.quoteAsset}</td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.marketType}</td>
 
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.historyStartTime} - {symbol.historyEndTime}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                {(!symbol.historyStartTime && !symbol.historyEndTime)
+                                    ? "—"
+                                    : `${formatTimestamp(symbol.historyStartTime)} — ${formatTimestamp(symbol.historyEndTime)}`
+                                }
+                            </td>
 
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.createdAt}</td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                {formatMyDate(symbol.createdAt)}
+                            </td>
+
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(symbol.id)} title="View" style={{ cursor: "pointer" }} >
                                     <FontAwesomeIcon icon={faEye} />
@@ -193,32 +348,53 @@ const Symbols = () => {
                 </tbody>
             </table>
 
-            {/* Проверяем, есть ли пользователи и больше ли одной страницы */}
+            {/* Генерация номеров страниц с многоточием */}
             {symbols.length > 0 && totalPages > 1 && (
                 <nav aria-label="Page navigation" className="mt-4">
                     <ul className="pagination justify-content-center">
-                        {/* Кнопка Назад */}
+
+                        {/* В самое начало */}
                         <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                            <button className="page-link" onClick={() => setCurrentPage(1)} title="Первая страница">
                                 &laquo;
                             </button>
                         </li>
 
+                        {/* Назад */}
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                                &lsaquo;
+                            </button>
+                        </li>
+
                         {/* Генерация номеров страниц */}
-                        {[...Array(totalPages)].map((_, index) => {
-                            const pageNumber = index + 1;
+                        {getPageNumbers().map((page, index) => {
+                            if (page === '...') {
+                                return (
+                                    <li key={`sep-${index}`} className="page-item disabled">
+                                        <span className="page-link">...</span>
+                                    </li>
+                                );
+                            }
                             return (
-                                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                                    <button className="page-link" onClick={() => setCurrentPage(pageNumber)}>
-                                        {pageNumber}
+                                <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => setCurrentPage(page)}>
+                                        {page}
                                     </button>
                                 </li>
                             );
                         })}
 
-                        {/* Кнопка Вперед */}
+                        {/* Вперед */}
                         <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                             <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                                &rsaquo;
+                            </button>
+                        </li>
+
+                        {/* В самый конец */}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(totalPages)} title="Последняя страница">
                                 &raquo;
                             </button>
                         </li>

@@ -1,8 +1,11 @@
 package com.techmatrix18.controller.api;
 
 import com.techmatrix18.clients.BinanceApiClient;
+import com.techmatrix18.dto.RoleDto;
 import com.techmatrix18.dto.SymbolDto;
+import com.techmatrix18.mapper.RoleMapper;
 import com.techmatrix18.mapper.SymbolMapper;
+import com.techmatrix18.model.Role;
 import com.techmatrix18.model.Symbol;
 import com.techmatrix18.service.SymbolService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,11 +50,30 @@ public class SymbolController {
 
     @GetMapping(params = {"page", "size"})
     @Operation(summary = "Get all symbols by pages", description = "Returns list of all symbols by pages")
-    public ResponseEntity<Page<SymbolDto>> getAllByPages(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<SymbolDto>> getAllByPages(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "") String search,
+                                                         @RequestParam(name = "sort", defaultValue = "id,asc") String sort ) { // Axios шлет один параметр "sort"
         log.info("Fetching all symbols");
-        Page<Symbol> symbols = symbolService.getAllPaginated(page, size);
+        // Разделяем "id,asc" на два поля для вашего сервиса
+        String[] sortParts = sort.split(",");
+        String sortBy = sortParts[0];
+        String sortDir = sortParts.length > 1 ? sortParts[1] : "asc";
+
+        Page<Symbol> symbols = symbolService.getAllPaginated(page, size, search, sortBy, sortDir);
         Page<SymbolDto> symbolsDto = symbols.map(symbol -> SymbolMapper.toDto(symbol));
         return ResponseEntity.ok(symbolsDto);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get role by ID", description = "Returns a symbol by its unique ID")
+    public ResponseEntity<SymbolDto> getRole(@PathVariable Long id) {
+        log.info("Fetching symbol with ID = " + id);
+        Symbol symbol = symbolService.getById(id);
+        if (symbol == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(SymbolMapper.toDto(symbol));
     }
 
     @GetMapping("/upload-binance")
@@ -64,6 +86,18 @@ public class SymbolController {
         } catch (Exception e) {
             log.severe("Error uploading symbols from Binance: " + e.getMessage());
             return ResponseEntity.status(500).body("Error uploading symbols from Binance");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete symbol by ID", description = "Deletes a symbol by ID")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        log.info("Deleting symbol with ID: " + id);
+        boolean deleted = symbolService.deleteSymbol(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build(); // Успех, статус 204
+        } else {
+            return ResponseEntity.notFound().build(); // Не найден, статус 404
         }
     }
 }

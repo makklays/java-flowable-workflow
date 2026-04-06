@@ -2,12 +2,15 @@ package com.techmatrix18.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.techmatrix18.clients.BinanceApiClient;
+import com.techmatrix18.controller.api.RoleController;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.model.Symbol;
 import com.techmatrix18.repository.CandleRepository;
 import com.techmatrix18.repository.SymbolRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +35,8 @@ public class SymbolService {
     private final SymbolRepository symbolRepository;
     private final CandleRepository candleRepository;
     private final BinanceApiClient binanceApiClient;
+
+    private static final Logger log = LoggerFactory.getLogger(SymbolService.class);
 
     public SymbolService(SymbolRepository symbolRepository, CandleRepository candleRepository, BinanceApiClient binanceApiClient) {
         this.symbolRepository = symbolRepository;
@@ -66,8 +71,20 @@ public class SymbolService {
      * @param size
      * @return
      */
-    public Page<Symbol> getAllPaginated(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+    public Page<Symbol> getAllPaginated(int page, int size, String search, String sortBy, String sortDir) {
+        // 1. Создаем объект Sort динамически
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        System.out.println(sortBy + " " + sortDir);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        // 2. Логика поиска: если строка поиска не пуста, ищем по ней
+        if (search != null && !search.trim().isEmpty()) {
+            //return symbolRepository.findAllBySymbolContainingIgnoreCase(search, pageable);
+            return symbolRepository.searchSymbols(search, pageable); // by Symbol or ID
+        }
+        // 3. Если поиска нет, возвращаем всё с пагинацией и сортировкой
         return symbolRepository.findAll(pageable);
     }
 
@@ -76,19 +93,33 @@ public class SymbolService {
      *
      * @param marketType
      */
-    public void uploadSymbolsFromBinance(String marketType) {
+    public void uploadSymbolsFromBinance(String marketType) throws Exception {
         try {
-            System.out.println("Начало синхронизации " + marketType + "...");
+            List<Symbol> symbolsFromApi = binanceApiClient.fetchExchangeInfo(marketType);
 
-            // 1. Получаем данные из API через клиент
-            List<Symbol> symbols = binanceApiClient.fetchExchangeInfo(marketType);
+            for (Symbol apiSymbol : symbolsFromApi) {
+                // Ищем существующий символ по уникальным полям
+                Optional<Symbol> existing = symbolRepository.findByExchangeIdAndSymbolAndMarketType(
+                        apiSymbol.getExchangeId(),
+                        apiSymbol.getSymbol(),
+                        apiSymbol.getMarketType()
+                );
 
-            // 2. Сохраняем в базу через репозиторий
-            symbolRepository.saveAll(symbols);
-
-            System.out.println("Успешно синхронизировано пар: " + symbols.size());
+                if (existing.isPresent()) {
+                    // Если нашли — обновляем нужные поля
+                    Symbol s = existing.get();
+                    s.setPricePrecision(apiSymbol.getPricePrecision());
+                    s.setQuantityPrecision(apiSymbol.getQuantityPrecision());
+                    s.setActive(apiSymbol.getActive());
+                    symbolRepository.save(s);
+                } else {
+                    // Если нет — сохраняем как новый
+                    symbolRepository.save(apiSymbol);
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Логируем ошибку, чтобы знать, что пошло не так
+            log.error("Ошибка при загрузке данных с Binance: " + e.getMessage());
         }
     }
 
@@ -173,6 +204,18 @@ public class SymbolService {
             System.err.println("Ошибка загрузки исторических данных для " + symbol + ": " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Delete Symbol by SymbolID
+     *
+     * @return boolean
+     */
+    public boolean deleteSymbol(Long id) {
+        return symbolRepository.findById(id).map(symbol -> {
+            symbolRepository.delete(symbol);
+            return true;
+        }).orElse(false);
     }
 
 }

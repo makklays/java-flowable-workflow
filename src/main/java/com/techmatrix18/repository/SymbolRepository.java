@@ -8,9 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +51,13 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
     @Modifying
     @Query(value = "UPDATE symbols SET history_end_time = :endTime WHERE id = :id", nativeQuery = true)
     int updateEndTime(@Param("id") Long id, @Param("endTime") long endTime);
+
+    Page<Symbol> findAllBySymbolContainingIgnoreCase(String symbol, Pageable pageable);
+
+    @Query("SELECT s FROM Symbol s WHERE " +
+            "LOWER(s.symbol) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "CAST(s.id AS string) LIKE CONCAT('%', :search, '%')")
+    Page<Symbol> searchSymbols(@Param("search") String search, Pageable pageable);
 
 }
 

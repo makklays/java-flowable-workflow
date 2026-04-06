@@ -10,9 +10,16 @@ const getAllSymbols = async () => {
 };
 
 // get list of departments with pagination
-const getAllSymbolsByPages = async (page, size) => {
-    // Передаем токены вторым аргументом в объект config
-    return await axios.get(`${API_URL}?page=${page}&size=${size}`, { headers: authHeader() });
+const getAllSymbolsByPages = async (page, size, search, sortBy, direction) => {
+    return await axios.get(API_URL, {
+        params: {
+            page: page,
+            size: size,
+            search: search,
+            sort: `${sortBy},${direction}`
+        },
+        headers: authHeader() // Переносим сюда!
+    });
 };
 
 // upload SPOT symbols from binance

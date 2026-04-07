@@ -140,13 +140,17 @@ public class SymbolService {
             // 1. Получаем текущие границы истории для данного символа из БД
             // Это важно, чтобы знать какие данные уже есть и не перезаписывать их, а только дополнять
             Optional<Symbol> currentData = symbolRepository.findById(symbolId);
-            long historyStart = 0L;
-            long historyEnd = 0L;
-            if (currentData.isPresent()) {
-                Symbol s = currentData.get();
-                historyStart = s.getHistoryStartTime();
-                historyEnd = s.getHistoryEndTime();
+
+            // Если символа нет в базе, загрузка невозможна
+            if (currentData.isEmpty()) {
+                System.err.println("Символ с ID " + symbolId + " не найден в базе данных.");
+                return;
             }
+
+            Symbol s = currentData.get();
+            long historyStart = s.getHistoryStartTime();
+            long historyEnd = s.getHistoryEndTime();
+            Integer exchangeId = s.getExchangeId(); // Достаем один раз здесь
 
             while (currentStart < end) {
                 // 2. Вызов вашего метода fetchHistoricalData
@@ -160,7 +164,7 @@ public class SymbolService {
                 // 3. Конвертация данных из JSON в объекты Candle для сохранения в БД
                 List<Candle> candlesToSave = new ArrayList<>();
                 for (JsonNode node : rawCandles) {
-                    candlesToSave.add(CandleMapper.toEntityFromBinanceJson(symbolId, timeframe, node));
+                    candlesToSave.add(CandleMapper.toEntityFromBinanceJson(symbolId, exchangeId, timeframe, node));
                 }
 
                 // 4. Пакетное сохранение в базу данных (эффективнее, чем по одной свече)

@@ -1,8 +1,13 @@
 package com.techmatrix18.service;
 
 import com.techmatrix18.model.Candle;
+import com.techmatrix18.model.Symbol;
 import com.techmatrix18.repository.CandleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,5 +49,40 @@ public class CandleService {
         return candleRepository.findAll();
     }
 
+    /**
+     * Finds all symbols by pages
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Candle> getAllPaginated(int page, int size, String search, String sortBy, String sortDir) {
+        // 1. Создаем объект Sort динамически
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        System.out.println(sortBy + " " + sortDir);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        // 2. Логика поиска: если строка поиска не пуста, ищем по ней
+        if (search != null && !search.trim().isEmpty()) {
+            //return symbolRepository.findAllBySymbolContainingIgnoreCase(search, pageable);
+            return candleRepository.searchCandles(search, pageable); // by Symbol or ID
+        }
+        // 3. Если поиска нет, возвращаем всё с пагинацией и сортировкой
+        return candleRepository.findAll(pageable);
+    }
+
+    /**
+     * Delete Candle by CandleID
+     *
+     * @return boolean
+     */
+    public boolean deleteCandle(Long id) {
+        return candleRepository.findById(id).map(candle -> {
+            candleRepository.delete(candle);
+            return true;
+        }).orElse(false);
+    }
 }
 

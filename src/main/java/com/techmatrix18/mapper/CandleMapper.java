@@ -60,23 +60,26 @@ public class CandleMapper {
         return candle;
     }
 
-    public static Candle toEntityFromBinanceJson(Long symbolId, String timeframe, JsonNode node) {
+    public static Candle toEntityFromBinanceJson(Long symbolId, Integer exchangeId, String timeframe, JsonNode node) {
         Candle candle = new Candle();
         candle.setSymbolId(symbolId);
+        // Если exchangeId пришел null, ставим ID = 1 (Binance) по умолчанию
+        candle.setExchangeId(exchangeId != null ? exchangeId : 1);
         candle.setTimeframe(timeframe);
 
-        // Маппинг согласно документации Binance (массив элементов)
-        candle.setOpenTime(node.get(0).asLong());              // 0: Open time
-        candle.setOpen(new BigDecimal(node.get(1).asText()));  // 1: Open
-        candle.setHigh(new BigDecimal(node.get(2).asText()));  // 2: High
-        candle.setLow(new BigDecimal(node.get(3).asText()));   // 3: Low
-        candle.setClose(new BigDecimal(node.get(4).asText())); // 4: Close
-        candle.setVolume(new BigDecimal(node.get(5).asText()));// 5: Volume
-        //candle.setCloseTime(node.get(6).asLong());             // 6: Close time
+        candle.setOpenTime(node.get(0).asLong());
+        candle.setOpen(new BigDecimal(node.get(1).asText()));
+        candle.setHigh(new BigDecimal(node.get(2).asText()));
+        candle.setLow(new BigDecimal(node.get(3).asText()));
+        candle.setClose(new BigDecimal(node.get(4).asText()));
+        candle.setVolume(new BigDecimal(node.get(5).asText()));
+        candle.setQuoteAssetVolume(new BigDecimal(node.get(7).asText()));
+        candle.setTradesCount(node.get(8).asInt());
 
-        // Дополнительные поля (опционально, если используете)
-        candle.setQuoteAssetVolume(new BigDecimal(node.get(7).asText())); // 7: Quote asset volume
-        candle.setTradesCount((int) node.get(8).asLong());                      // 8: Number of trades
+        // Поля, которых нет в обычном клайне Binance, лучше инициализировать нулем,
+        // если они NOT NULL в базе
+        candle.setOpenInterest(BigDecimal.ZERO);
+        candle.setFundingRate(BigDecimal.ZERO);
 
         return candle;
     }

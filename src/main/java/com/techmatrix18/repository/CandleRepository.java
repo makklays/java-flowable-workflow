@@ -2,7 +2,12 @@ package com.techmatrix18.repository;
 
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.Candle;
+import com.techmatrix18.model.Symbol;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,5 +33,9 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
     Optional<Candle> findById(Long id);
 
     List<Candle> findAll();
+
+    @Query("SELECT c FROM Candle c WHERE " +
+            "CAST(c.id AS string) LIKE CONCAT('%', :search, '%')")
+    Page<Candle> searchCandles(@Param("search") String search, Pageable pageable);
 }
 

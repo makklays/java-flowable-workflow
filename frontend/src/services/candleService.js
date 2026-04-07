@@ -1,16 +1,16 @@
 import axios from 'axios';
 import authHeader from './authHeader'; // Импортируем вашу функцию заголовков
 
-const API_URL = 'http://localhost:8082/api/v1/symbols';
+const API_URL = 'http://localhost:8082/api/v1/candles';
 
 // get list of all positions
-const getAllSymbols = async () => {
+const getAllCandles = async () => {
     // Передаем токены вторым аргументом в объект config
     return await axios.get(`${API_URL}`, { headers: authHeader() });
 };
 
-// get list of symbols with pagination
-const getAllSymbolsByPages = async (page, size, search, sortBy, direction) => {
+// get list of candles with pagination
+const getAllCandlesByPages = async (page, size, search, sortBy, direction) => {
     return await axios.get(API_URL, {
         params: {
             page: page,
@@ -22,57 +22,57 @@ const getAllSymbolsByPages = async (page, size, search, sortBy, direction) => {
     });
 };
 
-// upload SPOT symbols from binance
+// upload candles from binance
 const uploadSpot = async () => {
     return await axios.get(`${API_URL}/upload-binance?type=SPOT`, {
         headers: authHeader()
     });
 }
 
-// upload SPOT symbols from binance
+// upload SPOT candles from binance
 const uploadFutures = async () => {
     return await axios.get(`${API_URL}/upload-binance?type=FUTURES`, {
         headers: authHeader()
     });
 }
 
-// get symbol by id
-const getSymbolById = async (id) => {
+// get candle by id
+const getCandleById = async (id) => {
     return await axios.get(`${API_URL}/${id}`, {
         headers: authHeader()
     });
 };
 
-// send data to backend (add a new symbol)
-const postSymbol = async (data) => {
+// send data to backend (add a new candle)
+const postCandle = async (data) => {
     // Передаем токены вторым аргументом в объект config
     return await axios.post(API_URL, data, {
         headers: authHeader()
     });
 };
 
-// send data to backend (add a new symbol)
+// send data to backend (add a new candle)
 // PUT → полное обновление объекта
-const putSymbol = async (id, data) => {
+const putCandle = async (id, data) => {
     return await axios.put(`${API_URL}/${id}`, data, {
         headers: authHeader()
     });
 };
 
 // PATCH → частичное обновление объекта
-const patchSymbol = async (id, data) => {
+const patchCandle = async (id, data) => {
     return await axios.patch(`${API_URL}/${id}`, data, {
         headers: authHeader()
     });
 };
 
-// delete symbol by id
-const deleteSymbol = async (id) => {
+// delete candle by id
+const deleteCandle = async (id) => {
     return await axios.delete(`${API_URL}/${id}`, {
         headers: authHeader()
     });
 };
 
-export default { getAllSymbols, getAllSymbolsByPages, uploadSpot, uploadFutures,
-                 getSymbolById, postSymbol, putSymbol, patchSymbol, deleteSymbol };
+export default { getAllCandles, getAllCandlesByPages, uploadSpot, uploadFutures,
+                 getCandleById, postCandle, putCandle, patchCandle, deleteCandle };
 

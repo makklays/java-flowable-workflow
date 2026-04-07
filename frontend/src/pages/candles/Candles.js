@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
+import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPenToSquare, faTrashCan, faPlus, faDownload, faChartBar, faBolt, faFileImport, faSync, faDatabase, faCoins, faSitemap, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faTrashCan, faPlus, faDownload, faChartBar, faEye, faBolt, faFileImport, faSync, faDatabase, faCoins, faSitemap, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
 import { CandlestickChart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Form, Button, Table, Card, Collapse } from 'react-bootstrap';
 // Переводы текстов
 import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
@@ -23,10 +23,15 @@ import Select from 'react-select';
 const Candles = () => {
     // 1. Состояние для пользователей
     const [candles, setCandles] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(100); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
+
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState('id');
+    const [direction, setDirection] = useState('asc');
 
     // Вспомогательная функция для формата ГГГГ-ММ-ДД
     const formatDate = (date) => date.toISOString().split('T')[0];
@@ -45,16 +50,12 @@ const Candles = () => {
 
     const [showForm, setShowForm] = useState(false);
 
-    const [symbols, setSymbols] = useState([]); // Состояние для списка символов
+    const [symbols, setSymbols] = useState([]); // Состояние для выпадающего списка символов
     const [loadingSymbols, setLoadingSymbols] = useState(true); // Состояние загрузки
 
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user } = useApp();
-
-    const [search, setSearch] = useState('');
-    const [sortBy, setSortBy] = useState('id');
-    const [direction, setDirection] = useState('asc');
 
     // состояние загрузки
     const [isUploading, setIsUploading] = useState(false);
@@ -84,6 +85,21 @@ const Candles = () => {
         setCurrentPage(1); // Всегда возвращаемся на первую страницу при новом поиске
     };
 
+    // Удаляем свечу по ID
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        if (!window.confirm("Вы уверены, что хотите удалить свечу c ID:" + id + " ?")) return;
+        console.log("Удалить ID:", id);
+        try {
+            await candleService.deleteCandle(id);
+            console.log("Свеча успешно удалена");
+            // После удаления можно обновить список, например, вызвав функцию загрузки данных
+            setCandles(prevCandles => prevCandles.filter(candle => candle.id !== id));
+        } catch (error) {
+            console.error("Ошибка при удалении свечи", error);
+        }
+    }
+
     // Загрузка данных с Binance
     const handleUploadData = async (e) => {
         e.preventDefault();
@@ -98,7 +114,7 @@ const Candles = () => {
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return; // Если есть ошибки, не отправляем
 
-        delay(1000); // Имитируем задержку для демонстрации загрузки
+        //delay(1000); // Имитируем задержку для демонстрации загрузки
 
         try {
             // Подготовка параметров для URL
@@ -127,13 +143,11 @@ const Candles = () => {
     }
 
     useEffect(() => {
-        // Функция для получения данных
         const fetchSymbols = async () => {
             try {
-                // Замените URL на ваш реальный эндпоинт
                 const response = await fetch('http://localhost:8082/api/v1/symbols');
                 const data = await response.json();
-                setSymbols(data); // Предполагаем, что бэкенд возвращает массив объектов или строк
+                setSymbols(data);
             } catch (error) {
                 console.error("Ошибка при загрузке символов:", error);
             } finally {
@@ -142,6 +156,31 @@ const Candles = () => {
         };
         fetchSymbols();
     }, []);  // Пустой массив означает, что запрос выполнится 1 раз при загрузке страницы
+
+    useEffect(() => {
+        const loadCandles = async () => {
+            setLoading(true);
+            try {
+                const response = await candleService.getAllCandlesByPages(
+                    currentPage - 1,
+                    pageSize,
+                    search,
+                    sortBy,
+                    direction
+                );
+
+                const { content, totalPages, totalElements } = response.data;
+                setCandles(content || []);
+                setTotalPages(totalPages || 0);
+                setTotalElements(totalElements || 0);
+            } catch (error) {
+                console.error("Ошибка загрузки данных:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadCandles();
+    }, [currentPage, pageSize, sortBy, direction, search]); // Добавьте search в зависимости
 
     // 1. Подготовим данные для поиска
     const options = symbols.map(sym => ({
@@ -169,6 +208,36 @@ const Candles = () => {
             },
             transition: 'border-color .15s ease-in-out,box-shadow .15s ease-in-out' // Плавность как в Bootstrap
         }),
+    };
+
+    // Постраничная навигация
+    const getPageNumbers = () => {
+        const pages = [];
+        const leftRange = 2; // Сколько страниц показывать слева от текущей
+        const rightRange = 2; // Сколько страниц показывать справа от текущей
+
+        for (let i = 1; i <= totalPages; i++) {
+            // Всегда показываем:
+            // 1. Первую страницу
+            // 2. Последнюю страницу
+            // 3. Текущую страницу и диапазон вокруг неё
+            if (
+                i === 1 ||
+                i === totalPages ||
+                (i >= currentPage - leftRange && i <= currentPage + rightRange)
+            ) {
+                pages.push(i);
+            }
+            // Если мы пропустили числа между 1 и началом диапазона
+            else if (i === 2 && currentPage - leftRange > 2) {
+                pages.push('...');
+            }
+            // Если мы пропустили числа между концом диапазона и последней страницей
+            else if (i === totalPages - 1 && currentPage + rightRange < totalPages - 1) {
+                pages.push('...');
+            }
+        }
+        return pages;
     };
 
     return (
@@ -366,46 +435,218 @@ const Candles = () => {
                             <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }} onClick={() => handleSort('id')} >
                                 ID
                                 <span className="ms-2 text-muted">
-                                     {sortBy === 'id' ? (
-                                         direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
-                                     ) : (
-                                         <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
-                                     )}
-                                 </span>
+                                    {sortBy === 'id' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
                             </th>
 
-                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('symbol')} >
-                                Symbol
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('symbolId')} >
+                                Symbol ID
                                 <span className="ms-2 text-muted">
-                                     {sortBy === 'symbol' ? (
-                                         direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
-                                     ) : (
-                                         <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
-                                     )}
-                                 </span>
+                                    {sortBy === 'symbolId' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
                             </th>
+
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('openTime')} >
+                                Open Time
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'openTime' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('exchangeId')} >
+                                Exchange ID
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'exchangeId' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('timeframe')} >
+                                Timaframe
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'timeframe' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('open')} >
+                                Open
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'open' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('high')} >
+                                High
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'high' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('low')} >
+                                Low
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'low' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('close')} >
+                                Close
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'close' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('volume')} >
+                                Volume
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'volume' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+
+                            <th style={{width: '200px', textAlign: 'center', verticalAlign: 'middle'}}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {candles.length > 0 ? candles.map(symbol => (
-                            <tr key={symbol.id}>
-                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={symbol.id} /></td>
-                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.id}</td>
+                        {candles.length > 0 ? candles.map(candle => (
+                            <tr key={candle.id}>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                    <input type="checkbox" name="checkbox_all" value={candle.id} />
+                                </td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{candle.id}</td>
+
+                                <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
+                                    {new Date(candle.openTime).toLocaleString()}
+                                </td>
+
                                 <td style={{verticalAlign: 'middle'}}>
-                                    <a href="#" onClick={() => handleView(symbol.id)} >{symbol.symbol}</a>
+                                    <a href="#" onClick={() => handleView(candle.symbolId)} >{candle.symbolName || `ID: ${candle.symbolId}`}</a>
+                                </td>
+                                <td style={{textAlign: 'left', verticalAlign: 'middle'}}>
+                                    <span className="badge bg-light text-dark border">
+                                        {candle.exchangeId === 1 ? 'Binance' : `Exch: ${candle.exchangeId}`}
+                                    </span>
+                                </td>
+                                <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>{candle.timeframe}</td>
+
+                                <td style={{ verticalAlign: 'middle' }} >{candle.open}</td>
+                                <td style={{ verticalAlign: 'middle' }} >{candle.high}</td>
+                                <td style={{ verticalAlign: 'middle' }} >{candle.low}</td>
+                                <td style={{ verticalAlign: 'middle' }} >{candle.close}</td>
+
+                                <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
+                                    {candle.volume?.toFixed(2)}
+                                </td>
+
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                    <a href="#" onClick={() => handleView(candle.id)} title="View" style={{ cursor: "pointer" }} >
+                                        <FontAwesomeIcon icon={faEye} />
+                                    </a>
+                                    <a href="#" onClick={(e) => handleDelete(e, candle.id)} title="Delete" style={{ cursor: "pointer" }} >
+                                        <FontAwesomeIcon icon={faTrashCan} />
+                                    </a>
                                 </td>
                             </tr>
                         )) : (
                             <tr>
-                                <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>
+                                <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
                                     <FontAwesomeIcon icon={faCoins} size="3x" className="mb-3 text-muted" />
-                                    <div className="text-muted">Нет данных для отображения</div>
+                                    <div className="text-muted">Данные в базе не найдены</div>
+                                    <small className="text-muted">Настройте фильтры или загрузите данные с Binance</small>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
             </div>
+
+            {/* Генерация номеров страниц с многоточием */}
+            {candles.length > 0 && totalPages > 1 && (
+                <nav aria-label="Page navigation" className="mt-4">
+                    <ul className="pagination justify-content-center">
+
+                        {/* В самое начало */}
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(1)} title="Первая страница">
+                                &laquo;
+                            </button>
+                        </li>
+
+                        {/* Назад */}
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                                &lsaquo;
+                            </button>
+                        </li>
+
+                        {/* Генерация номеров страниц */}
+                        {getPageNumbers().map((page, index) => {
+                            if (page === '...') {
+                                return (
+                                    <li key={`sep-${index}`} className="page-item disabled">
+                                        <span className="page-link">...</span>
+                                    </li>
+                                );
+                            }
+                            return (
+                                <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => setCurrentPage(page)}>
+                                        {page}
+                                    </button>
+                                </li>
+                            );
+                        })}
+
+                        {/* Вперед */}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                                &rsaquo;
+                            </button>
+                        </li>
+
+                        {/* В самый конец */}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(totalPages)} title="Последняя страница">
+                                &raquo;
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            )}
         </div>
     );
 };

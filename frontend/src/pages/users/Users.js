@@ -1,13 +1,11 @@
 import React from 'react';
 import TableView from '../../components/TableView';
-// Переводы текстов
-import i18n from '../../i18n';
+// Убрали импорт i18n, так как он не используется напрямую
 import { useTranslation } from 'react-i18next';
 
-// Короткая запись компонента - стрелочная функция
 const Users = () => {
-
-    const { t, i18n } = useTranslation();
+    // Оставили только { t }, так как i18n здесь не вызывается
+    const { t } = useTranslation();
 
     return (
         <div>

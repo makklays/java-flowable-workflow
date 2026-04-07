@@ -28,7 +28,8 @@ npm install @reduxjs/toolkit react-redux
 npm install react-select --legacy-peer-deps
 // установка переключателя тем (с солнышком и луной иконками)
 npm install lucide-react
-
+// установка react-toastify (для уведомлений)
+npm install react-toastify
 -----------------------------------------------------
 
 npm start

@@ -83,11 +83,12 @@ import Learn from './pages/Learn';
 
 import myLogo from './assets/fl-logo1.png';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   const { t, i18n } = useTranslation();
   //const isLoggedIn = false;
-
-
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -132,6 +133,8 @@ function App() {
   }, []);*/
 
   return (
+    <>
+    <ToastContainer theme="dark" position="top-right" autoClose={3000} />
     <AppProvider>
         <Router>
           {/* Главный контейнер на всю высоту экрана */}
@@ -281,6 +284,8 @@ function App() {
                       <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
                   </Routes>
                 </Container>
+
+
               </main>
 
             </div>
@@ -288,6 +293,13 @@ function App() {
         </Router>
 
     </AppProvider>
+
+    {/* Попробуйте переместить его В САМЫЙ НИЗ внутри div */}
+    <div id="notifications">
+        <ToastContainer theme="dark" />
+    </div>
+
+    </>
   );
 }
 

@@ -583,7 +583,7 @@ const Candles = () => {
                             </tr>
                         )) : (
                             <tr>
-                                <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
+                                <td colSpan="12" style={{ textAlign: 'center', padding: '40px' }}>
                                     <FontAwesomeIcon icon={faCoins} size="3x" className="mb-3 text-muted" />
                                     <div className="text-muted">Данные в базе не найдены</div>
                                     <small className="text-muted">Настройте фильтры или загрузите данные с Binance</small>

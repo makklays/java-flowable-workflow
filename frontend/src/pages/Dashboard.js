@@ -7,6 +7,16 @@ const Dashboard = () => {
 
     const notify = () => toast.success("Библиотека работает!");
 
+    const playNotificationSound = () => {
+        const audio = new Audio('/sounds/magic.wav'); // Путь к файлу в папке public
+        audio.play().catch(error => console.error("Ошибка воспроизведения звука:", error));
+    };
+
+    const notifySuccess = (message) => {
+        playNotificationSound();
+        toast.success("Библиотека работает!");
+    };
+
     return (
         <div className="p-4">
             <h1>Панель управления</h1>
@@ -36,7 +46,7 @@ const Dashboard = () => {
             </div>
 
             <div>
-                <button className="btn btn-primary" onClick={notify}>Проверить тост</button>
+                <button className="btn btn-primary" onClick={notifySuccess}>Проверить тост</button>
 
             </div>
         </div>

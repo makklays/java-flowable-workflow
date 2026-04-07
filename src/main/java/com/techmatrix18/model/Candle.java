@@ -1,5 +1,6 @@
 package com.techmatrix18.model;
 
+import com.techmatrix18.enums.Timeframe;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -92,6 +93,22 @@ public class Candle {
 
     public Long getOpenTime() { return openTime; }
     public void setOpenTime(Long openTime) { this.openTime = openTime; }
+
+    @Transient // Hibernate будет игнорировать это при записи в БД
+    public long getCloseTime() {
+        if (this.timeframe == null) return openTime; // Защита от Null
+        Timeframe tf = Timeframe.fromCode(timeframe);
+        return tf.getCloseTime(openTime);
+    }
+    public void setCloseTime(long closeTime) {
+        if (this.timeframe == null) {
+            // Если таймфрейм еще не задан, используем дефолтный или просто выходим
+            return;
+        }
+        // Если нужно, можно реализовать обратную логику для установки openTime на основе closeTime
+        Timeframe tf = Timeframe.fromCode(timeframe);
+        this.openTime = closeTime - tf.getMsec() + 1;
+    }
 
     public BigDecimal getOpen() { return open; }
     public void setOpen(BigDecimal open) { this.open = open; }

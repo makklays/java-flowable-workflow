@@ -2,8 +2,8 @@ package com.techmatrix18.dto;
 
 import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Contact;
-import com.techmatrix18.model.enums.ActivityStatus;
-import com.techmatrix18.model.enums.ActivityType;
+import com.techmatrix18.enums.ActivityStatus;
+import com.techmatrix18.enums.ActivityType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

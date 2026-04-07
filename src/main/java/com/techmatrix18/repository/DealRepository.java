@@ -1,7 +1,7 @@
 package com.techmatrix18.repository;
 
 import com.techmatrix18.dto.DealInfoDto;
-import com.techmatrix18.model.enums.DealStage;
+import com.techmatrix18.enums.DealStage;
 import com.techmatrix18.model.Deal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

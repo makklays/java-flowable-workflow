@@ -4,6 +4,7 @@ import com.techmatrix18.dto.CandleDto;
 import com.techmatrix18.mapper.CandleMapper;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.service.CandleService;
+import com.techmatrix18.service.SymbolService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,10 @@ import java.util.logging.Logger;
 public class CandleController {
 
     private CandleService candleService;
+    private SymbolService symbolService;
 
-    public CandleController(CandleService candleService) {
+    public CandleController(CandleService candleService, SymbolService symbolService) {
+        this.symbolService = symbolService;
         this.candleService = candleService;
     }
 
@@ -42,12 +45,16 @@ public class CandleController {
         return ResponseEntity.ok(CandleMapper.toDtoList(candles));
     }
 
-    @GetMapping("/upload-binance")
+    @PostMapping("/upload-binance")
     @Operation(summary = "Upload candles from Binance", description = "Uploads candles from Binance API")
-    public ResponseEntity<String> uploadFromBinance(@RequestParam(defaultValue = "SPOT") String marketType) {
+    public ResponseEntity<String> uploadFromBinance(@RequestParam Long symbolId,
+                                                    @RequestParam String symbol,
+                                                    @RequestParam String timeframe,
+                                                    @RequestParam Long start,
+                                                    @RequestParam Long end) {
         log.info("Uploading symbols from Binance API");
         try {
-            //candleService.uploadCandlesFromBinance(marketType);
+            symbolService.uploadHistoryCandlesFromBinance(symbolId, symbol, timeframe, start, end);
             return ResponseEntity.ok("Symbols uploaded successfully from Binance");
         } catch (Exception e) {
             log.severe("Error uploading symbols from Binance: " + e.getMessage());

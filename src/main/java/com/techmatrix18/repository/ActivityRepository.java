@@ -1,6 +1,6 @@
 package com.techmatrix18.repository;
 
-import com.techmatrix18.model.enums.ActivityStatus;
+import com.techmatrix18.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

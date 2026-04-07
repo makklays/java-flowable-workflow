@@ -2,7 +2,9 @@ package com.techmatrix18.mapper;
 
 import com.techmatrix18.dto.CandleDto;
 import com.techmatrix18.model.Candle;
+import com.fasterxml.jackson.databind.JsonNode;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,27 @@ public class CandleMapper {
         candle.setTradesCount(candleDto.getTradesCount());
         candle.setOpenInterest(candleDto.getOpenInterest());
         candle.setFundingRate(candleDto.getFundingRate());
+        return candle;
+    }
+
+    public static Candle toEntityFromBinanceJson(Long symbolId, String timeframe, JsonNode node) {
+        Candle candle = new Candle();
+        candle.setSymbolId(symbolId);
+        candle.setTimeframe(timeframe);
+
+        // Маппинг согласно документации Binance (массив элементов)
+        candle.setOpenTime(node.get(0).asLong());              // 0: Open time
+        candle.setOpen(new BigDecimal(node.get(1).asText()));  // 1: Open
+        candle.setHigh(new BigDecimal(node.get(2).asText()));  // 2: High
+        candle.setLow(new BigDecimal(node.get(3).asText()));   // 3: Low
+        candle.setClose(new BigDecimal(node.get(4).asText())); // 4: Close
+        candle.setVolume(new BigDecimal(node.get(5).asText()));// 5: Volume
+        //candle.setCloseTime(node.get(6).asLong());             // 6: Close time
+
+        // Дополнительные поля (опционально, если используете)
+        candle.setQuoteAssetVolume(new BigDecimal(node.get(7).asText())); // 7: Quote asset volume
+        candle.setTradesCount((int) node.get(8).asLong());                      // 8: Number of trades
+
         return candle;
     }
 }

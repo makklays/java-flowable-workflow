@@ -1,6 +1,6 @@
 package com.techmatrix18.service;
 
-import com.techmatrix18.model.enums.ActivityStatus;
+import com.techmatrix18.enums.ActivityStatus;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.repository.ActivityRepository;
 import org.springframework.data.domain.Page;

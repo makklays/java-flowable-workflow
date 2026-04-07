@@ -1,7 +1,7 @@
 package com.techmatrix18.dto;
 
 import com.techmatrix18.model.Client;
-import com.techmatrix18.model.enums.DealStage;
+import com.techmatrix18.enums.DealStage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

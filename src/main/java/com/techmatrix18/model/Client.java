@@ -1,6 +1,6 @@
 package com.techmatrix18.model;
 
-import com.techmatrix18.model.enums.ClientType;
+import com.techmatrix18.enums.ClientType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

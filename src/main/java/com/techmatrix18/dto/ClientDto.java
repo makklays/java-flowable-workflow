@@ -1,6 +1,6 @@
 package com.techmatrix18.dto;
 
-import com.techmatrix18.model.enums.ClientType;
+import com.techmatrix18.enums.ClientType;
 import jakarta.validation.constraints.NotBlank;
 
 public class ClientDto {

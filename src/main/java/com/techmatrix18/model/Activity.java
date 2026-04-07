@@ -1,7 +1,7 @@
 package com.techmatrix18.model;
 
-import com.techmatrix18.model.enums.ActivityStatus;
-import com.techmatrix18.model.enums.ActivityType;
+import com.techmatrix18.enums.ActivityStatus;
+import com.techmatrix18.enums.ActivityType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;

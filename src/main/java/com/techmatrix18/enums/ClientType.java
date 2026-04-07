@@ -1,4 +1,4 @@
-package com.techmatrix18.model.enums;
+package com.techmatrix18.enums;
 
 /**
  * @author Alexander Kuziv

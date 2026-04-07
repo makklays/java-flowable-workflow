@@ -4,7 +4,7 @@ import com.techmatrix18.dto.DealDto;
 import com.techmatrix18.model.Deal;
 import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
-import com.techmatrix18.model.enums.DealStage;
+import com.techmatrix18.enums.DealStage;
 import com.techmatrix18.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;

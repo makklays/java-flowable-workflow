@@ -1,8 +1,8 @@
 package com.techmatrix18.repository;
 
-import com.techmatrix18.model.enums.ActivityStatus;
-import com.techmatrix18.model.enums.ActivityType;
-import com.techmatrix18.model.enums.ClientType;
+import com.techmatrix18.enums.ActivityStatus;
+import com.techmatrix18.enums.ActivityType;
+import com.techmatrix18.enums.ClientType;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.Client;
 import com.techmatrix18.model.Contact;

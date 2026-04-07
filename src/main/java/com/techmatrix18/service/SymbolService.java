@@ -3,6 +3,7 @@ package com.techmatrix18.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.techmatrix18.clients.BinanceApiClient;
 import com.techmatrix18.controller.api.RoleController;
+import com.techmatrix18.mapper.CandleMapper;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.model.Symbol;
@@ -135,7 +136,6 @@ public class SymbolService {
      */
     public void uploadHistoryCandlesFromBinance(Long symbolId, String symbol, String timeframe, long start, long end) {
         long currentStart = start;
-
         try {
             // 1. Получаем текущие границы истории для данного символа из БД
             // Это важно, чтобы знать какие данные уже есть и не перезаписывать их, а только дополнять
@@ -160,7 +160,7 @@ public class SymbolService {
                 // 3. Конвертация данных из JSON в объекты Candle для сохранения в БД
                 List<Candle> candlesToSave = new ArrayList<>();
                 for (JsonNode node : rawCandles) {
-                    //candlesToSave.add(mapJsonToCandle(symbolId, timeframe, node));
+                    candlesToSave.add(CandleMapper.toEntityFromBinanceJson(symbolId, timeframe, node));
                 }
 
                 // 4. Пакетное сохранение в базу данных (эффективнее, чем по одной свече)

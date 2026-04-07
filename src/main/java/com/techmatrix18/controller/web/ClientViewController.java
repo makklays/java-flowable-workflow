@@ -4,7 +4,7 @@ import com.techmatrix18.dto.ClientDto;
 import com.techmatrix18.model.Client;
 import com.techmatrix18.model.OlapCrm;
 import com.techmatrix18.model.User;
-import com.techmatrix18.model.enums.ClientType;
+import com.techmatrix18.enums.ClientType;
 import com.techmatrix18.service.ClientService;
 import com.techmatrix18.service.OlapCrmService;
 import com.techmatrix18.service.UserService;

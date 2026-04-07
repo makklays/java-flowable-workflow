@@ -67,6 +67,17 @@ public class CandleController {
         return ResponseEntity.ok(candlesDto);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get candle by ID", description = "Returns a candle by its unique ID")
+    public ResponseEntity<CandleDto> getRole(@PathVariable Long id) {
+        log.info("Fetching candle with ID = " + id);
+        Candle candle = candleService.getById(id);
+        if (candle == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(CandleMapper.toDto(candle));
+    }
+
     @PostMapping("/upload-binance")
     @Operation(summary = "Upload candles from Binance", description = "Uploads candles from Binance API")
     public ResponseEntity<String> uploadFromBinance(@RequestParam Long symbolId,

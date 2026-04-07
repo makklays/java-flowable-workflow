@@ -227,7 +227,7 @@ const Symbols = () => {
                     <tr>
                         <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
 
-                        <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }} onClick={() => handleSort('id')} >
+                        <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                             ID
                             <span className="ms-2 text-muted">
                                  {sortBy === 'id' ? (

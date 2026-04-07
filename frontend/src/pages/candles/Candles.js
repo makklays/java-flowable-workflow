@@ -430,9 +430,9 @@ const Candles = () => {
                        }} className="table table-striped" >
                     <thead>
                         <tr>
-                            <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                            <th style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle' }}><input type="checkbox" name="checkbox_all" /></th>
 
-                            <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }} onClick={() => handleSort('id')} >
+                            <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                                 ID
                                 <span className="ms-2 text-muted">
                                     {sortBy === 'id' ? (
@@ -477,7 +477,7 @@ const Candles = () => {
                             </th>
 
                             <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('timeframe')} >
-                                Timaframe
+                                Timeframe
                                 <span className="ms-2 text-muted">
                                     {sortBy === 'timeframe' ? (
                                         direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />

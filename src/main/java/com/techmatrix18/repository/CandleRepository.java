@@ -30,6 +30,12 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
     // Проверка существования конкретной свечи
     boolean existsByExchangeIdAndSymbolIdAndTimeframeAndOpenTime(Integer exchangeId, Long symbolId, String timeframe, Long openTime);
 
+    // Ищем по symbolId и сортируем по openTime
+    List<Candle> findTop50BySymbolIdOrderByOpenTimeDesc(Long symbolId);
+
+    // Если нужно больше свечей для MACD/ATR:
+    List<Candle> findTop200BySymbolIdOrderByOpenTimeDesc(Long symbolId);
+
     Optional<Candle> findById(Long id);
 
     List<Candle> findAll();

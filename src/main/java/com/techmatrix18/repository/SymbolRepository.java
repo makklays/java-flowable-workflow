@@ -36,6 +36,9 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
     // Проверка существования перед вставкой
     boolean existsByExchangeIdAndSymbolAndMarketType(Integer exchangeId, String symbol, String marketType);
 
+    @Query(value = "SELECT * FROM symbols WHERE symbol IN (:symbols) AND market_type = 'FUTURES'", nativeQuery = true)
+    List<Symbol> findSomeSymbolsFutures(@Param("symbols") List<String> symbols);
+
     Optional<Symbol> findById(Long id);
 
     List<Symbol> findAll();

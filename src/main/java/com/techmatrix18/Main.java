@@ -4,6 +4,7 @@ import com.techmatrix18.patterns.HashSetUnique;
 import com.techmatrix18.patterns.PizzaBuilder;
 import com.techmatrix18.patterns.PizzaJavaBeans;
 import com.techmatrix18.service.RedisService;
+import com.techmatrix18.service.TelegramService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -45,6 +46,10 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Redis not available, but server is starting...");
         }
+
+        TelegramService telegramService = context.getBean(TelegramService.class);
+        System.out.println("Проверка отправки в Telegram...");
+        telegramService.sendMessage("🤖 Бот успешно запущен и готов к торговле!");
 
         /*Set<String> names1 = Set.of("Tom", "Alice", "Bob");
         Set<String> names2 = Set.of("Larry", "Moe", "Curly");

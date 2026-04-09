@@ -1,24 +1,12 @@
 package com.techmatrix18;
 
-import com.techmatrix18.patterns.HashSetUnique;
-import com.techmatrix18.patterns.PizzaBuilder;
-import com.techmatrix18.patterns.PizzaJavaBeans;
 import com.techmatrix18.service.RedisService;
-import com.techmatrix18.service.TelegramService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import com.techmatrix18.telegram.TelegramService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.Set;
 
 /**
  * This is Main class
@@ -47,9 +35,10 @@ public class Main {
             System.out.println("Redis not available, but server is starting...");
         }
 
-        TelegramService telegramService = context.getBean(TelegramService.class);
-        System.out.println("Проверка отправки в Telegram...");
-        telegramService.sendMessage("🤖 Бот успешно запущен и готов к торговле!");
+        // Рабочая отправка сообщения в Telegram при запуске
+        //TelegramService telegramService = context.getBean(TelegramService.class);
+        //System.out.println("Проверка отправки в Telegram...");
+        //telegramService.sendMessage("🤖 Бот успешно запущен и готов к торговле!");
 
         /*Set<String> names1 = Set.of("Tom", "Alice", "Bob");
         Set<String> names2 = Set.of("Larry", "Moe", "Curly");

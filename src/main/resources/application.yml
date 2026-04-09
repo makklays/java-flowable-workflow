@@ -1,10 +1,10 @@
 spring:
   datasource:
     generate-unique-name: false
-    url: jdbc:mysql://localhost:3306/flowable_db
+    url: jdbc:mariadb://localhost:3306/flowable_db
     username: admin
     password: admin
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
   data:
     redis:
       host: localhost
@@ -19,14 +19,14 @@ spring:
       static-locations: file:/home/alexander/IdeaProjects/java-flowable-workflow/src/main/resources/mystatic/
   jpa:
     show-sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     database: default
     generate-ddl: false
     properties:
       connection:
         charSet: utf-8
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MariaDBDialect
         ddl-auto: none
         show_sql: true
         format_sql: true
@@ -35,7 +35,7 @@ spring:
     locations: classpath:db/migration
     baselineOnMigrate: true
     validateOnMigrate: true
-    url: jdbc:mysql://localhost:3306/flowable_db
+    url: jdbc:mariadb://localhost:3306/flowable_db
     user: admin
     password: admin
     out-of-order: true

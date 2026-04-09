@@ -1,7 +1,7 @@
 package com.techmatrix18.trading;
 
 import com.techmatrix18.model.Candle;
-import com.techmatrix18.service.TelegramService;
+import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.trading.indicators.*;
 import com.techmatrix18.trading.rules.*;
 import org.springframework.stereotype.Service;

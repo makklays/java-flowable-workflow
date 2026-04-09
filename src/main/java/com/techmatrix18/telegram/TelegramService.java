@@ -1,4 +1,4 @@
-package com.techmatrix18.service;
+package com.techmatrix18.telegram;
 
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
@@ -27,7 +27,7 @@ public class TelegramService {
     private String chatId;
 
     public void sendMessage(String message) {
-        String url = String.format("https://telegram.org", botToken, chatId, message);
+        String url = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", botToken, chatId, message);
 
         try {
             RestTemplate restTemplate = new RestTemplate();

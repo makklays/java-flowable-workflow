@@ -5,7 +5,7 @@ import com.techmatrix18.model.Position;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.model.User;
 import com.techmatrix18.service.SlackService;
-import com.techmatrix18.service.TelegramService;
+import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.service.UserService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;

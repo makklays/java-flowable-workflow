@@ -1,6 +1,7 @@
 package com.techmatrix18;
 
 import com.techmatrix18.service.RedisService;
+import com.techmatrix18.telegram.MyBot;
 import com.techmatrix18.telegram.TelegramService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,6 +40,10 @@ public class Main {
         //TelegramService telegramService = context.getBean(TelegramService.class);
         //System.out.println("Проверка отправки в Telegram...");
         //telegramService.sendMessage("🤖 Бот успешно запущен и готов к торговле!");
+
+        // Проверка отправки сигнала в Telegram при запуске
+        //MyBot bot = context.getBean(MyBot.class);
+        //bot.sendSignal("This is a new signal!");
 
         /*Set<String> names1 = Set.of("Tom", "Alice", "Bob");
         Set<String> names2 = Set.of("Larry", "Moe", "Curly");

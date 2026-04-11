@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faSync, faChartLine, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -36,6 +36,27 @@ const Symbols = () => {
     const [direction, setDirection] = useState('asc');
 
     const [selectedItems, setSelectedItems] = useState([]);
+    const [loadingSymbols, setLoadingSymbols] = useState(false);
+
+    //
+    const fetchSymbols = async () => {
+        setLoadingSymbols(true);
+        try {
+            const response = await symbolService.getAllSymbols();
+            console.log("Пришли символы:", response); // Проверка в консоли
+
+            // Если используете axios:
+            setSymbols(response.data || response);
+        } catch (error) {
+            console.error("Ошибка при загрузке символов:", error);
+        } finally {
+            setLoadingSymbols(false); // Здесь спиннер должен выключиться
+        }
+    };
+
+    /*useEffect(() => {
+        fetchSymbols();
+    }, []); // Пустые скобки — запуск один раз при старте*/
 
     // 2. Исправленная функция клика
     const handleClick = (id) => {
@@ -90,35 +111,36 @@ const Symbols = () => {
         loadData();
     }, [currentPage, pageSize, user, navigate, search, sortBy, direction]); // Массив зависимостей
 
+    // Обработка загрузки SPOT
     const handleUploadSpot = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault(); // Предотвращаем переход по ссылке, если нужно остаться на странице
+        setLoadingSymbols(true);    // Сразу включаем спиннер в таблице
         try {
-            console.log("Загрузить SPOT");
-            // Вызываем сервис загрузки
-            await symbolService.uploadSpot();
-            // После успешной загрузки обновляем список в таблице
-            await loadData();
-            console.log("Данные SPOT успешно обновлены");
+            await symbolService.uploadSpot(); // Ваш запрос к бэкенду
+            // После успешной загрузки — обновляем список
+            await fetchSymbols();
         } catch (error) {
             console.error("Ошибка при загрузке SPOT:", error);
-            alert("Не удалось загрузить данные");
+            alert("Не удалось загрузить SPOT символы");
+        } finally {
+            setLoadingSymbols(false); // Выключаем спиннер (если fetchSymbols его не выключил)
         }
-    }
+    };
 
+    // Обработка загрузки Futures (аналогично)
     const handleUploadFutures = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        setLoadingSymbols(true);
         try {
-            console.log("Загрузить Futures");
-            // Вызываем сервис загрузки
             await symbolService.uploadFutures();
-            // После успешной загрузки обновляем список в таблице
-            await loadData();
-            console.log("Данные Futures успешно обновлены");
+            await fetchSymbols();
         } catch (error) {
             console.error("Ошибка при загрузке Futures:", error);
-            alert("Не удалось загрузить данные");
+            alert("Не удалось загрузить Futures");
+        } finally {
+            setLoadingSymbols(false);
         }
-    }
+    };
 
     // Функция, которая переключает сортировку при клике
     const handleSort = (column) => {
@@ -310,40 +332,56 @@ const Symbols = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {symbols.length > 0 ? symbols.map(symbol => (
-                        <tr key={symbol.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={symbol.id} /></td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.id}</td>
-                            <td style={{verticalAlign: 'middle'}}>
-                                <a href="#" onClick={() => handleView(symbol.id)} >{symbol.symbol}</a>
-                            </td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.originalSymbol}</td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.baseAsset}</td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.quoteAsset}</td>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.marketType}</td>
-
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                {(!symbol.historyStartTime && !symbol.historyEndTime)
-                                    ? "—"
-                                    : `${formatTimestamp(symbol.historyStartTime)} — ${formatTimestamp(symbol.historyEndTime)}`
-                                }
-                            </td>
-
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                {formatMyDate(symbol.createdAt)}
-                            </td>
-
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                <a href="#" onClick={() => handleView(symbol.id)} title="View" style={{ cursor: "pointer" }} >
-                                    <FontAwesomeIcon icon={faEye} />
-                                </a>
-                                <a href="#" onClick={(e) => handleDelete(e, symbol.id)} title="Delete" style={{ cursor: "pointer" }} >
-                                    <FontAwesomeIcon icon={faTrashCan} />
-                                </a>
+                    {loadingSymbols ? (
+                        <tr>
+                            <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
+                                <FontAwesomeIcon icon={faSync} size="3x" spin className="mb-3 text-primary" />
+                                <div className="text-muted">Загрузка списка символов...</div>
                             </td>
                         </tr>
-                    )) : (
-                        <tr><td colSpan="10" style={{textAlign: 'center', marginTop: '20px', verticalAlign: 'middle'}}>Нет данных...</td></tr>
+                    ) : symbols.length > 0 ? (
+                        symbols.map(symbol => (
+                            <tr key={symbol.id}>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                    <input type="checkbox" name="checkbox_all" value={symbol.id} />
+                                </td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.id}</td>
+                                <td style={{verticalAlign: 'middle'}}>
+                                    <a href="#" onClick={(e) => { e.preventDefault(); handleView(symbol.id); }}>
+                                        {symbol.symbol}
+                                    </a>
+                                </td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.originalSymbol}</td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.baseAsset}</td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.quoteAsset}</td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.marketType}</td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                    {(!symbol.historyStartTime && !symbol.historyEndTime)
+                                        ? "—"
+                                        : `${formatTimestamp(symbol.historyStartTime)} — ${formatTimestamp(symbol.historyEndTime)}`
+                                    }
+                                </td>
+                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                    {formatMyDate(symbol.createdAt)}
+                                </td>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <a href="#" onClick={(e) => { e.preventDefault(); handleView(symbol.id); }} title="View">
+                                        <FontAwesomeIcon icon={faEye} />
+                                    </a>
+                                    <a href="#" className="text-danger" onClick={(e) => handleDelete(e, symbol.id)} title="Delete">
+                                        <FontAwesomeIcon icon={faTrashCan} />
+                                    </a>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
+                                <FontAwesomeIcon icon={faChartLine} size="3x" className="mb-3 text-muted" />
+                                <div className="text-muted">Данные в базе не найдены</div>
+                                <small className="text-muted">Настройте фильтры или добавьте новые символы</small>
+                            </td>
+                        </tr>
                     )}
                 </tbody>
             </table>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashCan, faPlus, faDownload, faChartLine, faChartBar, faEye, faBolt, faFileImport, faSync,
-        faDatabase, faCoins, faSitemap, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
-import { CandlestickChart } from 'lucide-react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { faTrashCan, faDownload, faChartLine, faEye, faBolt, faSync,
+        faCoins, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
@@ -298,7 +297,6 @@ const Candles = () => {
             <div className="row d-flex align-items-end">
                 <div className="col-md-6">
                     <h1>
-                        {/* SVG иконка CandlestickChart из Lucide (вместо FontAwesome) */}
                         <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" />
                         {t('candles')}
                     </h1>
@@ -629,7 +627,7 @@ const Candles = () => {
                                     <a href="#" onClick={() => handleView(candle.id)} title="View" style={{ cursor: "pointer" }} >
                                         <FontAwesomeIcon icon={faEye} />
                                     </a>
-                                    <a href="#" onClick={(e) => handleDelete(e, candle.id)} title="Delete" style={{ cursor: "pointer" }} >
+                                    <a href="#" className="text-danger" onClick={(e) => handleDelete(e, candle.id)} title="Delete" style={{ cursor: "pointer" }} >
                                         <FontAwesomeIcon icon={faTrashCan} />
                                     </a>
                                 </td>

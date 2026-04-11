@@ -2,21 +2,19 @@ import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faDownload, faChartLine, faPlus, faCoins, faClock, faTimes, faSortUp, faArrowLeft, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { faDownload, faChartLine, faCoins, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 // Переводы текстов
-import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
-import { user, useApp } from '../../context/AppContext';
+import { useApp } from '../../context/AppContext';
 
 // Короткая запись компонента - стрелочная функция
 const SymbolView = () => {
     const { id } = useParams();
     const [symbol, setSymbol] = useState(null);
 
-    const { t, i18n } = useTranslation(); // 2. Инициализируем t
+    const { t } = useTranslation(); // 2. Инициализируем t
     const navigate = useNavigate();
-    const { user } = useApp();
 
     useEffect(() => {
         const fetchSymbol = async () => {

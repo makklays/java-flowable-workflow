@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan, faPlus, faDownload, faChartLine, faChartBar, faEye, faBolt, faFileImport, faSync,
@@ -74,12 +74,15 @@ const Candles = () => {
 
     // Указываем изначальные значения в форму для загрузки данных с Binance
     // 1. Подготовим данные для поиска
-    const options = symbols.map(sym => ({
-        value: sym.id,
-        label: `ID:${sym.id} ${sym.symbol} (${sym.marketType})`,
-        // Сохраняем оригинальный объект, если понадобится позже
-        original: sym
-    }));
+    // Используем useMemo, чтобы массив не пересоздавался при каждом рендере
+    const options = useMemo(() => {
+        return symbols.map(sym => ({
+            value: sym.id,
+            label: `ID:${sym.id} ${sym.symbol} (${sym.marketType})`,
+            symbolName: sym.symbol,
+            original: sym
+        }));
+    }, [symbols]); // Пересчитывать только если изменился стейт symbols
 
     // 2. ЗАТЕМ ИСПОЛЬЗУЕМ options В useEffect
     useEffect(() => {

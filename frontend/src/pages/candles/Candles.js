@@ -72,6 +72,36 @@ const Candles = () => {
         navigate(`/candles/${id}`);
     };
 
+    // Указываем изначальные значения в форму для загрузки данных с Binance
+    // 1. Подготовим данные для поиска
+    const options = symbols.map(sym => ({
+        value: sym.id,
+        label: `ID:${sym.id} ${sym.symbol} (${sym.marketType})`,
+        // Сохраняем оригинальный объект, если понадобится позже
+        original: sym
+    }));
+
+    // 2. ЗАТЕМ ИСПОЛЬЗУЕМ options В useEffect
+    useEffect(() => {
+        const uploadMode = searchParams.get('upload');
+        const symbolFromUrl = searchParams.get('search');
+
+        if (uploadMode === 'true') {
+            setShowForm(true);
+        }
+
+        if (symbolFromUrl && options.length > 0) {
+            // Ищем внутри оригинального объекта символа
+            const foundOption = options.find(opt =>
+                opt.original.symbol.toLowerCase() === symbolFromUrl.toLowerCase()
+            );
+
+            if (foundOption) {
+                setFormData(prev => ({ ...prev, symbol: foundOption.value }));
+            }
+        }
+    }, [searchParams, options]); // Теперь options определена и доступна здесь
+
     // Функция, которая переключает сортировку при клике
     const handleSort = (column) => {
         if (sortBy === column) {
@@ -85,6 +115,7 @@ const Candles = () => {
         console.log(column + ' ' + direction);
     };
 
+    // Поле поиска и фильтра
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
         setCurrentPage(1); // Всегда возвращаемся на первую страницу при новом поиске
@@ -108,9 +139,13 @@ const Candles = () => {
     // Загрузка данных с Binance
     const handleUploadData = async (e) => {
         e.preventDefault();
-        setIsUploading(true);
-        // Валидация формы
+
+        // 1. Сначала сбрасываем старое состояние
+        setErrors({});
+        // НЕ ставим setIsUploading(true) здесь!
+
         const newErrors = {};
+        // Валидация на пустые поля
         if (!formData.symbol) newErrors.symbol = "Символ обязателен";
         if (!formData.startDate) newErrors.startDate = "Дата начала обязательна";
         if (!formData.endDate) newErrors.endDate = "Дата окончания обязательна";
@@ -118,48 +153,44 @@ const Candles = () => {
 
         const start = new Date(formData.startDate);
         start.setHours(0, 0, 0, 0);
-        const startTime = start.getTime(); // Устанавливаем 00:00 именно вашего локального времени
-        const humanDate = new Date(startTime).toLocaleString();
-        // Создаем объект даты для конца дня
+        const startTime = start.getTime();
+
         const endDate = new Date(formData.endDate);
         endDate.setHours(23, 59, 59, 999);
-        const endTime = endDate.getTime(); // 23:59:59
-        const endHumanDate = new Date(endTime).toLocaleString();
-
-        console.log(startTime + " " + humanDate + " | " + endTime + " " + endHumanDate);
+        const endTime = endDate.getTime();
 
         if (startTime >= endTime) {
-            alert("Дата начала должна быть меньше даты окончания");
-            newErrors.endDate = "Дата начала должна быть меньше даты окончания";
+            newErrors.endDate = "Дата окончания должна быть больше даты начала";
+        }
+
+        // 2. ПРОВЕРКА ОШИБОК: Если они есть, выводим их и выходим.
+        // Кнопка останется в обычном состоянии.
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
-        setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) return; // Если есть ошибки, не отправляем
-
+        // 3. ТОЛЬКО ТЕПЕРЬ, когда всё проверено, включаем индикатор загрузки
+        setIsUploading(true);
         try {
-            // Подготовка параметров для URL
             const params = new URLSearchParams({
-                symbolId: formData.symbol,                                                // Это ID из вашего Select
-                symbol: options.find(o => o.value === formData.symbol)?.original.symbol,  // Получаем имя (BTCUSDT)
+                symbolId: formData.symbol,
+                symbol: options.find(o => o.value === formData.symbol)?.original.symbol,
                 timeframe: formData.timeframe,
-                start: new Date(formData.startDate).setHours(0, 0, 0, 0),                 // Конвертация в Long
-                end: new Date(formData.endDate).setHours(23, 59, 59, 999)                 // Конвертация в Long
+                start: startTime,
+                end: endTime
             });
-
             const response = await fetch(`http://localhost:8082/api/v1/candles/upload-binance?${params}`, {
-                method: 'POST', // Соответствует исправленному бэкенду
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error('Ошибка сервера');
-
-            //alert("Данные успешно загружены!");
-            // Здесь можно вызвать функцию обновления таблицы, например: loadCandles();
             await loadCandles();
         } catch (error) {
             console.error("Ошибка:", error);
             alert("Ошибка при загрузке");
         } finally {
+            // 4. Выключаем индикатор в любом случае (успех или ошибка)
             setIsUploading(false);
         }
     }
@@ -207,13 +238,7 @@ const Candles = () => {
         loadCandles();
     }, [currentPage, pageSize, sortBy, direction, search]);// Добавьте search в зависимости
 
-    // 1. Подготовим данные для поиска
-    const options = symbols.map(sym => ({
-        value: sym.id,
-        label: `ID:${sym.id} ${sym.symbol} (${sym.marketType})`,
-        // Сохраняем оригинальный объект, если понадобится позже
-        original: sym
-    }));
+
 
     // 2. Стили для соответствия Bootstrap
     const customStyles = {
@@ -323,7 +348,7 @@ const Candles = () => {
                                     <div className="col-md-3">
                                         <div className="mb-3">
                                             <label className="form-label required">Дата начала</label>
-                                            <input className={`form-control ${errors.startDate ? 'is-invalid' : ''}`}
+                                            <input className={'form-control'}
                                                 type="date"
                                                 value={formData.startDate || ''}
                                                 onChange={(e) => {
@@ -340,7 +365,7 @@ const Candles = () => {
                                     <div className="col-md-3">
                                         <div className="mb-3">
                                             <label className="form-label required">Дата окончания</label>
-                                            <input className={`form-control ${errors.endDate ? 'is-invalid' : ''}`}
+                                            <input className={'form-control'}
                                                 type="date"
                                                 value={formData.endDate || ''}
                                                 onChange={(e) => {
@@ -362,7 +387,7 @@ const Candles = () => {
                                                     <FontAwesomeIcon icon={faSync} /> {/* Можно сменить иконку */}
                                                 </span>
                                                 <select
-                                                    className={`form-select ${errors.timeframe ? 'is-invalid' : ''}`}
+                                                    className={'form-select'}
                                                     value={formData.timeframe || ''}
                                                     onChange={(e) => {
                                                         const val = e.target.value;
@@ -388,7 +413,7 @@ const Candles = () => {
                                 </div>
 
                                 {/* Кнопка действия */}
-                                <div className="row mt-2">
+                                <div className="row">
                                     <div className="col-md-4">
                                         <button className="btn btn-success" disabled={isUploading} onClick={(e) => { handleUploadData(e); console.log('Загрузка...', formData); }}>
                                             <FontAwesomeIcon icon={isUploading ? faSync : faBolt} className={`me-2 ${isUploading ? 'fa-spin' : ''}`} />

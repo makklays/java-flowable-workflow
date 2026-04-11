@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faSearch, faPenToSquare, faTrashCan, faDownload, faChartLine, faPlus, faCoins, faClock, faTimes, faSortUp, faArrowLeft, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
@@ -137,7 +137,7 @@ const SymbolView = () => {
 
             <div className="row" style={{ marginTop: '20px' }}>
                 <div className="col-md-8 col-lg-6">
-                    <button className="btn btn-primary" onClick={() => navigate('/candles')} style={{ marginRight: '10px' }}>
+                    <button className="btn btn-primary" onClick={() => navigate(`/candles?search=${symbol.symbol}&upload=true`)} style={{ marginRight: '10px' }}>
                         <FontAwesomeIcon icon={faDownload} className="me-2" /> {t('upload_candles')}
                     </button>
                     <button className="btn btn-primary" onClick={() => navigate(`/candles?search=${symbol.symbol}`)} style={{ marginRight: '10px' }}>

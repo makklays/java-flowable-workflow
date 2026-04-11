@@ -76,6 +76,7 @@ import Candles from './pages/candles/Candles';
 import CandleView from './pages/candles/CandleView';
 
 import Trading from './pages/Trading';
+import Backtest from './pages/Backtest';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import Login from './pages/Login';
@@ -209,6 +210,9 @@ function App() {
                   <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
                   </Nav.Link>
+                  <Nav.Link as={NavLink} to="/backtest" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('backtest')}
+                  </Nav.Link>
                   <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn')}
                   </Nav.Link>
@@ -277,6 +281,7 @@ function App() {
                       <Route path="/users/:id" element={<UserView />} />
 
                       <Route path="/trading" element={<Trading />} />
+                      <Route path="/backtest" element={<Backtest />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/login" element={<Login />} />

@@ -527,9 +527,7 @@ const Trading = () => {
                     s.current.onerror = null;
                     s.current.onclose = null;
                     s.current.close();
-                    s.current =
-
-        null;
+                    s.current = null;
                 }
             });
 

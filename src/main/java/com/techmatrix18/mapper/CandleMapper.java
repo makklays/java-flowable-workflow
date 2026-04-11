@@ -23,6 +23,10 @@ public class CandleMapper {
         dto.setId(candle.getId());
         dto.setExchangeId(candle.getExchangeId());
         dto.setSymbolId(candle.getSymbolId());
+        // Берем имя из связанной сущности Symbol
+        /*if (candle.getSymbol() != null) {
+            dto.setSymbolName(candle.getSymbol().getName());
+        }*/
         dto.setTimeframe(candle.getTimeframe());
         dto.setOpenTime(candle.getOpenTime());
         dto.setOpen(candle.getOpen());

@@ -2,6 +2,7 @@ package com.techmatrix18.controller.api;
 
 import com.techmatrix18.dto.CandleDto;
 import com.techmatrix18.dto.SymbolDto;
+import com.techmatrix18.enums.Timeframe;
 import com.techmatrix18.mapper.CandleMapper;
 import com.techmatrix18.mapper.SymbolMapper;
 import com.techmatrix18.model.Candle;
@@ -62,7 +63,28 @@ public class CandleController {
         String sortDir = sortParts.length > 1 ? sortParts[1] : "asc";
 
         Page<Candle> candles = candleService.getAllPaginated(page, size, search, sortBy, sortDir);
-        Page<CandleDto> candlesDto = candles.map(candle -> CandleMapper.toDto(candle));
+        Page<CandleDto> candlesDto = candles.map(candle -> {
+            CandleDto dto = CandleMapper.toDto(candle);
+
+            // 1. Ищем имя символа по его ID через сервис
+            var symbol = symbolService.getById(candle.getSymbolId());
+            if (symbol != null) {
+                // Укажите правильный геттер (например, symbol.getSymbol() или symbol.getName())
+                dto.setSymbolName(symbol.getSymbol());
+            }
+
+            // 2. Преобразуем "1m" -> "M1"
+            try {
+                // Ищем элемент Enum по коду ("1m") и берем его имя ("M1")
+                String humanTimeframe = Timeframe.fromCode(candle.getTimeframe()).name();
+                dto.setTimeframe(humanTimeframe);
+            } catch (IllegalArgumentException e) {
+                // Если вдруг в базе странное значение, оставляем как есть
+                dto.setTimeframe(candle.getTimeframe());
+            }
+
+            return dto;
+        });
         log.info("Fetching all candles !!!!!!!");
         return ResponseEntity.ok(candlesDto);
     }
@@ -75,7 +97,26 @@ public class CandleController {
         if (candle == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(CandleMapper.toDto(candle));
+
+        // 1. Базовый маппинг в DTO
+        CandleDto dto = CandleMapper.toDto(candle);
+
+        // 2. Добавляем имя символа через symbolService
+        var symbol = symbolService.getById(candle.getSymbolId());
+        if (symbol != null) {
+            dto.setSymbolName(symbol.getSymbol());
+        }
+
+        // 3. Преобразуем "1m" -> "M1"
+        try {
+            String displayTimeframe = Timeframe.fromCode(candle.getTimeframe()).name();
+            dto.setTimeframe(displayTimeframe);
+        } catch (IllegalArgumentException e) {
+            log.warning("Unknown timeframe code: " + candle.getTimeframe());
+            // Оставляем оригинальный код, если в Enum его нет
+        }
+
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/upload-binance")

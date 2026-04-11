@@ -443,17 +443,6 @@ const Candles = () => {
                                 </span>
                             </th>
 
-                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('symbolId')} >
-                                Symbol ID
-                                <span className="ms-2 text-muted">
-                                    {sortBy === 'symbolId' ? (
-                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
-                                    ) : (
-                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
-                                    )}
-                                </span>
-                            </th>
-
                             <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('openTime')} >
                                 Open Time
                                 <span className="ms-2 text-muted">
@@ -465,8 +454,19 @@ const Candles = () => {
                                 </span>
                             </th>
 
-                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('exchangeId')} >
-                                Exchange ID
+                            <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('symbolId')} >
+                                Symbol
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'symbolId' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+
+                            <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('exchangeId')} >
+                                Exchange
                                 <span className="ms-2 text-muted">
                                     {sortBy === 'exchangeId' ? (
                                         direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
@@ -476,7 +476,7 @@ const Candles = () => {
                                 </span>
                             </th>
 
-                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('timeframe')} >
+                            <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('timeframe')} >
                                 Timeframe
                                 <span className="ms-2 text-muted">
                                     {sortBy === 'timeframe' ? (
@@ -527,10 +527,20 @@ const Candles = () => {
                                     )}
                                 </span>
                             </th>
-                            <th style={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('volume')} >
+                            <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('volume')} >
                                 Volume
                                 <span className="ms-2 text-muted">
                                     {sortBy === 'volume' ? (
+                                        direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
+                                    )}
+                                </span>
+                            </th>
+                            <th style={{ textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('tradesCount')} >
+                                Trades Count
+                                <span className="ms-2 text-muted">
+                                    {sortBy === 'tradesCount' ? (
                                         direction === 'asc' ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />
                                     ) : (
                                         <FontAwesomeIcon icon={faSort} style={{ opacity: 0.3 }} />
@@ -544,35 +554,40 @@ const Candles = () => {
                     <tbody>
                         {candles.length > 0 ? candles.map(candle => (
                             <tr key={candle.id}>
-                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <input type="checkbox" name="checkbox_all" value={candle.id} />
                                 </td>
-                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{candle.id}</td>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{candle.id}</td>
 
                                 <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
                                     {new Date(candle.openTime).toLocaleString()}
                                 </td>
 
-                                <td style={{verticalAlign: 'middle'}}>
-                                    <a href="#" onClick={() => handleView(candle.symbolId)} >{candle.symbolName || `ID: ${candle.symbolId}`}</a>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <a href="#" onClick={() => handleView(candle.id)} >{candle.symbolName}</a>
                                 </td>
-                                <td style={{textAlign: 'left', verticalAlign: 'middle'}}>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <span className="badge bg-light text-dark border">
                                         {candle.exchangeId === 1 ? 'Binance' : `Exch: ${candle.exchangeId}`}
                                     </span>
                                 </td>
-                                <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>{candle.timeframe}</td>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{candle.timeframe}</td>
 
                                 <td style={{ verticalAlign: 'middle' }} >{candle.open}</td>
                                 <td style={{ verticalAlign: 'middle' }} >{candle.high}</td>
                                 <td style={{ verticalAlign: 'middle' }} >{candle.low}</td>
                                 <td style={{ verticalAlign: 'middle' }} >{candle.close}</td>
 
-                                <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     {candle.volume?.toFixed(2)}
                                 </td>
 
-                                <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    {candle.tradesCount?.toFixed(2)}
+                                </td>
+
+
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <a href="#" onClick={() => handleView(candle.id)} title="View" style={{ cursor: "pointer" }} >
                                         <FontAwesomeIcon icon={faEye} />
                                     </a>
@@ -583,7 +598,7 @@ const Candles = () => {
                             </tr>
                         )) : (
                             <tr>
-                                <td colSpan="12" style={{ textAlign: 'center', padding: '40px' }}>
+                                <td colSpan="13" style={{ textAlign: 'center', padding: '40px' }}>
                                     <FontAwesomeIcon icon={faCoins} size="3x" className="mb-3 text-muted" />
                                     <div className="text-muted">Данные в базе не найдены</div>
                                     <small className="text-muted">Настройте фильтры или загрузите данные с Binance</small>

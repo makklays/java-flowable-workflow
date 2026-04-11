@@ -61,8 +61,8 @@ const CandleView = () => {
             {/* Заголовок с кнопкой назад */}
             <div className="row">
                 <div className="col-md-6">
-                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('candles')}</h1>
-                    <p>Детали символа {candle.symbolId}</p>
+                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('view_candle')}</h1>
+                    <p>Детали символа {candle.symbolName}</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
                     <button className="btn btn-outline-secondary btn-sm" onClick={() => navigate('/candles')}>
@@ -80,12 +80,16 @@ const CandleView = () => {
                                 <td className="ps-4">{candle.id}</td>
                             </tr>
                             <tr>
-                                <th className="bg-light w-25 ps-4">Символ ID</th>
-                                <td className="ps-4 fw-bold text-dark">{candle.symbolId}</td>
-                            </tr>
-                            <tr>
                                 <th className="bg-light w-25 ps-4">Символ</th>
-                                <td className="ps-4 fw-bold text-dark">{candle.symbolName != null ? candle.symbolName : '-'}</td>
+                                <td className="ps-4 text-dark">
+                                    <Link
+                                        to={`/symbols/${candle.symbolId}`}
+                                        className="text-decoration-none fw-bold"
+                                    >
+                                        {candle.symbolName || '-'}
+                                    </Link>
+                                    <span className="ms-1 text-muted"> (ID: {candle.symbolId})</span>
+                                </td>
                             </tr>
                             <tr>
                                 <th className="bg-light w-25 ps-4">Биржа</th>
@@ -118,12 +122,20 @@ const CandleView = () => {
                                 <td className="ps-4 text-dark">{candle.close}</td>
                             </tr>
                             <tr>
-                                <th className="bg-light w-25 ps-4">Volume</th>
-                                <td className="ps-4 text-dark">{candle.volume}</td>
+                                <th className="bg-light w-25 ps-4">Объём</th>
+                                <td className="ps-4 text-dark">{candle.volume?.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <th className="bg-light w-25 ps-4">Количество сделок</th>
+                                <td className="ps-4 text-dark">{candle.tradesCount?.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <th className="bg-light w-25 ps-4">Объем котируемого актива</th>
+                                <td className="ps-4 text-dark">{candle.quoteAssetVolume?.toFixed(2)}</td>
                             </tr>
 
                             <tr>
-                                <th className="bg-light w-25 ps-4">Open time</th>
+                                <th className="bg-light w-25 ps-4">Время открытия</th>
                                 <td className="ps-4 text-dark">{new Date(candle.openTime).toLocaleString()}</td>
                             </tr>
 
@@ -135,7 +147,7 @@ const CandleView = () => {
             <div className="row" style={{ marginTop: '20px' }}>
                 <div className="col-md-8 col-lg-6">
                     <button className="btn btn-light text-secondary" onClick={() => navigate('/candles')}>
-                        <FontAwesomeIcon icon={faTimes} className="me-2" /> Закрыть
+                        <FontAwesomeIcon icon={faTimes} className="me-2" /> {t('close')}
                     </button>
                 </div>
             </div>

@@ -17,6 +17,7 @@ public class CandleDto {
     private Integer exchangeId;
 
     private Long symbolId;
+    private String symbolName;
 
     private String timeframe;
 
@@ -50,6 +51,9 @@ public class CandleDto {
 
     public Long getSymbolId() { return symbolId; }
     public void setSymbolId(Long symbolId) { this.symbolId = symbolId; }
+
+    public String getSymbolName() { return symbolName; }
+    public void setSymbolName(String symbolName) { this.symbolName = symbolName; }
 
     public String getTimeframe() { return timeframe; }
     public void setTimeframe(String timeframe) { this.timeframe = timeframe; }

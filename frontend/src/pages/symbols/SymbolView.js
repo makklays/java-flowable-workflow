@@ -60,7 +60,7 @@ const SymbolView = () => {
             {/* Заголовок с кнопкой назад */}
             <div className="row">
                 <div className="col-md-6">
-                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
+                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('view_symbol')}</h1>
                     <p>Детали символа {symbol.symbol}</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
@@ -138,7 +138,7 @@ const SymbolView = () => {
             <div className="row" style={{ marginTop: '20px' }}>
                 <div className="col-md-8 col-lg-6">
                     <button className="btn btn-light text-secondary" onClick={() => navigate('/symbols')}>
-                        <FontAwesomeIcon icon={faTimes} className="me-2" /> Закрыть
+                        <FontAwesomeIcon icon={faTimes} className="me-2" /> {t('close')}
                     </button>
                 </div>
             </div>

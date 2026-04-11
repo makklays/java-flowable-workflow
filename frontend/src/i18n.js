@@ -28,7 +28,11 @@ i18n
           big: "Увеличить",
           less: "Уменьшить",
           symbols: "Символы",
-          candles: "Свечи"
+          candles: "Свечи",
+          view_candle: "Просмотр свечи",
+          view_symbol: "Просмотр символа",
+          close: "Закрыть",
+          go_back: "Назад"
         }
       },
       en: {
@@ -51,7 +55,11 @@ i18n
           big: "Increase",
           less: "Decrease",
           symbols: "Symbols",
-          candles: "Candles"
+          candles: "Candles",
+          view_candle: "View Candle",
+          view_symbol: "View Symbol",
+          close: "Close",
+          go_back: "Go Back"
         }
       },
       es: {
@@ -74,7 +82,11 @@ i18n
           big: "Aumentar",
           less: "Disminuir",
           symbols: "Símbolos",
-          candles: "Velas"
+          candles: "Velas",
+          view_candle: "Ver Vela",
+          view_symbol: "Ver Símbolo",
+          close: "Cerrar",
+          go_back: "Regresar"
         }
       }
     }, // Закрываем resources здесь

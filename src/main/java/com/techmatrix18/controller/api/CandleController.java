@@ -127,8 +127,13 @@ public class CandleController {
                                                     @RequestParam Long start,
                                                     @RequestParam Long end) {
         log.info("Uploading symbols from Binance API");
+        if (start >= end) {
+            return ResponseEntity.badRequest().body("Начальная дата должна быть меньше конечной");
+        }
+
         try {
             symbolService.uploadHistoryCandlesFromBinance(symbolId, symbol, timeframe, start, end);
+            log.info("Uploaded candles from Binance: " + start + " | " + end);
             return ResponseEntity.ok("Symbols uploaded successfully from Binance");
         } catch (Exception e) {
             log.severe("Error uploading symbols from Binance: " + e.getMessage());

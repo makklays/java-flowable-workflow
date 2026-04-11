@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for add symbols in the system.
@@ -153,55 +155,57 @@ public class SymbolService {
             Integer exchangeId = s.getExchangeId(); // Достаем один раз здесь
 
             while (currentStart < end) {
-                // 2. Вызов вашего метода fetchHistoricalData
+                // 1. Загрузка данных из Binance
                 List<JsonNode> rawCandles = binanceApiClient.fetchHistoricalData(symbol, timeframe, currentStart, end);
 
                 if (rawCandles.isEmpty()) {
-                    System.out.println("данных для " + symbol + " с " + currentStart + " по " + end + " не найдено. Завершение загрузки.");
+                    System.out.println("Данных для " + symbol + " не найдено. Завершение.");
                     break;
                 }
 
-                // 3. Конвертация данных из JSON в объекты Candle для сохранения в БД
+                // 2. Определяем границы текущего полученного пакета
+                long batchStart = rawCandles.get(0).get(0).asLong();
+                long batchEnd = rawCandles.get(rawCandles.size() - 1).get(0).asLong();
+
+                // 3. Конвертация JSON -> List<Candle>
                 List<Candle> candlesToSave = new ArrayList<>();
                 for (JsonNode node : rawCandles) {
                     candlesToSave.add(CandleMapper.toEntityFromBinanceJson(symbolId, exchangeId, timeframe, node));
                 }
 
-                // 4. Пакетное сохранение в базу данных (эффективнее, чем по одной свече)
-                System.out.println(" ");
-                System.out.println("Подготовлено к сохранению свечей: " + candlesToSave.size());
-                System.out.println(" ");
-                candleRepository.saveAll(candlesToSave);
+                // 4. Фильтрация дубликатов
+                // Проверяем в базе, какие openTime из этого диапазона у нас уже есть
+                Set<Long> existingTimes = candleRepository.findAllOpenTimesBySymbolAndRange(
+                    symbolId, exchangeId, timeframe, batchStart, batchEnd
+                );
 
-                // 5. Определяем границы загруженного блока данных
-                long batchStart = rawCandles.get(0).get(0).asLong(); // open_time першої свічки
-                long batchEnd = rawCandles.get(rawCandles.size() - 1).get(0).asLong(); // open_time останньої свічки
+                List<Candle> filteredCandles = candlesToSave.stream()
+                    .filter(c -> !existingTimes.contains(c.getOpenTime()))
+                    .collect(Collectors.toList());
 
-                // 6. Обновляем "левую" границу (Start Time), если загружены данные старше
+                // 5. Сохранение только новых записей
+                if (!filteredCandles.isEmpty()) {
+                    candleRepository.saveAll(filteredCandles);
+                    System.out.println("Сохранено новых свечей: " + filteredCandles.size());
+                } else {
+                    System.out.println("Все свечи в блоке (" + batchStart + " -> " + batchEnd + ") уже существуют. Пропуск.");
+                }
+
+                // 6. Обновление границ истории в таблице Symbols
                 if (historyStart == 0 || batchStart < historyStart) {
                     historyStart = batchStart;
                     symbolRepository.updateStartTime(symbolId, historyStart);
                 }
-
-                // 7. Обновляем "правую" границу (End Time), если данные новее
                 if (batchEnd > historyEnd) {
                     historyEnd = batchEnd;
                     symbolRepository.updateEndTime(symbolId, historyEnd);
                 }
 
-                // 8. Сдвигаем currentStart для следующего запроса к Binance (1000 свечей вперед)
+                // 7. Подготовка к следующему циклу
                 currentStart = batchEnd + 1;
+                System.out.println("Синхронизировано: " + batchStart + " -> " + batchEnd);
 
-                System.out.println("Синхронизировано блок для " + symbol + ": " + batchStart + " -> " + batchEnd);
-
-                // Пауза 200мс, чтобы Binance не заблокировал за слишком частые запросы (можно настроить в зависимости от лимитов API)
-                // А какие лимиты у Binance по историческим данным?
-                // Обычно 1200 запросов в минуту, но лучше проверить актуальную документацию и при необходимости увеличить паузу
-                // Какая должна быть пауза между запросами к Binance для исторических данных?
-                // Обычно рекомендуется не превышать 1200 запросов в минуту, что примерно 50 мс между запросами.
-                // Однако, чтобы быть в безопасности и избежать блокировки, можно установить паузу в 200 мс или больше,
-                // особенно если вы делаете много запросов подряд. Важно также учитывать, что если вы запрашиваете
-                // большие объемы данных, лучше делать это постепенно и с учетом текущей нагрузки на сервер Binance.
+                // Пауза 200мс для соблюдения лимитов Binance
                 Thread.sleep(200);
             }
         } catch (Exception e) {

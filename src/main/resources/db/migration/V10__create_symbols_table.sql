@@ -15,8 +15,8 @@ CREATE TABLE symbols (
     price_precision INTEGER NOT NULL,      -- Binance: Точность цены (кол-во знаков после запятой)
     quantity_precision INTEGER NOT NULL,   -- Binance: Точность количества (шаг лота)
 
-    history_start_time INTEGER DEFAULT 0,  -- Самая ранняя свеча в БД
-    history_end_time INTEGER DEFAULT 0,    -- Самая поздняя свеча (ваш last_sync)
+    history_start_time BIGINT DEFAULT 0,  -- Самая ранняя свеча в БД
+    history_end_time BIGINT DEFAULT 0,    -- Самая поздняя свеча (ваш last_sync)
 
     is_active BOOLEAN DEFAULT TRUE,
 

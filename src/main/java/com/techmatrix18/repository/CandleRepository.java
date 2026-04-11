@@ -3,15 +3,18 @@ package com.techmatrix18.repository;
 import com.techmatrix18.model.Activity;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.model.Symbol;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository interface for managing Candle entities, providing CRUD operations and custom queries.
@@ -41,7 +44,26 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
     List<Candle> findAll();
 
     @Query("SELECT c FROM Candle c WHERE " +
-            "CAST(c.id AS string) LIKE CONCAT('%', :search, '%')")
+        "CAST(c.id AS string) LIKE CONCAT('%', :search, '%')")
     Page<Candle> searchCandles(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT c.openTime FROM Candle c WHERE c.symbolId = :symbolId " +
+        "AND c.exchangeId = :exchangeId AND c.timeframe = :timeframe " +
+        "AND c.openTime BETWEEN :start AND :end")
+    Set<Long> findAllOpenTimesBySymbolAndRange(
+        @Param("symbolId") Long symbolId,
+        @Param("exchangeId") Integer exchangeId,
+        @Param("timeframe") String timeframe,
+        @Param("start") Long start,
+        @Param("end") Long end
+    );
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT IGNORE INTO candles (exchange_id, symbol_id, timeframe, open_time, open, high, low, close, volume, quote_asset_volume, trades_count) " +
+        "VALUES (:#{#c.exchangeId}, :#{#c.symbolId}, :#{#c.timeframe}, :#{#c.openTime}, :#{#c.open}, :#{#c.high}, :#{#c.low}, :#{#c.close}, :#{#c.volume}, :#{#c.quoteAssetVolume}, :#{#c.tradesCount})",
+        nativeQuery = true)
+    void insertIgnore(@Param("c") Candle candle);
+
 }
 

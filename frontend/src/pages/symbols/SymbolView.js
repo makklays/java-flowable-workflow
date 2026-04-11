@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useState, useEffect, useReducer } from 'react';
 import symbolService from '../../services/symbolService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faCoins, faClock, faTimes, faSortUp, faArrowLeft, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faDownload, faPlus, faCoins, faClock, faTimes, faSortUp, faArrowLeft, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -137,6 +137,9 @@ const SymbolView = () => {
 
             <div className="row" style={{ marginTop: '20px' }}>
                 <div className="col-md-8 col-lg-6">
+                    <button className="btn btn-primary" onClick={() => navigate('/candles')} style={{ marginRight: '10px' }}>
+                        <FontAwesomeIcon icon={faDownload} className="me-2" /> {t('upload_candles')}
+                    </button>
                     <button className="btn btn-light text-secondary" onClick={() => navigate('/symbols')}>
                         <FontAwesomeIcon icon={faTimes} className="me-2" /> {t('close')}
                     </button>

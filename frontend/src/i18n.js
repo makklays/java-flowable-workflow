@@ -32,7 +32,8 @@ i18n
           view_candle: "Просмотр свечи",
           view_symbol: "Просмотр символа",
           close: "Закрыть",
-          go_back: "Назад"
+          go_back: "Назад",
+          upload_candles: "Загрузить свечи",
         }
       },
       en: {
@@ -59,7 +60,8 @@ i18n
           view_candle: "View Candle",
           view_symbol: "View Symbol",
           close: "Close",
-          go_back: "Go Back"
+          go_back: "Go Back",
+          upload_candles: "Upload Candles",
         }
       },
       es: {
@@ -86,7 +88,8 @@ i18n
           view_candle: "Ver Vela",
           view_symbol: "Ver Símbolo",
           close: "Cerrar",
-          go_back: "Regresar"
+          go_back: "Regresar",
+          upload_candles: "Subir Velas",
         }
       }
     }, // Закрываем resources здесь

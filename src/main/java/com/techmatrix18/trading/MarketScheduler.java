@@ -32,7 +32,7 @@ public class MarketScheduler {
         this.symbolRepository = symbolRepository;
     }
 
-    @Scheduled(fixedDelay = 20000) // Раз в 20 секунд
+    /*@Scheduled(fixedDelay = 20000) // Раз в 20 секунд
     public void runAnalysis() {
         // 1. Получаем список всех активных пар (BTCUSDT, ETHUSDT и т.д.)
         List<String> myWatchlist = List.of("BTCUSDT", "ETHUSDT", "SOLUSDT");
@@ -47,6 +47,6 @@ public class MarketScheduler {
                 strategyService.executeFullAnalysis(symbol.getSymbol(), candles);
             }
         }
-    }
+    }*/
 }
 

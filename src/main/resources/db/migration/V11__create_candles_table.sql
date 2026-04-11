@@ -11,10 +11,10 @@ CREATE TABLE candles (
     timeframe VARCHAR(10) NOT NULL,       -- '1m', '5m', '1h', '1d'
 
     open_time BIGINT NOT NULL,            -- timestamp in miliseconds (ms)
-    open DECIMAL(20, 10) NOT NULL,
-    high DECIMAL(20, 10) NOT NULL,
-    low DECIMAL(20, 10) NOT NULL,
-    close DECIMAL(20, 10) NOT NULL,
+    open DECIMAL(24, 10) NOT NULL,
+    high DECIMAL(24, 10) NOT NULL,
+    low DECIMAL(24, 10) NOT NULL,
+    close DECIMAL(24, 10) NOT NULL,
 
     volume NUMERIC(24, 10) NOT NULL,      -- Объем в базовой валюте (например, BTC)
 

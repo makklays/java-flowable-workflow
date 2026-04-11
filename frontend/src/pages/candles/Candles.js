@@ -111,19 +111,35 @@ const Candles = () => {
         if (!formData.endDate) newErrors.endDate = "Дата окончания обязательна";
         if (!formData.timeframe) newErrors.timeframe = "Таймфрейм обязателен";
 
+        const start = new Date(formData.startDate);
+        start.setHours(0, 0, 0, 0);
+        const startTime = start.getTime(); // Устанавливаем 00:00 именно вашего локального времени
+        const humanDate = new Date(startTime).toLocaleString();
+        // Создаем объект даты для конца дня
+        const endDate = new Date(formData.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        const endTime = endDate.getTime(); // 23:59:59
+        const endHumanDate = new Date(endTime).toLocaleString();
+
+        console.log(startTime + " " + humanDate + " | " + endTime + " " + endHumanDate);
+
+        if (startTime >= endTime) {
+            alert("Дата начала должна быть меньше даты окончания");
+            newErrors.endDate = "Дата начала должна быть меньше даты окончания";
+            return;
+        }
+
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return; // Если есть ошибки, не отправляем
-
-        //delay(1000); // Имитируем задержку для демонстрации загрузки
 
         try {
             // Подготовка параметров для URL
             const params = new URLSearchParams({
-                symbolId: formData.symbol, // Это ID из вашего Select
-                symbol: options.find(o => o.value === formData.symbol)?.original.symbol, // Получаем имя (BTCUSDT)
+                symbolId: formData.symbol,                                                // Это ID из вашего Select
+                symbol: options.find(o => o.value === formData.symbol)?.original.symbol,  // Получаем имя (BTCUSDT)
                 timeframe: formData.timeframe,
-                start: new Date(formData.startDate).getTime(), // Конвертация в Long
-                end: new Date(formData.endDate).getTime()      // Конвертация в Long
+                start: new Date(formData.startDate).setHours(0, 0, 0, 0),                 // Конвертация в Long
+                end: new Date(formData.endDate).setHours(23, 59, 59, 999)                 // Конвертация в Long
             });
 
             const response = await fetch(`http://localhost:8082/api/v1/candles/upload-binance?${params}`, {
@@ -132,8 +148,9 @@ const Candles = () => {
             });
             if (!response.ok) throw new Error('Ошибка сервера');
 
-            alert("Данные успешно загружены!");
-            // Здесь можно вызвать функцию обновления таблицы, например: fetchCandles();
+            //alert("Данные успешно загружены!");
+            // Здесь можно вызвать функцию обновления таблицы, например: loadCandles();
+            await loadCandles();
         } catch (error) {
             console.error("Ошибка:", error);
             alert("Ошибка при загрузке");
@@ -157,30 +174,32 @@ const Candles = () => {
         fetchSymbols();
     }, []);  // Пустой массив означает, что запрос выполнится 1 раз при загрузке страницы
 
-    useEffect(() => {
-        const loadCandles = async () => {
-            setLoading(true);
-            try {
-                const response = await candleService.getAllCandlesByPages(
-                    currentPage - 1,
-                    pageSize,
-                    search,
-                    sortBy,
-                    direction
-                );
+    // Функция загрузки теперь доступна во всем компоненте
+    const loadCandles = async () => {
+        setLoading(true);
+        try {
+            const response = await candleService.getAllCandlesByPages(
+                currentPage - 1,
+                pageSize,
+                search,
+                sortBy,
+                direction
+            );
+            const { content, totalPages, totalElements } = response.data;
+            setCandles(content || []);
+            setTotalPages(totalPages || 0);
+            setTotalElements(totalElements || 0);
+        } catch (error) {
+            console.error("Ошибка загрузки данных:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                const { content, totalPages, totalElements } = response.data;
-                setCandles(content || []);
-                setTotalPages(totalPages || 0);
-                setTotalElements(totalElements || 0);
-            } catch (error) {
-                console.error("Ошибка загрузки данных:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Вызывается автоматически при изменении зависимостей
+    useEffect(() => {
         loadCandles();
-    }, [currentPage, pageSize, sortBy, direction, search]); // Добавьте search в зависимости
+    }, [currentPage, pageSize, sortBy, direction, search]);// Добавьте search в зависимости
 
     // 1. Подготовим данные для поиска
     const options = symbols.map(sym => ({

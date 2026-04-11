@@ -34,6 +34,7 @@ i18n
           close: "Закрыть",
           go_back: "Назад",
           upload_candles: "Загрузить свечи",
+          view_candles: "Просмотр свечей",
         }
       },
       en: {
@@ -62,6 +63,7 @@ i18n
           close: "Close",
           go_back: "Go Back",
           upload_candles: "Upload Candles",
+          view_candles: "View Candles",
         }
       },
       es: {
@@ -90,6 +92,7 @@ i18n
           close: "Cerrar",
           go_back: "Regresar",
           upload_candles: "Subir Velas",
+          view_candles: "Ver Velas",
         }
       }
     }, // Закрываем resources здесь

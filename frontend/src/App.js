@@ -184,7 +184,7 @@ function App() {
                       <FontAwesomeIcon icon={faCoins} className="me-3 text-secondary" /> {t('symbols')}
                   </Nav.Link>
                   <Nav.Link as={NavLink} to="/candles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faChartBar} className="me-3 text-secondary" /> {t('candles')}
+                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('candles')}
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>

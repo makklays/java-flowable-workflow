@@ -43,8 +43,9 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
 
     List<Candle> findAll();
 
-    @Query("SELECT c FROM Candle c WHERE " +
-        "CAST(c.id AS string) LIKE CONCAT('%', :search, '%')")
+    @Query("SELECT c FROM Candle c JOIN Symbol s ON c.symbolId = s.id WHERE " +
+            "CAST(c.id AS string) LIKE CONCAT('%', :search, '%') OR " +
+            "LOWER(s.symbol) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Candle> searchCandles(@Param("search") String search, Pageable pageable);
 
     @Query("SELECT c.openTime FROM Candle c WHERE c.symbolId = :symbolId " +

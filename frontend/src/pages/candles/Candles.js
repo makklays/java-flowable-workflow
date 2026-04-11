@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashCan, faPlus, faDownload, faChartBar, faEye, faBolt, faFileImport, faSync, faDatabase, faCoins, faSitemap, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faTrashCan, faPlus, faDownload, faChartLine, faChartBar, faEye, faBolt, faFileImport, faSync,
+        faDatabase, faCoins, faSitemap, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
 import { CandlestickChart } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,10 @@ import Select from 'react-select';
  */
 // Короткая запись компонента - стрелочная функция
 const Candles = () => {
+    const [searchParams] = useSearchParams();
+    // 1. Извлекаем начальное значение поиска из URL один раз
+    const initialSearch = searchParams.get('search') || '';
+
     // 1. Состояние для пользователей
     const [candles, setCandles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -29,7 +34,7 @@ const Candles = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(initialSearch);
     const [sortBy, setSortBy] = useState('id');
     const [direction, setDirection] = useState('asc');
 
@@ -159,6 +164,7 @@ const Candles = () => {
         }
     }
 
+    // Получение Символов для выпадающего списка при загрузке страницы
     useEffect(() => {
         const fetchSymbols = async () => {
             try {
@@ -265,22 +271,7 @@ const Candles = () => {
                 <div className="col-md-6">
                     <h1>
                         {/* SVG иконка CandlestickChart из Lucide (вместо FontAwesome) */}
-                        <svg
-                            width="50" height="50"
-                            viewBox="0 0 30 30"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-secondary"
-                            style={{ verticalAlign: 'middle' }}
-                        >
-                            <path d="M9 5v4" /><rect width="4" height="6" x="7" y="9" rx="1" />
-                            <path d="M9 15v4" /><path d="M17 3v2" />
-                            <rect width="4" height="8" x="15" y="5" rx="1" />
-                            <path d="M17 13v8" /><path d="M3 3v18h18" />
-                        </svg>
+                        <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" />
                         {t('candles')}
                     </h1>
                     <p>Список всех свечей (0)</p>
@@ -436,7 +427,7 @@ const Candles = () => {
                     <div className="table-overlay">
                         <div className="text-center">
                             <FontAwesomeIcon icon={faSync} spin size="3x" className="text-primary mb-2" />
-                            <div className="text-primary fw-bold">Обновление данных...</div>
+                            <div className="text-primary fw-bold">Загрузка данных с Binance...</div>
                         </div>
                     </div>
                 )}
@@ -618,7 +609,7 @@ const Candles = () => {
                         )) : (
                             <tr>
                                 <td colSpan="13" style={{ textAlign: 'center', padding: '40px' }}>
-                                    <FontAwesomeIcon icon={faCoins} size="3x" className="mb-3 text-muted" />
+                                    <FontAwesomeIcon icon={faChartLine} size="3x" className="mb-3 text-muted" />
                                     <div className="text-muted">Данные в базе не найдены</div>
                                     <small className="text-muted">Настройте фильтры или загрузите данные с Binance</small>
                                 </td>

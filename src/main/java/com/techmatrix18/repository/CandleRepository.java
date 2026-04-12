@@ -39,9 +39,22 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
     // Если нужно больше свечей для MACD/ATR:
     List<Candle> findTop200BySymbolIdOrderByOpenTimeDesc(Long symbolId);
 
+    List<Candle> findBySymbolIdAndTimeframeAndOpenTimeBetween(Long symbolId, String timeframe, Long start, Long end);
+
     Optional<Candle> findById(Long id);
 
     List<Candle> findAll();
+
+    @Query("SELECT c FROM Candle c WHERE c.symbolId = :symbolId " +
+            "AND c.timeframe = :timeframe " +
+            "AND c.openTime BETWEEN :start AND :end " +
+            "ORDER BY c.openTime ASC")
+    List<Candle> findByPeriod(
+        @Param("symbolId") Long symbolId,
+        @Param("timeframe") String timeframe,
+        @Param("start") Long start,
+        @Param("end") Long end
+    );
 
     @Query("SELECT c FROM Candle c JOIN Symbol s ON c.symbolId = s.id WHERE " +
             "CAST(c.id AS string) LIKE CONCAT('%', :search, '%') OR " +

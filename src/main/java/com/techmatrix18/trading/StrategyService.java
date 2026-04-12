@@ -1,11 +1,18 @@
 package com.techmatrix18.trading;
 
+import com.techmatrix18.dto.BacktestDto;
+import com.techmatrix18.dto.PriceLevelDto;
+import com.techmatrix18.dto.TradeSignalDto;
+import com.techmatrix18.mapper.CandleMapper;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.trading.indicators.*;
 import com.techmatrix18.trading.rules.*;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -169,8 +176,105 @@ public class StrategyService {
                 .or(new PriceNearFibRule(fibonacciIndicator, "level_236"));
 
         if (sellSignal.isSatisfied(candles)) {
-            telegramService.sendMessage("⚠️ [" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
+            telegramService.sendMessage("⚠️[" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
         }
+    }
+
+    // Выполняет бэктест стратегии на истории: рассчитывает сигналы входа/выхода и уровни поддержки/сопротивления
+    public BacktestDto analyzeHistory(List<Candle> candles) {
+        BacktestDto report = new BacktestDto();
+
+        // 1. Конвертируем свечи в DTO для фронтенда
+        report.setCandles(CandleMapper.toDtoList(candles));
+
+        List<TradeSignalDto> signals = new ArrayList<>();
+        List<PriceLevelDto> levels = new ArrayList<>();
+
+        // 2. Логика поиска сигналов (пример на пересечении EMA или вашей стратегии)
+        // Мы идем по списку свечей и ищем точки входа
+        for (int i = 1; i < candles.size(); i++) {
+            Candle current = candles.get(i);
+
+            // Здесь вызывается ваша существующая логика анализа
+            // Например, если стратегия выдала "BUY":
+            if (checkBuyCondition(candles, i)) {
+                signals.add(new TradeSignalDto(
+                    current.getOpenTime(),
+                    "BUY",
+                    current.getClose(),
+                    "Long Entry"
+                ));
+            } else if (checkSellCondition(candles, i)) {
+                signals.add(new TradeSignalDto(
+                    current.getOpenTime(),
+                    "SELL",
+                    current.getClose(),
+                    "Short Entry"
+                ));
+            }
+        }
+        report.setSignals(signals);
+
+        // 3. Логика поиска уровней поддержки и сопротивления
+        // Простейший алгоритм: ищем локальные максимумы и минимумы
+        levels = findSupportResistanceLevels(candles);
+        report.setLevels(levels);
+
+        // 4. Статистика (опционально)
+        report.setTotalTrades(signals.size());
+
+        return report;
+    }
+
+    // Пример метода для покупки (Цена пересекает SMA снизу вверх)
+    private boolean checkBuyCondition(List<Candle> candles, int i) {
+        if (i < 20) return false; // Нужно подождать, пока накопится история для средней
+        BigDecimal currentClose = candles.get(i).getClose();
+        BigDecimal prevClose = candles.get(i - 1).getClose();
+        BigDecimal sma = calculateSMA(candles, i, 20);
+
+        // Условие: предыдущая цена была ниже SMA, а текущая — выше
+        return prevClose.compareTo(sma) < 0 && currentClose.compareTo(sma) > 0;
+    }
+
+    // Пример метода для продажи (Цена пересекает SMA сверху вниз)
+    private boolean checkSellCondition(List<Candle> candles, int i) {
+        if (i < 20) return false;
+        BigDecimal currentClose = candles.get(i).getClose();
+        BigDecimal prevClose = candles.get(i - 1).getClose();
+        BigDecimal sma = calculateSMA(candles, i, 20);
+
+        return prevClose.compareTo(sma) > 0 && currentClose.compareTo(sma) < 0;
+    }
+
+    // Вспомогательный метод для расчета средней
+    private BigDecimal calculateSMA(List<Candle> candles, int currentIndex, int period) {
+        BigDecimal sum = BigDecimal.ZERO;
+        for (int j = currentIndex; j > currentIndex - period; j--) {
+            sum = sum.add(candles.get(j).getClose());
+        }
+        return sum.divide(new BigDecimal(period), RoundingMode.HALF_UP);
+    }
+
+    // Определяет уровни поддержки и сопротивления на основе экстремумов цен.
+    // В данной реализации находит абсолютный максимум (Resistance) и минимум (Support)
+    // среди переданного набора свечей.
+    private List<PriceLevelDto> findSupportResistanceLevels(List<Candle> candles) {
+        List<PriceLevelDto> levels = new ArrayList<>();
+
+        // Берем последние 100 свечей и ищем самый высокий High и самый низкий Low
+        BigDecimal maxHigh = candles.stream()
+            .map(Candle::getHigh)
+            .max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+
+        BigDecimal minLow = candles.stream()
+            .map(Candle::getLow)
+            .min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+
+        levels.add(new PriceLevelDto(maxHigh, "RESISTANCE"));
+        levels.add(new PriceLevelDto(minLow, "SUPPORT"));
+
+        return levels;
     }
 }
 

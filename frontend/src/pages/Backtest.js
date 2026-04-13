@@ -138,6 +138,7 @@ const Backtest = () => {
             // Получаем данные для отображения в таблице - цена входа, выхода, профит..
             if (data.signals && data.signals.length > 0) {
                 const formattedTrades = [];
+                let j = 1;
                 // Проходим по сигналам парами (предполагая: BUY -> SELL)
                 for (let i = 0; i < data.signals.length; i += 2) {
                     const entry = data.signals[i];
@@ -146,12 +147,21 @@ const Backtest = () => {
                     if (entry && exit) {
                         const entryPrice = parseFloat(entry.price);
                         const exitPrice = parseFloat(exit.price);
-                        // Расчет профита в % (для примера Long)
-                        const profit = exitPrice - entryPrice;
-                        const profit_percent = ((exitPrice - entryPrice) / entryPrice) * 100;
+
+                        // ОБЯЗАТЕЛЬНО: Объявляем переменные через let ПЕРЕД использованием в if
+                        let profit = 0;
+                        let profit_percent = 0;
+
+                        if (entry.type === 'BUY') {
+                            profit = exitPrice - entryPrice;
+                            profit_percent = ((exitPrice - entryPrice) / entryPrice) * 100;
+                        } else {
+                            profit = entryPrice - exitPrice;
+                            profit_percent = ((entryPrice - exitPrice) / entryPrice) * 100;
+                        }
 
                         formattedTrades.push({
-                            id: i,
+                            id: j,
                             entryTime: new Date(entry.time).toLocaleString(),
                             exitTime: new Date(exit.time).toLocaleString(),
                             entryPrice: entryPrice.toFixed(2),
@@ -159,6 +169,7 @@ const Backtest = () => {
                             profit: profit.toFixed(2),
                             profit_percent: profit_percent.toFixed(2)
                         });
+                        j++;
                     }
                 }
                 setTradesList(formattedTrades);
@@ -185,41 +196,42 @@ const Backtest = () => {
 
             // 4. Маркеры (сигналы Buy/Sell) и штрихованные линии
             if (data.signals && data.signals.length > 0) {
-                // 1. Создаем штрихованную линию сделок
-                const tradeLineSeries = chartApiRef.current.addSeries(LineSeries, {
-                    color: '#95a5a6',
-                    lineWidth: 1,
-                    lineStyle: 2,
-                    priceLineVisible: false,
-                    lastValueVisible: false,
-                    crosshairMarkerVisible: false,
-                });
+                // СТРОГАЯ СОРТИРОВКА: от старых к новым
+                const sortedSignals = [...data.signals].sort((a, b) => a.time - b.time);
 
-                // Сохраняем в реф для последующей очистки
-                tradeLinesRef.current.push(tradeLineSeries);
+                // Теперь используем sortedSignals вместо data.signals
+                for (let i = 0; i < sortedSignals.length; i += 2) {
+                    const entry = sortedSignals[i];
+                    const exit = sortedSignals[i + 1];
 
-                // Подготовка данных для линии (время и цена)
-                const lineData = data.signals.map(s => ({
-                    time: s.time / 1000,
-                    value: parseFloat(s.price)
-                })).sort((a, b) => a.time - b.time);
+                    if (entry && exit) {
+                        const singleTradeLine = chartApiRef.current.addSeries(LineSeries, {
+                            color: entry.type === 'BUY' ? '#26a69a' : '#ef5350', // Цвет по типу входа
+                            lineWidth: 1,
+                            lineStyle: 2,
+                            priceLineVisible: false,
+                            lastValueVisible: false,
+                        });
 
-                tradeLineSeries.setData(lineData);
+                        tradeLinesRef.current.push(singleTradeLine);
 
-                // 2. Подготовка маркеров (стрелок с текстом)
-                const markers = data.signals.map(s => ({
+                        singleTradeLine.setData([
+                            { time: entry.time / 1000, value: parseFloat(entry.price) },
+                            { time: exit.time / 1000, value: parseFloat(exit.price) }
+                        ]);
+                    }
+                }
+
+                // Маркеры тоже делаем на основе отсортированных данных
+                const markers = sortedSignals.map(s => ({
                     time: s.time / 1000,
                     position: s.type === 'BUY' ? 'belowBar' : 'aboveBar',
                     color: s.type === 'BUY' ? '#26a69a' : '#ef5350',
                     shape: s.type === 'BUY' ? 'arrowUp' : 'arrowDown',
-                    text: s.type + ' @ ' + s.price // Формат как в вашем примере
-                })).sort((a, b) => a.time - b.time);
+                    text: s.type + ' @ ' + s.price
+                }));
 
-                // 3. Установка маркеров проверенным способом
-                if (seriesRef.current) {
-                    // Используем функцию, которая у вас точно работает
-                    createSeriesMarkers(seriesRef.current, markers);
-                }
+                createSeriesMarkers(seriesRef.current, markers);
             }
 
             // 5. Линии поддержки/сопротивления
@@ -543,6 +555,7 @@ const Backtest = () => {
                     <table className="table table-hover mb-0">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Вход</th>
                                 <th>Выход</th>
                                 <th>Цена входа</th>
@@ -554,6 +567,7 @@ const Backtest = () => {
                         <tbody>
                             {tradesList.map((trade) => (
                                 <tr key={trade.id}>
+                                    <td>{trade.id}</td>
                                     <td>{trade.entryTime}</td>
                                     <td>{trade.exitTime}</td>
                                     <td>{trade.entryPrice}</td>

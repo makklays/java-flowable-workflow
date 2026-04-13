@@ -1,5 +1,5 @@
+import { createChart, LineSeries, CandlestickSeries, createSeriesMarkers } from 'lightweight-charts';
 import React, { useState, useLayoutEffect, useEffect, useRef, useMemo } from 'react';
-import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +11,12 @@ import Select from 'react-select';
 const Backtest = () => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null);
+    const chartApiRef = useRef(null);
     const seriesRef = useRef(null);
     const maSeriesRef = useRef(null);
     const socketRef = useRef(null);
+
+    const tradeLinesRef = useRef([]); // Массив для хранения серий линий сделок
 
     const [selectedSymbolId, setSelectedSymbolId] = useState(42); // ID из вашей базы
     const [backtestDates, setBacktestDates] = useState({
@@ -33,6 +36,8 @@ const Backtest = () => {
     const [timeframe, setTimeframe] = useState('1m');
 
     const priceLinesRef = useRef([]);
+
+    const [tradesList, setTradesList] = useState([]);
 
     useEffect(() => {
         const fetchSymbols = async () => {
@@ -86,13 +91,33 @@ const Backtest = () => {
     }
 
     const runBacktest = async () => {
-        if (!seriesRef.current) return;
+        // Проверяем, что API графика доступно
+        if (!chartApiRef.current || !seriesRef.current) {
+            console.error("График еще не инициализирован");
+            return;
+        }
         setIsBacktesting(true);
+
+        // Очистка старых штрихованных линий
+        if (tradeLinesRef.current.length > 0) {
+            tradeLinesRef.current.forEach(s => {
+                try {
+                    chartApiRef.current.removeSeries(s);
+                } catch (e) {
+                    console.warn("Ошибка при удалении серии:", e);
+                }
+            });
+            tradeLinesRef.current = [];
+        }
 
         try {
             // 1. Очистка старых линий
             priceLinesRef.current.forEach(line => seriesRef.current.removePriceLine(line));
             priceLinesRef.current = [];
+
+            // 2. Очистка старых линий сделок через API реф
+            tradeLinesRef.current.forEach(s => chartApiRef.current.removeSeries(s));
+            tradeLinesRef.current = [];
 
             const params = new URLSearchParams({
                 symbolId: selectedSymbolId,
@@ -110,6 +135,35 @@ const Backtest = () => {
                 return;
             }
 
+            // Получаем данные для отображения в таблице - цена входа, выхода, профит..
+            if (data.signals && data.signals.length > 0) {
+                const formattedTrades = [];
+                // Проходим по сигналам парами (предполагая: BUY -> SELL)
+                for (let i = 0; i < data.signals.length; i += 2) {
+                    const entry = data.signals[i];
+                    const exit = data.signals[i + 1];
+
+                    if (entry && exit) {
+                        const entryPrice = parseFloat(entry.price);
+                        const exitPrice = parseFloat(exit.price);
+                        // Расчет профита в % (для примера Long)
+                        const profit = exitPrice - entryPrice;
+                        const profit_percent = ((exitPrice - entryPrice) / entryPrice) * 100;
+
+                        formattedTrades.push({
+                            id: i,
+                            entryTime: new Date(entry.time).toLocaleString(),
+                            exitTime: new Date(exit.time).toLocaleString(),
+                            entryPrice: entryPrice.toFixed(2),
+                            exitPrice: exitPrice.toFixed(2),
+                            profit: profit.toFixed(2),
+                            profit_percent: profit_percent.toFixed(2)
+                        });
+                    }
+                }
+                setTradesList(formattedTrades);
+            }
+
             // 2. Маппинг и СТРОГАЯ СОРТИРОВКА (решает ошибку Assertion failed)
             const formattedCandles = data.candles
                 .map(c => ({
@@ -122,23 +176,50 @@ const Backtest = () => {
                 .sort((a, b) => a.time - b.time); // Сортируем от старых к новым
 
             // 3. Удаление дубликатов (защита от ошибок БД)
-            const uniqueCandles = formattedCandles.filter((item, index, self) =>
+            /*const uniqueCandles = formattedCandles.filter((item, index, self) =>
                 index === 0 || item.time !== self[index - 1].time
-            );
+            );*/
 
-            console.log(`Отрисовка бэктеста: ${uniqueCandles.length} свечей.`);
-            seriesRef.current.setData(uniqueCandles);
+            console.log(`Отрисовка бэктеста: ${formattedCandles.length} свечей.`);
+            seriesRef.current.setData(formattedCandles);
 
-            // 4. Маркеры (сигналы Buy/Sell)
+            // 4. Маркеры (сигналы Buy/Sell) и штрихованные линии
             if (data.signals && data.signals.length > 0) {
+                // 1. Создаем штрихованную линию сделок
+                const tradeLineSeries = chartApiRef.current.addSeries(LineSeries, {
+                    color: '#95a5a6',
+                    lineWidth: 1,
+                    lineStyle: 2,
+                    priceLineVisible: false,
+                    lastValueVisible: false,
+                    crosshairMarkerVisible: false,
+                });
+
+                // Сохраняем в реф для последующей очистки
+                tradeLinesRef.current.push(tradeLineSeries);
+
+                // Подготовка данных для линии (время и цена)
+                const lineData = data.signals.map(s => ({
+                    time: s.time / 1000,
+                    value: parseFloat(s.price)
+                })).sort((a, b) => a.time - b.time);
+
+                tradeLineSeries.setData(lineData);
+
+                // 2. Подготовка маркеров (стрелок с текстом)
                 const markers = data.signals.map(s => ({
                     time: s.time / 1000,
                     position: s.type === 'BUY' ? 'belowBar' : 'aboveBar',
                     color: s.type === 'BUY' ? '#26a69a' : '#ef5350',
                     shape: s.type === 'BUY' ? 'arrowUp' : 'arrowDown',
-                    text: s.label || s.type
-                }));
-                createSeriesMarkers(seriesRef.current, markers);
+                    text: s.type + ' @ ' + s.price // Формат как в вашем примере
+                })).sort((a, b) => a.time - b.time);
+
+                // 3. Установка маркеров проверенным способом
+                if (seriesRef.current) {
+                    // Используем функцию, которая у вас точно работает
+                    createSeriesMarkers(seriesRef.current, markers);
+                }
             }
 
             // 5. Линии поддержки/сопротивления
@@ -197,8 +278,9 @@ const Backtest = () => {
             },
         });
         chartRef.current = chart;
+        chartApiRef.current = chart; // Сохраняем в API реф
 
-        // 1. Линия MA
+        // Линия MA
         const maSeries = chart.addSeries(LineSeries, {
             color: '#2962FF',
             lineWidth: 2,
@@ -206,13 +288,10 @@ const Backtest = () => {
         });
         maSeriesRef.current = maSeries;
 
-        // 2. Свечи
+        // Свечи
         const candleSeries = chart.addSeries(CandlestickSeries, {
             upColor: '#26a69a',
             downColor: '#ef5350',
-            borderVisible: false,
-            wickUpColor: '#26a69a',
-            wickDownColor: '#ef5350',
         });
         seriesRef.current = candleSeries;
 
@@ -456,8 +535,47 @@ const Backtest = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <div className="mt-4 card">
+                <div className="card-header">Результаты сделок</div>
+                <div className="table-responsive">
+                    <table className="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Вход</th>
+                                <th>Выход</th>
+                                <th>Цена входа</th>
+                                <th>Цена выхода</th>
+                                <th>Профит</th>
+                                <th>Профит (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tradesList.map((trade) => (
+                                <tr key={trade.id}>
+                                    <td>{trade.entryTime}</td>
+                                    <td>{trade.exitTime}</td>
+                                    <td>{trade.entryPrice}</td>
+                                    <td>{trade.exitPrice}</td>
+                                    <td className={trade.profit >= 0 ? 'text-success' : 'text-danger'}>
+                                        {trade.profit}
+                                    </td>
+                                    <td className={trade.profit_percent >= 0 ? 'text-success' : 'text-danger'}>
+                                        {trade.profit_percent}%
+                                    </td>
+                                </tr>
+                            ))}
+                            {tradesList.length === 0 && (
+                                <tr>
+                                    <td colSpan="5" className="text-center text-muted">Сделок не найдено</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     );
 };

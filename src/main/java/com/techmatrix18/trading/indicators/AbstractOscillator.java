@@ -1,6 +1,8 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
+import com.techmatrix18.trading.series.CandleSeries;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,22 +16,34 @@ import java.util.List;
  */
 public abstract class AbstractOscillator implements Indicator<Double> {
     protected final int period;
+    protected List<Double> history = new ArrayList<>();
 
     protected AbstractOscillator(int period) {
         this.period = period;
     }
 
-    // Метод для проверки, достаточно ли данных в БД/списке для расчета
-    protected boolean hasEnoughData(List<Candle> candles) {
-        return candles != null && candles.size() >= period;
+    // Рассчитывает историю один раз (для бэктеста или инициализации буфера)
+    public void prepare(CandleSeries series) {
+        history.clear();
+        for (int i = 0; i < series.size(); i++) {
+            // Теперь передаем серию и индекс напрямую
+            history.add(calculate(series, i));
+        }
     }
 
-    // Метод получения подмножества свечей для текущего расчета
-    protected List<Candle> getCurrentWindow(List<Candle> candles) {
-        return candles.subList(candles.size() - period, candles.size());
+    @Override
+    public Double getValue(int index) {
+        if (index < 0 || index >= history.size()) return 0.0;
+        return history.get(index);
     }
 
-    // Главный метод, который реализует каждый конкретный индикатор
-    public abstract Double calculate(List<Candle> candles);
+    // Проверка наличия данных по индексу
+    protected boolean hasEnoughData(int index) {
+        return index >= period - 1;
+    }
+
+    // Главный метод: теперь он считает значение для КОНКРЕТНОЙ свечи 'index'
+    // Это позволит не нарезать списки subList
+    public abstract Double calculate(CandleSeries series, int index);
 }
 

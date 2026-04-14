@@ -1,10 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * RsiIndicator calculates the Relative Strength Index (RSI) based on a list of candles.
@@ -17,46 +13,66 @@ import java.util.List;
  * @company TechMatrix18
  * @version 0.0.1
  */
-@Component
 public class RsiIndicator extends AbstractOscillator {
 
     public RsiIndicator() {
-        super(14); // Стандартный период RSI
+        super(14); // Стандартный период 14
     }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (!hasEnoughData(candles)) return 0.0;
+    public void prepare(CandleSeries series) {
+        history.clear();
+        if (series.size() < 2) return;
 
-        List<Candle> window = getCurrentWindow(candles);
+        double avgGain = 0;
+        double avgLoss = 0;
+        for (int i = 0; i < series.size(); i++) {
+            if (i == 0) {
+                history.add(50.0); // Нейтральное значение для первой свечи
+                continue;
+            }
 
-        // Инициализируем переменные как BigDecimal
-        BigDecimal gains = BigDecimal.ZERO;
-        BigDecimal losses = BigDecimal.ZERO;
+            // Вычисляем разницу цен закрытия текущей и предыдущей свечи
+            double diff = series.getClose(i) - series.getClose(i - 1);
 
-        for (int i = 1; i < window.size(); i++) {
-            BigDecimal currentClose = window.get(i).getClose();
-            BigDecimal previousClose = window.get(i - 1).getClose();
+            double gain = Math.max(0, diff);
+            double loss = Math.max(0, -diff);
 
-            BigDecimal difference = currentClose.subtract(previousClose);
-
-            if (difference.compareTo(BigDecimal.ZERO) > 0) {
-                // ПРИСВАИВАЕМ результат обратно: gains = gains.add(...)
-                gains = gains.add(difference);
+            if (i <= period) {
+                // Начальный этап: простое среднее для накопления базы
+                avgGain += gain / period;
+                avgLoss += loss / period;
             } else {
-                losses = losses.add(difference.abs());
+                // Классическое сглаживание Уайлдера (Wilder's Smoothing)
+                avgGain = (avgGain * (period - 1) + gain) / period;
+                avgLoss = (avgLoss * (period - 1) + loss) / period;
+            }
+
+            // Добавляем значения в кэш
+            if (i < period) {
+                history.add(50.0);
+            } else {
+                if (avgLoss == 0) {
+                    history.add(100.0);
+                } else {
+                    double rs = avgGain / avgLoss;
+                    history.add(100 - (100 / (1 + rs)));
+                }
             }
         }
+    }
 
-        // Если убытков нет, RSI равен 100
-        if (losses.compareTo(BigDecimal.ZERO) == 0) return 100.0;
+    @Override
+    public Double calculate(CandleSeries series, int index) {
+        // Если значение для этого индекса уже есть в кэше — возвращаем его
+        if (index < history.size()) {
+            return getValue(index);
+        }
 
-        // Конвертируем в double только в самом конце для финальной формулы
-        double avgGain = gains.doubleValue() / period;
-        double avgLoss = losses.doubleValue() / period;
-
-        double rs = avgGain / avgLoss;
-        return 100 - (100 / (1 + rs));
+        // В противном случае пересчитываем историю до этого индекса
+        // (Обычно вызывается один раз при инициализации)
+        prepare(series);
+        return getValue(index);
     }
 }
 

@@ -1,12 +1,8 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
+import com.techmatrix18.trading.series.CandleSeries;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * MacdIndicator is a placeholder for the actual implementation of the MACD (Moving Average Convergence Divergence) indicator.
@@ -23,41 +19,61 @@ import java.util.Map;
  * @company TechMatrix18
  * @version 0.0.1
  */
-public class MacdIndicator {
+public class MacdIndicator implements Indicator<Map<String, Double>> {
     private final EmaIndicator fastEma;
     private final EmaIndicator slowEma;
     private final int signalPeriod;
 
-    // Конструктор позволяет задать любые периоды
+    private List<Map<String, Double>> history = new ArrayList<>();
+
     public MacdIndicator(int fastPeriod, int slowPeriod, int signalPeriod) {
         this.fastEma = new EmaIndicator(fastPeriod);
         this.slowEma = new EmaIndicator(slowPeriod);
         this.signalPeriod = signalPeriod;
     }
 
-    public Map<String, Double> calculate(List<Candle> candles) {
-        // Минимально нужно свечей столько, сколько период самой длинной EMA + период сигнала
-        if (candles.size() < 35) return Collections.emptyMap();
+    public void prepare(CandleSeries series) {
+        history.clear();
+        if (series.size() == 0) return;
 
-        // 1. MACD Line
-        double macdLine = fastEma.calculate(candles) - slowEma.calculate(candles);
+        // 1. Подготавливаем базовые EMA линии (они уже работают с CandleSeries)
+        fastEma.prepare(series);
+        slowEma.prepare(series);
 
-        // 2. Рассчитываем историю MACD для построения Signal Line
-        List<Double> macdHistory = new ArrayList<>();
-        for (int i = 0; i < signalPeriod; i++) {
-            List<Candle> subList = candles.subList(i, candles.size());
-            double historicMacd = fastEma.calculate(subList) - slowEma.calculate(subList);
-            macdHistory.add(historicMacd);
+        // 2. Рассчитываем MACD Line и Signal Line
+        double multiplier = 2.0 / (signalPeriod + 1);
+
+        // Начальное значение Signal Line (первая разница EMA)
+        double currentSignalLine = fastEma.getValue(0) - slowEma.getValue(0);
+
+        for (int i = 0; i < series.size(); i++) {
+            double macdLine = fastEma.getValue(i) - slowEma.getValue(i);
+
+            // Signal Line — это EMA от самой MACD Line
+            currentSignalLine = (macdLine - currentSignalLine) * multiplier + currentSignalLine;
+
+            Map<String, Double> point = new HashMap<>();
+            point.put("macdLine", macdLine);
+            point.put("signalLine", currentSignalLine);
+            point.put("histogram", macdLine - currentSignalLine);
+
+            history.add(point);
         }
+    }
 
-        // Signal Line (обычно это EMA от MACD, но для простоты возьмем SMA)
-        double signalLine = macdHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+    @Override
+    public Map<String, Double> getValue(int index) {
+        if (index < 0 || index >= history.size()) return Collections.emptyMap();
+        return history.get(index);
+    }
 
-        return Map.of(
-            "macdLine", macdLine,
-            "signalLine", signalLine,
-            "histogram", macdLine - signalLine
-        );
+    @Override
+    public Map<String, Double> calculate(CandleSeries series, int index) {
+        // Если данных в кэше нет для этого индекса, запускаем подготовку
+        if (history.size() <= index) {
+            prepare(series);
+        }
+        return getValue(index);
     }
 }
 

@@ -39,11 +39,11 @@ public class BacktestController {
             @RequestParam Long end,
             @RequestParam String timeframe) {
 
-        // 1. Загружаем исторические данные
+        // 1. Загружаем исторические данные - таймфрейм 1m
         List<Candle> history = candleRepository.findBySymbolIdAndTimeframeAndOpenTimeBetween(symbolId, timeframe, start, end);
 
-        // 2. Просим сервис рассчитать сигналы и уровни (нужно добавить такой метод в StrategyService)
-        BacktestDto result = strategyService.analyzeHistory(history);
+        // 2. Просим сервис рассчитать сигналы и уровни - для таймфрейма 1h
+        BacktestDto result = strategyService.analyzeHistory(history, "1h");
 
         return ResponseEntity.ok(result);
     }

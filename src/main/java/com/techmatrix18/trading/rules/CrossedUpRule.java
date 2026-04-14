@@ -15,38 +15,42 @@ import java.util.List;
  */
 public class CrossedUpRule implements Rule {
     private final Indicator<Double> indicator;
+    private final Indicator<Double> priceIndicator;
     private final Double constantThreshold;
 
-    public CrossedUpRule(Indicator<Double> indicator) {
-        this.indicator = indicator;
-        this.constantThreshold = null;
-    }
-
+    // Конструктор 1: Индикатор пересекает числовое значение (например, RSI выходит из 30 вверх)
     public CrossedUpRule(Indicator<Double> indicator, double threshold) {
         this.indicator = indicator;
         this.constantThreshold = threshold;
+        this.priceIndicator = null;
+    }
+
+    // Конструктор 2: Цена пересекает индикатор (например, Цена пробивает MA снизу вверх)
+    public CrossedUpRule(Indicator<Double> indicator, Indicator<Double> priceIndicator) {
+        this.indicator = indicator;
+        this.priceIndicator = priceIndicator;
+        this.constantThreshold = null;
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        // Простая проверка: если свечей совсем мало (меньше 2), пересечение невозможно
-        if (candles.size() < 2) return false;
+    public boolean isSatisfied(int i) {
+        // Пересечение требует как минимум две точки (текущую и предыдущую)
+        if (i < 1) return false;
 
-        double currentIndicator = indicator.calculate(candles);
+        double currentVal = indicator.getValue(i);
+        double prevVal = indicator.getValue(i - 1);
 
-        // Получаем предыдущее значение индикатора (без последней свечи)
-        List<Candle> previousCandles = candles.subList(1, candles.size());
-        double prevIndicator = indicator.calculate(previousCandles);
-
-        if (constantThreshold == null) {
-            // Цена пересекает индикатор вверх
-            double currentPrice = candles.get(0).getClose().doubleValue();
-            double prevPrice = candles.get(1).getClose().doubleValue();
-            return prevPrice <= prevIndicator && currentPrice > currentIndicator;
-        } else {
-            // Индикатор пересекает число вверх (например, RSI > 50)
-            return prevIndicator <= constantThreshold && currentIndicator > constantThreshold;
+        if (constantThreshold != null) {
+            // Случай 1: Линия индикатора пересекает порог снизу вверх
+            return prevVal <= constantThreshold && currentVal > constantThreshold;
+        } else if (priceIndicator != null) {
+            // Случай 2: Цена пересекает линию индикатора снизу вверх
+            double currentPrice = priceIndicator.getValue(i);
+            double prevPrice = priceIndicator.getValue(i - 1);
+            return prevPrice <= prevVal && currentPrice > currentVal;
         }
+
+        return false;
     }
 }
 

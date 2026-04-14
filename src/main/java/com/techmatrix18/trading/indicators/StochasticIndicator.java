@@ -1,9 +1,8 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
+import com.techmatrix18.trading.series.CandleSeries;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,22 +18,72 @@ import java.util.List;
  * @version 0.0.1
  */
 public class StochasticIndicator extends AbstractOscillator {
-    public StochasticIndicator() { super(14); } // Стандартный период 14
+    private List<Double> dLineHistory = new ArrayList<>(); // Линия %D (сигнальная)
+    private final int dPeriod = 3; // Период сглаживания для %D
+
+    public StochasticIndicator() { super(14); }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (!hasEnoughData(candles)) return 0.0;
+    public void prepare(CandleSeries series) {
+        history.clear();
+        dLineHistory.clear();
 
-        List<Candle> window = getCurrentWindow(candles);
-        double currentClose = candles.get(0).getClose().doubleValue();
+        // 1. Считаем быструю линию %K
+        for (int i = 0; i < series.size(); i++) {
 
-        double lowMin = window.stream().map(Candle::getLow).mapToDouble(BigDecimal::doubleValue).min().orElse(0.0);
-        double highMax = window.stream().map(Candle::getHigh).mapToDouble(BigDecimal::doubleValue).max().orElse(0.0);
+            if (i < period - 1) {
+                history.add(50.0); // Нейтральное значение на этапе прогрева
+                continue;
+            }
 
-        if (highMax == lowMin) return 50.0;
+            // Поиск Min Low и Max High за период напрямую через серию
+            double lowMin = series.getLow(i);
+            double highMax = series.getHigh(i);
 
-        // Формула %K
-        return ((currentClose - lowMin) / (highMax - lowMin)) * 100;
+            for (int j = i; j > i - period; j--) {
+                double currentLow = series.getLow(j);
+                double currentHigh = series.getHigh(j);
+                if (currentLow < lowMin) lowMin = currentLow;
+                if (currentHigh > highMax) highMax = currentHigh;
+            }
+
+            double currentClose = series.getClose(i);
+
+            if (highMax == lowMin) {
+                history.add(50.0);
+            } else {
+                double kLine = ((currentClose - lowMin) / (highMax - lowMin)) * 100;
+                history.add(kLine);
+            }
+        }
+
+        // 2. Считаем сигнальную линию %D (SMA от линии %K)
+        for (int i = 0; i < history.size(); i++) {
+            if (i < dPeriod - 1) {
+                dLineHistory.add(50.0);
+            } else {
+                double sum = 0;
+                for (int j = 0; j < dPeriod; j++) {
+                    sum += history.get(i - j);
+                }
+                dLineHistory.add(sum / dPeriod);
+            }
+        }
+    }
+
+    // Получение значения сигнальной линии %D по индексу
+    public Double getDValue(int index) {
+        if (index < 0 || index >= dLineHistory.size()) return 50.0;
+        return dLineHistory.get(index);
+    }
+
+    @Override
+    public Double calculate(CandleSeries series, int index) {
+        // Если кэш пуст или меньше нужного индекса — готовим данные
+        if (history.size() <= index) {
+            prepare(series);
+        }
+        return getValue(index);
     }
 }
 

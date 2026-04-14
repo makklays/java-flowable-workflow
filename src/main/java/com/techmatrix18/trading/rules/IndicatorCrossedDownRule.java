@@ -24,17 +24,18 @@ public class IndicatorCrossedDownRule implements Rule {
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.size() < 2) return false;
+    public boolean isSatisfied(int i) {
+        // Пересечение требует как минимум две точки
+        if (i < 1) return false;
 
-        double currentFast = fast.calculate(candles);
-        double currentSlow = slow.calculate(candles);
+        // Берем готовые значения из кэша индикаторов по индексам
+        double currentFast = fast.getValue(i);
+        double currentSlow = slow.getValue(i);
 
-        List<Candle> previousCandles = candles.subList(1, candles.size());
-        double prevFast = fast.calculate(previousCandles);
-        double prevSlow = slow.calculate(previousCandles);
+        double prevFast = fast.getValue(i - 1);
+        double prevSlow = slow.getValue(i - 1);
 
-        // Условие: раньше быстрая была над медленной, теперь — под ней
+        // Условие: раньше быстрая была выше (или равна), а теперь стала ниже
         return prevFast >= prevSlow && currentFast < currentSlow;
     }
 }

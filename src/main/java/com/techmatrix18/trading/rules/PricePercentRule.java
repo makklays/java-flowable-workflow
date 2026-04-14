@@ -1,6 +1,7 @@
 package com.techmatrix18.trading.rules;
 
 import com.techmatrix18.model.Candle;
+import com.techmatrix18.trading.series.CandleSeries;
 
 import java.util.List;
 
@@ -15,21 +16,33 @@ import java.util.List;
  * @version 0.0.1
  */
 public class PricePercentRule implements Rule {
+    private final CandleSeries series; // Переходим на интерфейс
     private final double entryPrice;
     private final double percentage;
-    private final boolean isProfit; // true для тейка, false для стопа
+    private final boolean isProfit; // true для TakeProfit, false для StopLoss
 
-    public PricePercentRule(double entryPrice, double percentage, boolean isProfit) {
+    public PricePercentRule(CandleSeries series, double entryPrice, double percentage, boolean isProfit) {
+        this.series = series;
         this.entryPrice = entryPrice;
         this.percentage = percentage;
         this.isProfit = isProfit;
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        double currentPrice = candles.get(0).getClose().doubleValue();
+    public boolean isSatisfied(int i) {
+        if (i < 0 || i >= series.size()) return false;
+
+        // Используем метод интерфейса для получения цены
+        double currentPrice = series.getClose(i);
         double change = (currentPrice - entryPrice) / entryPrice * 100;
-        return isProfit ? change >= percentage : change <= -percentage;
+
+        if (isProfit) {
+            // Тейк-профит: рост цены выше порога
+            return change >= percentage;
+        } else {
+            // Стоп-лосс: падение цены ниже порога (сравнение с отрицательным значением)
+            return change <= -percentage;
+        }
     }
 }
 

@@ -17,34 +17,41 @@ import java.util.List;
  */
 public class CrossedDownRule implements Rule {
     private final Indicator<Double> indicator;
+    private final Indicator<Double> priceIndicator; // Используем для цены
     private final Double constantThreshold;
 
-    public CrossedDownRule(Indicator<Double> indicator) {
-        this.indicator = indicator;
-        this.constantThreshold = null;
-    }
-
+    // Конструктор для пробития числового уровня (например, RSI < 70)
     public CrossedDownRule(Indicator<Double> indicator, double threshold) {
         this.indicator = indicator;
         this.constantThreshold = threshold;
+        this.priceIndicator = null;
+    }
+
+    // Конструктор для пробития ценой индикатора (например, Цена < MA)
+    public CrossedDownRule(Indicator<Double> indicator, Indicator<Double> priceIndicator) {
+        this.indicator = indicator;
+        this.priceIndicator = priceIndicator;
+        this.constantThreshold = null;
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.size() < 2) return false;
+    public boolean isSatisfied(int i) {
+        if (i < 1) return false;
 
-        double currentIndicator = indicator.calculate(candles);
-        double prevIndicator = indicator.calculate(candles.subList(1, candles.size()));
+        double currentVal = indicator.getValue(i);
+        double prevVal = indicator.getValue(i - 1);
 
-        if (constantThreshold == null) {
-            // Цена пробила индикатор СВЕРХУ ВНИЗ
-            double currentPrice = candles.get(0).getClose().doubleValue();
-            double prevPrice = candles.get(1).getClose().doubleValue();
-            return prevPrice >= prevIndicator && currentPrice < currentIndicator;
-        } else {
-            // Индикатор пробил число СВЕРХУ ВНИЗ (например, RSI выходит из зоны 70)
-            return prevIndicator >= constantThreshold && currentIndicator < constantThreshold;
+        if (constantThreshold != null) {
+            // Случай 1: Индикатор пересекает число сверху вниз
+            return prevVal >= constantThreshold && currentVal < constantThreshold;
+        } else if (priceIndicator != null) {
+            // Случай 2: Цена пересекает индикатор сверху вниз
+            double currentPrice = priceIndicator.getValue(i);
+            double prevPrice = priceIndicator.getValue(i - 1);
+            return prevPrice >= prevVal && currentPrice < currentVal;
         }
+
+        return false;
     }
 }
 

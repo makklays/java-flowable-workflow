@@ -2,6 +2,7 @@ package com.techmatrix18.trading.rules;
 
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.trading.indicators.VolumeProfileIndicator;
+import com.techmatrix18.trading.series.CandleSeries;
 
 import java.util.List;
 
@@ -18,23 +19,27 @@ import java.util.List;
  * @version 0.0.1
  */
 public class PriceNearPOCRule implements Rule {
-    private final VolumeProfileIndicator volumeProfile;
-    private final int binCount;
+    private final CandleSeries series; // Используем универсальный интерфейс
+    private final VolumeProfileIndicator vpi;
+    private final double sensitivityPercent;
 
-    public PriceNearPOCRule(VolumeProfileIndicator volumeProfile, int binCount) {
-        this.volumeProfile = volumeProfile;
-        this.binCount = binCount;
+    public PriceNearPOCRule(CandleSeries series, VolumeProfileIndicator vpi, double sensitivityPercent) {
+        this.series = series;
+        this.vpi = vpi;
+        this.sensitivityPercent = sensitivityPercent;
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.isEmpty()) return false;
+    public boolean isSatisfied(int i) {
+        double pocPrice = vpi.getValue(i);
+        if (pocPrice <= 0) return false;
 
-        double currentPrice = candles.get(0).getClose().doubleValue();
-        double pocPrice = volumeProfile.findPOC(candles, binCount);
+        // Получаем цену через метод нашей серии
+        double currentPrice = series.getClose(i);
 
-        // Условие: цена в пределах 0.2% от уровня максимального объема
-        return Math.abs(currentPrice - pocPrice) / pocPrice * 100 < 0.2;
+        // Проверяем близость цены к POC (Point of Control)
+        double diff = Math.abs(currentPrice - pocPrice) / pocPrice * 100;
+        return diff <= sensitivityPercent;
     }
 }
 

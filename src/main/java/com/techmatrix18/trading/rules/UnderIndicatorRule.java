@@ -25,8 +25,10 @@ public class UnderIndicatorRule implements Rule {
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        return !candles.isEmpty() && indicator.calculate(candles) < threshold;
+    public boolean isSatisfied(int i) {
+        // Получаем значение из заранее рассчитанной истории индикатора
+        // Это работает за O(1), не пересчитывая всю историю
+        return indicator.getValue(i) < threshold;
     }
 }
 

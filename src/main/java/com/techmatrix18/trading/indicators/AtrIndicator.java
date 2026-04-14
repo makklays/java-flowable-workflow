@@ -1,9 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * ATR (Average True Range) - это индикатор, который измеряет волатильность рынка, показывая среднее значение истинного
@@ -15,24 +12,32 @@ import java.util.List;
  * @version 0.0.1
  */
 public class AtrIndicator extends AbstractOscillator {
-    public AtrIndicator(int period) { super(period); }
+    public AtrIndicator(int period) {
+        super(period);
+    }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (candles.size() < period + 1) return 0.0;
+    public Double calculate(CandleSeries series, int index) {
+        // Нам нужно минимум (period) предыдущих свечей + 1 для prevClose
+        if (index < period) {
+            return 0.0;
+        }
 
         double sumTR = 0;
-        // Считаем TR для каждой свечи в окне
-        for (int i = 0; i < period; i++) {
-            double high = candles.get(i).getHigh().doubleValue();
-            double low = candles.get(i).getLow().doubleValue();
-            double prevClose = candles.get(i + 1).getClose().doubleValue();
 
+        // Считаем True Range для окна размером period, заканчивающегося на index
+        for (int i = index; i > index - period; i--) {
+            double high = series.getHigh(i);
+            double low = series.getLow(i);
+            double prevClose = series.getClose(i - 1);
+
+            // Формула True Range
             double tr = Math.max(high - low,
                     Math.max(Math.abs(high - prevClose), Math.abs(low - prevClose)));
             sumTR += tr;
         }
-        return sumTR / period; // Простой ATR (SMA от True Range)
+
+        return sumTR / period;
     }
 }
 

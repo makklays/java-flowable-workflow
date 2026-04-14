@@ -16,13 +16,7 @@ import java.util.Map;
  */
 public class MacdRule implements Rule {
     public enum MacdCondition {
-        ABOVE_ZERO,      // Гистограмма > 0 (локальный импульс вверх)
-        BELOW_ZERO,      // Гистограмма < 0 (локальный импульс вниз)
-        CROSS_UP,        // Пересечение линий вверх (точка входа)
-        CROSS_DOWN,      // Пересечение линий вниз (точка выхода)
-        MACD_ABOVE_ZERO, // Линия MACD > 0 (глобальный бычий тренд)
-        MACD_BELOW_ZERO, // Линия MACD < 0 (глобальный медвежий тренд)
-        HIST_DECREASING  // Затухание импульса (текущий столбик ниже предыдущего)
+        ABOVE_ZERO, CROSS_UP, CROSS_DOWN, MACD_ABOVE_ZERO, MACD_BELOW_ZERO, HIST_DECREASING
     }
 
     private final MacdIndicator macd;
@@ -34,26 +28,27 @@ public class MacdRule implements Rule {
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.size() < 2) return false;
+    public boolean isSatisfied(int i) {
+        // Для условий пересечения и затухания нужно минимум 2 точки
+        if (i < 1) return false;
 
-        Map<String, Double> current = macd.calculate(candles);
-        if (current == null || current.isEmpty()) return false;
+        Map<String, Double> current = macd.getValue(i);
+        Map<String, Double> prev = macd.getValue(i - 1);
 
-        // Считаем ПРЕДЫДУЩЕЕ значение один раз для всех условий сразу
-        double prevHist = macd.calculate(candles.subList(1, candles.size())).getOrDefault("histogram", 0.0);
+        if (current.isEmpty()) return false;
 
         double currentHist = current.getOrDefault("histogram", 0.0);
         double currentLine = current.getOrDefault("macdLine", 0.0);
+        double prevHist = prev.getOrDefault("histogram", 0.0);
 
         return switch (condition) {
             case ABOVE_ZERO -> currentHist > 0;
-            case BELOW_ZERO -> currentHist < 0;
             case MACD_ABOVE_ZERO -> currentLine > 0;
             case MACD_BELOW_ZERO -> currentLine < 0;
             case CROSS_UP -> prevHist <= 0 && currentHist > 0;
             case CROSS_DOWN -> prevHist >= 0 && currentHist < 0;
             case HIST_DECREASING -> Math.abs(currentHist) < Math.abs(prevHist);
+            default -> false;
         };
     }
 }

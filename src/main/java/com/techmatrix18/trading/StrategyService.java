@@ -8,12 +8,17 @@ import com.techmatrix18.model.Candle;
 import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.trading.indicators.*;
 import com.techmatrix18.trading.rules.*;
+import com.techmatrix18.trading.series.CandleSeries;
+import com.techmatrix18.trading.series.HistoricalCandleSeries;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * StrategyService is responsible for managing trading strategies, including their creation, execution, and performance tracking.
@@ -46,108 +51,186 @@ public class StrategyService {
 
     // Соберем полноценную торговую систему.
     // Допустим, мы хотим покупать при сильном откате к Фибоначчи и продавать при перекупленности.
-    public void runLogic(String symbol, List<Candle> candles) {
-        // --- СТРАТЕГИЯ ВХОДА (BUY) ---
-        // 1. RSI ниже 30 (зона перепроданности)
-        Rule rsiOversold = new UnderIndicatorRule(rsiIndicator, 30.0);
-        // 2. Цена пробила среднюю Боллинджера вверх
-        Rule bbCrossUp = new CrossedUpRule(bollingerIndicator);
+    public void runLogic(String symbol, CandleSeries series) {
+        if (series.size() < 200) return; // Ждем накопления данных (например, для SMA200)
 
+        // 1. ПОДГОТОВКА: Обновляем кэш индикаторов для всей текущей серии
+        // В онлайн-режиме это происходит быстро, так как серия ограничена буфером
+        rsiIndicator.prepare(series);
+        bollingerIndicator.prepare(series);
+        fibonacciIndicator.prepare(series);
+        // ... подготовить остальные индикаторы
+
+        // 2. ИНДИКАТОР ЦЕНЫ: Обертка для получения текущей цены
+        Indicator<Double> closePrice = new Indicator<Double>() {
+            @Override public Double getValue(int index) { return series.getClose(index); }
+            @Override public Double calculate(CandleSeries s, int idx) { return s.getClose(idx); }
+        };
+
+        // 3. ТЕКУЩИЙ ИНДЕКС: Нас интересует только самая последняя закрытая свеча
+        int i = series.size() - 1;
+
+        // 4. ПРАВИЛА ВХОДА
+        Rule rsiOversold = new UnderIndicatorRule(rsiIndicator, 30.0);
+        Rule bbCrossUp = new CrossedUpRule(bollingerIndicator, closePrice);
         Rule entrySignal = rsiOversold.and(bbCrossUp);
 
-        if (entrySignal.isSatisfied(candles)) {
-            telegramService.sendMessage("✅ ВХОД " + symbol + ": RSI внизу + Пробой Боллинджера!");
+        if (entrySignal.isSatisfied(i)) {
+            telegramService.sendMessage("✅ ВХОД " + symbol + ": RSI < 30 + Пробой Боллинджера!");
+            // Здесь можно вызвать метод для создания реального ордера
         }
 
-        // --- СТРАТЕГИЯ ВЫХОДА (SELL) ---
-        // 1. RSI пробил 70 сверху вниз (выход из перекупленности)
+        // 5. ПРАВИЛА ВЫХОДА
         Rule rsiExit = new CrossedDownRule(rsiIndicator, 70.0);
-        // 2. ИЛИ цена коснулась верхнего уровня Фибо (0.236)
-        // (Для этого нужно создать правило PriceNearRule, как мы обсуждали ранее)
+        Rule fibTarget = new PriceNearFibRule(series, fibonacciIndicator, "level_236", 0.001);
+        Rule exitSignal = rsiExit.or(fibTarget);
 
-        if (rsiExit.isSatisfied(candles)) {
-            telegramService.sendMessage("❌ ВЫХОД " + symbol + ": RSI сигнализирует о развороте!");
+        if (exitSignal.isSatisfied(i)) {
+            telegramService.sendMessage("❌ ВЫХОД " + symbol + ": Цель достигнута или RSI развернулся!");
+            // Здесь можно вызвать метод для закрытия позиции
         }
     }
 
     // Проверим только входные сигналы для простоты - пример
-    public void checkEntry(List<Candle> candles) {
-        // Правило 1: Цена пробила среднюю Боллинджера вверх
-        Rule crossedBollinger = new CrossedUpRule(bollingerIndicator);
+    public void checkEntry(CandleSeries series) {
+        // 1. ПОДГОТОВКА: Обновляем кэш индикаторов для текущей серии
+        rsiIndicator.prepare(series);
+        bollingerIndicator.prepare(series);
 
-        // Правило 2: RSI ниже 30 (перепроданность)
-        Rule rsiLow = new UnderIndicatorRule(rsiIndicator, 30);
+        // 2. ИНДИКАТОР ЦЕНЫ: Обертка, чтобы правило пробоя знало цену закрытия
+        // Создаем индикатор цены, совместимый с интерфейсом Indicator<Double>
+        Indicator<Double> closePrice = new Indicator<Double>() {
+            @Override
+            public Double calculate(CandleSeries s, int index) {
+                return s.getClose(index);
+            }
 
-        // ОБЪЕДИНЯЕМ: Входить, если пробили Боллинджер И при этом RSI был низким
+            @Override
+            public Double getValue(int index) {
+                // Здесь мы обращаемся к внешней переменной series
+                return series.getClose(index);
+            }
+        };
+
+        // 3. ТЕКУЩИЙ ИНДЕКС: Проверяем последнюю закрытую свечу
+        int i = series.size() - 1;
+        if (i < 1) return; // Нужно минимум 2 свечи для CrossedUpRule
+
+        // 4. ПРАВИЛА
+        // В CrossedUpRule передаем индикатор и цену (Случай 2 из реализации правила)
+        Rule crossedBollinger = new CrossedUpRule(bollingerIndicator, closePrice);
+        Rule rsiLow = new UnderIndicatorRule(rsiIndicator, 30.0);
+
+        // ОБЪЕДИНЯЕМ
         Rule entryStrategy = crossedBollinger.and(rsiLow);
 
-        if (entryStrategy.isSatisfied(candles)) {
+        // 5. ПРОВЕРКА
+        if (entryStrategy.isSatisfied(i)) {
             telegramService.sendMessage("🎯 СИГНАЛ НА ВХОД: Боллинджер пробит + RSI подтверждает!");
         }
     }
 
     // Добавим еще один пример для MACD + Фибоначчи
-    public void checkEntryMACD(List<Candle> candles) {
-        // 1. Цена коснулась уровня Фибо 0.618
-        Rule nearFib = new PriceNearFibRule(fibonacciIndicator, "level_618");
+    public void checkEntryMACD(CandleSeries series) {
+        // 1. ПОДГОТОВКА: Заполняем кэш индикаторов для текущей серии
+        fibonacciIndicator.prepare(series);
+        macd.prepare(series);
 
-        // 2. Используем обновленный MacdRule с перечислением
-        // Условие ABOVE_ZERO как раз проверяет, что гистограмма > 0
+        // 2. ИНДЕКС: Работаем с последней закрытой свечой
+        int i = series.size() - 1;
+        if (i < 1) return; // Минимум данных для анализа
+
+        // 3. ПРАВИЛА
+        // Обновляем PriceNearFibRule: теперь оно принимает серию
+        // 0.001 — чувствительность (0.1% от уровня)
+        Rule nearFib = new PriceNearFibRule(series, fibonacciIndicator, "level_618", 0.001);
+
+        // MacdRule уже адаптирован под i
         Rule macdPositive = new MacdRule(macd, MacdRule.MacdCondition.ABOVE_ZERO);
 
         // ОБЪЕДИНЯЕМ
         Rule fibMacdStrategy = nearFib.and(macdPositive);
 
-        if (fibMacdStrategy.isSatisfied(candles)) {
+        // 4. ПРОВЕРКА
+        if (fibMacdStrategy.isSatisfied(i)) {
             telegramService.sendMessage("🎯 СИГНАЛ: Отскок от Фибо + MACD подтверждает рост!");
         }
     }
 
     // Профессиональная стратегия: Тренд + Поддержка + Сигнал.
     // Покупаем, если тренд глобально растущий, цена откатилась к Фибо, а импульс только что подтвердился пересечением.
-    public void checkProfessionalStrategy(List<Candle> candles) {
-        // Глобальный тренд (Линия MACD выше 0)
+    public void checkProfessionalStrategy(CandleSeries series) {
+        // 1. ПОДГОТОВКА: Заполняем кэш индикаторов для текущей серии
+        macd.prepare(series);
+        fibonacciIndicator.prepare(series);
+
+        // 2. ИНДЕКС: Последняя закрытая свеча
+        int i = series.size() - 1;
+        if (i < 1) return; // Минимум данных для пересечения (CROSS_UP)
+
+        // 3. ПРАВИЛА
+        // Глобальный тренд
         Rule trendIsUp = new MacdRule(macd, MacdRule.MacdCondition.MACD_ABOVE_ZERO);
 
-        // Цена у поддержки (Фибо 0.618)
-        Rule fibSupport = new PriceNearFibRule(fibonacciIndicator, "level_618");
+        // Цена у поддержки (передаем серию и чувствительность 0.1%)
+        Rule fibSupport = new PriceNearFibRule(series, fibonacciIndicator, "level_618", 0.001);
 
-        // Точка входа (Пересечение линий MACD вверх)
+        // Точка входа (пересечение)
         Rule entryPoint = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP);
 
-        // Итоговое правило: ТРЕНД + ПОДДЕРЖКА + СИГНАЛ
+        // 4. ОБЪЕДИНЯЕМ И ПРОВЕРЯЕМ
         Rule fullStrategy = trendIsUp.and(fibSupport).and(entryPoint);
 
-        if (fullStrategy.isSatisfied(candles)) {
+        if (fullStrategy.isSatisfied(i)) {
             telegramService.sendMessage("💎 СИГНАЛ ВЫСОКОЙ ТОЧНОСТИ: Тренд подтвержден, вход от Фибо!");
         }
     }
 
     // Сигнал на выход - проверим, не выдыхается ли тренд. Если RSI в зоне перекупленности И импульс MACD затухает — пора фиксировать прибыль.
-    public void checkExitStrategy(List<Candle> candles) {
-        // 1. Условие: Мы находимся в зоне перекупленности по RSI (> 70)
+    public void checkExitStrategy(CandleSeries series) {
+        // 1. ПОДГОТОВКА: Заполняем кэш для корректной работы getValue(i)
+        rsiIndicator.prepare(series);
+        macd.prepare(series);
+
+        // 2. ИНДЕКС: Последняя закрытая свеча
+        int i = series.size() - 1;
+        if (i < 1) return;
+
+        // 3. ПРАВИЛА
+        // Условие: Мы находимся в зоне перекупленности по RSI (> 70)
         Rule overbought = new OverIndicatorRule(rsiIndicator, 70.0);
 
-        // 2. Условие: Импульс MACD начал затухать (столбики гистограммы начали уменьшаться)
+        // Условие: Импульс MACD начал затухать
         Rule momentumFading = new MacdRule(macd, MacdRule.MacdCondition.HIST_DECREASING);
 
-        // СИГНАЛ: Если рынок перегрет И импульс слабеет — пора выходить
-        if (overbought.and(momentumFading).isSatisfied(candles)) {
+        // 4. ПРОВЕРКА
+        if (overbought.and(momentumFading).isSatisfied(i)) {
             telegramService.sendMessage("⚠️ ВНИМАНИЕ: Тренд выдыхается. Рекомендуется фиксация прибыли.");
         }
     }
 
     // Проверим стратегию, основанную на объеме. Если цена подошла к уровню с большим объемом (POC) И RSI подтверждает перепроданность — ждем отскок.
     // Самая эффективная тактика — искать отскок от POC при подтверждении от осциллятора (например, RSI).
-    public void checkVolumeStrategy(List<Candle> candles) {
-        // 1. Цена подошла к самому проторгованному уровню (POC)
-        Rule atPOC = new PriceNearPOCRule(volumeProfileIndicator, 50);
+    public void checkVolumeStrategy(CandleSeries series) {
+        // 1. ПОДГОТОВКА: Наполняем кэш индикаторов данными из серии
+        volumeProfileIndicator.prepare(series);
+        rsiIndicator.prepare(series);
 
-        // 2. RSI показывает перепроданность (цена дешевая)
+        // 2. ИНДЕКС: Работаем с последней закрытой свечой
+        int i = series.size() - 1;
+        if (i < 0) return;
+
+        // 3. ПРАВИЛА
+        // В PriceNearPOCRule теперь передаем: серию, индикатор и чувствительность (например, 0.2%)
+        Rule atPOC = new PriceNearPOCRule(series, volumeProfileIndicator, 0.2);
+
+        // RSI ниже 30
         Rule rsiLow = new UnderIndicatorRule(rsiIndicator, 30.0);
 
-        // СТРАТЕГИЯ: Покупаем, если цена у сильного горизонтального объема И RSI подтверждает перепроданность
-        if (atPOC.and(rsiLow).isSatisfied(candles)) {
+        // 4. ОБЪЕДИНЯЕМ И ПРОВЕРЯЕМ
+        Rule entrySignal = atPOC.and(rsiLow);
+
+        if (entrySignal.isSatisfied(i)) {
             telegramService.sendMessage("📊 СИГНАЛ: Цена на уровне максимального объема (POC) + RSI перепродан. Ожидаем отскок!");
         }
     }
@@ -156,96 +239,156 @@ public class StrategyService {
     // Например, мы можем создать стратегию, которая требует одновременного выполнения нескольких условий
     // для входа в позицию.
     public void executeFullAnalysis(String symbol, List<Candle> candles) {
-        // 1. СТРАТЕГИЯ ВХОДА (BUY)
-        // Покупаем, если MACD пересекся вверх + RSI низкий + цена у уровня Фибо
-        Rule buySignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP)
-                .and(new UnderIndicatorRule(rsiIndicator, 40.0))
-                .and(new PriceNearFibRule(fibonacciIndicator, "level_618"));
+        if (candles == null || candles.isEmpty()) return;
 
-        if (buySignal.isSatisfied(candles)) {
+        // 1. Оборачиваем данные в серию
+        CandleSeries series = new HistoricalCandleSeries(candles);
+
+        // 2. ПОДГОТОВКА: Заполняем кэш всех используемых индикаторов
+        macd.prepare(series);
+        rsiIndicator.prepare(series);
+        fibonacciIndicator.prepare(series);
+
+        // 3. ТЕКУЩИЙ ИНДЕКС: Последняя закрытая свеча
+        int i = series.size() - 1;
+        if (i < 1) return; // Минимум для условий CROSS
+
+        // 4. СТРАТЕГИЯ ВХОДА (BUY)
+        // Добавляем серию и чувствительность 0.001 в PriceNearFibRule
+        Rule buySignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP)
+            .and(new UnderIndicatorRule(rsiIndicator, 40.0))
+            .and(new PriceNearFibRule(series, fibonacciIndicator, "level_618", 0.001));
+
+        if (buySignal.isSatisfied(i)) {
             telegramService.sendMessage("🚀 [" + symbol + "] СИГНАЛ НА ВХОД: MACD Cross + Fib 0.618 + RSI low");
         }
 
-        // 2. СТРАТЕГИЯ ВЫХОДА (SELL / EXIT)
-        // Выходим, если:
-        // - MACD пересекся вниз (разворот тренда)
-        // - ИЛИ RSI стал слишком высоким (перекупленность > 70)
-        // - ИЛИ цена коснулась верхнего уровня сопротивления Фибо (0.236)
+        // 5. СТРАТЕГИЯ ВЫХОДА (SELL / EXIT)
         Rule sellSignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_DOWN)
-                .or(new OverIndicatorRule(rsiIndicator, 70.0))
-                .or(new PriceNearFibRule(fibonacciIndicator, "level_236"));
+            .or(new OverIndicatorRule(rsiIndicator, 70.0))
+            .or(new PriceNearFibRule(series, fibonacciIndicator, "level_236", 0.001));
 
-        if (sellSignal.isSatisfied(candles)) {
-            telegramService.sendMessage("⚠️[" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
+        if (sellSignal.isSatisfied(i)) {
+            telegramService.sendMessage("⚠️ [" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
         }
     }
 
     // Выполняет бэктест стратегии на истории: рассчитывает сигналы входа/выхода и уровни поддержки/сопротивления
-    public BacktestDto analyzeHistory(List<Candle> candles) {
-        BacktestDto report = new BacktestDto();
+    public BacktestDto analyzeHistory(List<Candle> candles, String timeframe) {
+        // 1. Агрегируем свечи (1m -> выбранный таймфрейм)
+        List<Candle> aggregatedList = aggregate(candles, timeframe);
 
-        // 1. Конвертируем свечи в DTO для фронтенда
-        report.setCandles(CandleMapper.toDtoList(candles));
+        // 2. Оборачиваем в нашу универсальную серию
+        CandleSeries series = new HistoricalCandleSeries(aggregatedList);
+
+        // 3. ПОДГОТОВКА ИНДИКАТОРОВ (Важно: считаем всю историю один раз)
+        macd.prepare(series);
+        rsiIndicator.prepare(series);
+        // fibonacciIndicator.prepare(series); // Если будете использовать
+
+        BacktestDto report = new BacktestDto();
+        // Отправляем на фронтенд именно агрегированные свечи
+        report.setCandles(CandleMapper.toDtoList(aggregatedList));
 
         List<TradeSignalDto> signals = new ArrayList<>();
-        List<PriceLevelDto> levels = new ArrayList<>();
 
-        // 2. Логика поиска сигналов (пример на пересечении EMA или вашей стратегии)
-        // Мы идем по списку свечей и ищем точки входа
-        for (int i = 1; i < candles.size(); i++) {
-            Candle current = candles.get(i);
+        // 4. ЦИКЛ БЭКТЕСТА (Идем по агрегированным свечам)
+        // Начинаем с 35-й свечи, чтобы MACD и RSI успели накопиться
+        for (int i = 35; i < series.size(); i++) {
 
-            // Здесь вызывается ваша существующая логика анализа
-            // Например, если стратегия выдала "BUY":
-            if (checkBuyCondition(candles, i)) {
+
+
+// Проверка условий Входа (BUY)
+            if (checkBuyCondition(series, i)) {
                 signals.add(new TradeSignalDto(
-                    current.getOpenTime(),
-                    "BUY",
-                    current.getClose(),
-                    "Long Entry"
+                        series.getCandle(i).getOpenTime(),
+                        "BUY",
+                        series.getCandle(i).getClose(),
+                        "MACD Cross Up"
                 ));
-            } else if (checkSellCondition(candles, i)) {
+            }
+            // Проверка условий Выхода (SELL)
+            else if (checkSellCondition(series, i)) {
                 signals.add(new TradeSignalDto(
-                    current.getOpenTime(),
-                    "SELL",
-                    current.getClose(),
-                    "Short Entry"
+                        series.getCandle(i).getOpenTime(),
+                        "SELL",
+                        series.getCandle(i).getClose(),
+                        "MACD Cross Down / RSI Overbought"
                 ));
             }
         }
+
         report.setSignals(signals);
 
-        // 3. Логика поиска уровней поддержки и сопротивления
-        // Простейший алгоритм: ищем локальные максимумы и минимумы
-        levels = findSupportResistanceLevels(candles);
-        report.setLevels(levels);
-
-        // 4. Статистика (опционально)
+        // 5. Уровни (используем агрегированные данные)
+        report.setLevels(findSupportResistanceLevels(aggregatedList));
         report.setTotalTrades(signals.size());
 
         return report;
     }
 
-    // Пример метода для покупки (Цена пересекает SMA снизу вверх)
-    private boolean checkBuyCondition(List<Candle> candles, int i) {
-        if (i < 20) return false; // Нужно подождать, пока накопится история для средней
-        BigDecimal currentClose = candles.get(i).getClose();
-        BigDecimal prevClose = candles.get(i - 1).getClose();
-        BigDecimal sma = calculateSMA(candles, i, 20);
-
-        // Условие: предыдущая цена была ниже SMA, а текущая — выше
-        return prevClose.compareTo(sma) < 0 && currentClose.compareTo(sma) > 0;
+    // Обновленный метод покупки (принимает Series и Index)
+    private boolean checkBuyCondition(CandleSeries series, int i) {
+        Rule entryPoint = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP);
+        // Сюда можно добавить .and(new UnderIndicatorRule(rsiIndicator, 40))
+        return entryPoint.isSatisfied(i);
     }
 
-    // Пример метода для продажи (Цена пересекает SMA сверху вниз)
-    private boolean checkSellCondition(List<Candle> candles, int i) {
-        if (i < 20) return false;
-        BigDecimal currentClose = candles.get(i).getClose();
-        BigDecimal prevClose = candles.get(i - 1).getClose();
-        BigDecimal sma = calculateSMA(candles, i, 20);
-
-        return prevClose.compareTo(sma) > 0 && currentClose.compareTo(sma) < 0;
+    // Обновленный метод продажи (принимает Series и Index)
+    private boolean checkSellCondition(CandleSeries series, int i) {
+        Rule sellSignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_DOWN)
+                .or(new OverIndicatorRule(rsiIndicator, 70.0));
+        return sellSignal.isSatisfied(i);
     }
+
+    // Агрегация Таймфрейма
+    private List<Candle> aggregate(List<Candle> candles, String timeframe) {
+        if (timeframe.equals("1m")) return candles; // Если 1м, ничего не делаем
+
+        int intervalMinutes = parseTimeframe(timeframe); // Например, "15m" -> 15
+        long intervalMs = intervalMinutes * 60 * 1000L;
+
+        List<Candle> result = new ArrayList<>();
+
+        // Группируем по интервалам времени
+        Map<Long, List<Candle>> groups = candles.stream()
+                .collect(Collectors.groupingBy(c -> (c.getOpenTime() / intervalMs) * intervalMs, TreeMap::new, Collectors.toList()));
+
+        for (Map.Entry<Long, List<Candle>> entry : groups.entrySet()) {
+            List<Candle> group = entry.getValue();
+            Candle first = group.get(0);
+            Candle last = group.get(group.size() - 1);
+
+            Candle combined = new Candle();
+            combined.setOpenTime(entry.getKey());
+            combined.setOpen(first.getOpen());
+            combined.setClose(last.getClose());
+            combined.setHigh(group.stream().map(Candle::getHigh).max(BigDecimal::compareTo).get());
+            combined.setLow(group.stream().map(Candle::getLow).min(BigDecimal::compareTo).get());
+            combined.setVolume(group.stream().map(Candle::getVolume).reduce(BigDecimal.ZERO, BigDecimal::add));
+
+            result.add(combined);
+        }
+        return result;
+    }
+
+    //
+    private int parseTimeframe(String timeframe) {
+        try {
+            // Убираем все буквы, оставляем цифры
+            int value = Integer.parseInt(timeframe.replaceAll("[^0-9]", ""));
+
+            if (timeframe.toLowerCase().endsWith("h")) {
+                return value * 60; // часы в минуты
+            } else if (timeframe.toLowerCase().endsWith("d")) {
+                return value * 60 * 24; // дни в минуты
+            }
+            return value; // по умолчанию считаем, что это минуты (m)
+        } catch (Exception e) {
+            return 1; // если произошла ошибка, возвращаем 1 минуту как дефолт
+        }
+    }
+
 
     // Вспомогательный метод для расчета средней
     private BigDecimal calculateSMA(List<Candle> candles, int currentIndex, int period) {

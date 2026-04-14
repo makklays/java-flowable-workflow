@@ -23,11 +23,10 @@ public class OverIndicatorRule implements Rule {
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.isEmpty()) return false;
-
-        // Проверяем, что текущее значение индикатора больше порога
-        return indicator.calculate(candles) > threshold;
+    public boolean isSatisfied(int i) {
+        // Просто берем значение индикатора по индексу i
+        // Метод getValue(i) работает мгновенно, так как берет данные из кэша
+        return indicator.getValue(i) > threshold;
     }
 }
 

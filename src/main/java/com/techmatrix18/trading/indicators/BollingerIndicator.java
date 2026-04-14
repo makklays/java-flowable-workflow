@@ -1,10 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * BollingerIndicator calculates the middle band (SMA) of the Bollinger Bands based on a list of candles.
@@ -17,25 +13,48 @@ import java.util.List;
  * @company TechMatrix18
  * @version 0.0.1
  */
-@Component
 public class BollingerIndicator extends AbstractOscillator {
+    private final double standardDeviation;
+    private final String lineType; // "UPPER", "MIDDLE", "LOWER"
 
-    public BollingerIndicator() {
-        super(20); // Стандартный период для Боллинджера
+    public BollingerIndicator(int period, double deviation, String lineType) {
+        super(period);
+        this.standardDeviation = deviation;
+        this.lineType = lineType;
     }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (!hasEnoughData(candles)) return 0.0;
+    public Double calculate(CandleSeries series, int index) {
+        // Проверка: достаточно ли свечей слева от текущего индекса
+        if (index < period - 1) {
+            return 0.0;
+        }
 
-        List<Candle> window = getCurrentWindow(candles);
+        // 1. Считаем Среднюю линию (SMA) за период
+        double sum = 0;
+        for (int i = index; i > index - period; i--) {
+            sum += series.getClose(i);
+        }
+        double sma = sum / period;
 
-        // Средняя линия (SMA) — это просто среднее арифметическое Close цен
-        return window.stream()
-            .map(Candle::getClose)
-            .mapToDouble(BigDecimal::doubleValue)
-            .average()
-            .orElse(0.0);
+        if ("MIDDLE".equals(lineType)) {
+            return sma;
+        }
+
+        // 2. Считаем Стандартное Отклонение (Sigma)
+        double sumOfSquares = 0;
+        for (int i = index; i > index - period; i--) {
+            double diff = series.getClose(i) - sma;
+            sumOfSquares += diff * diff;
+        }
+        double sigma = Math.sqrt(sumOfSquares / period);
+
+        // 3. Возвращаем нужную линию
+        return switch (lineType) {
+            case "UPPER" -> sma + (standardDeviation * sigma);
+            case "LOWER" -> sma - (standardDeviation * sigma);
+            default -> sma;
+        };
     }
 }
 

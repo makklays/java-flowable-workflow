@@ -1,10 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * SmaIndicator calculates the Simple Moving Average (SMA) for a given period.
@@ -19,12 +15,48 @@ public class SmaIndicator extends AbstractOscillator {
     public SmaIndicator(int period) { super(period); }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (!hasEnoughData(candles)) return 0.0;
-        return getCurrentWindow(candles).stream()
-            .map(Candle::getClose)
-            .mapToDouble(BigDecimal::doubleValue)
-            .average().orElse(0.0);
+    public void prepare(CandleSeries series) {
+        history.clear();
+        if (series.size() == 0) return;
+
+        double sum = 0;
+        for (int i = 0; i < series.size(); i++) {
+            // Добавляем текущую цену
+            sum += series.getClose(i);
+
+            // Если окно полностью заполнено, вычитаем цену, которая "выходит" из окна
+            if (i >= period) {
+                sum -= series.getClose(i - period);
+            }
+
+            // Записываем среднее значение в кэш
+            if (i < period - 1) {
+                // На этапе прогрева делим на фактическое количество свечей
+                history.add(sum / (i + 1));
+            } else {
+                // Когда окно заполнено, делим на период
+                history.add(sum / period);
+            }
+        }
+    }
+
+    @Override
+    public Double calculate(CandleSeries series, int index) {
+        if (index < 0) return 0.0;
+
+        // Если значение уже в кэше — возвращаем мгновенно
+        if (index < history.size()) {
+            return history.get(index);
+        }
+
+        // Если кэша нет (одиночный расчет), считаем только для текущего окна
+        if (index < period - 1) return 0.0;
+
+        double sum = 0;
+        for (int i = index; i > index - period; i--) {
+            sum += series.getClose(i);
+        }
+        return sum / period;
     }
 }
 

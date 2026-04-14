@@ -13,16 +13,14 @@ import java.util.List;
  * @version 0.0.1
  */
 public interface Rule {
-    boolean isSatisfied(List<Candle> candles);
+    boolean isSatisfied(int index);
 
-    // Метод для объединения правил через логическое И (AND)
     default Rule and(Rule other) {
-        return (candles) -> this.isSatisfied(candles) && other.isSatisfied(candles);
+        return (i) -> this.isSatisfied(i) && other.isSatisfied(i);
     }
 
-    // Метод для объединения правил через логическое ИЛИ (OR)
     default Rule or(Rule other) {
-        return (candles) -> this.isSatisfied(candles) || other.isSatisfied(candles);
+        return (i) -> this.isSatisfied(i) || other.isSatisfied(i);
     }
 }
 

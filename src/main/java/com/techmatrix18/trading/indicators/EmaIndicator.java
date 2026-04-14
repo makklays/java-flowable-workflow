@@ -1,9 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * EmaIndicator calculates the Exponential Moving Average (EMA) for a given period.
@@ -20,18 +17,40 @@ public class EmaIndicator extends AbstractOscillator {
     public EmaIndicator(int period) { super(period); }
 
     @Override
-    public Double calculate(List<Candle> candles) {
-        if (!hasEnoughData(candles)) return 0.0;
+    public void prepare(CandleSeries series) {
+        history.clear();
+        if (series.size() == 0) return;
 
-        // Коэффициент (multiplier) обычно равен 2 / (period + 1)
         double multiplier = 2.0 / (period + 1);
-        // Для первой точки EMA обычно берется SMA
-        double ema = candles.get(candles.size() - period).getClose().doubleValue();
+        // Начальное значение EMA обычно берется равным цене первой свечи
+        double ema = series.getClose(0);
 
-        // Проходим от старых цен к новым (нужно изменить порядок в списке, если он DESC)
-        for (int i = candles.size() - period; i < candles.size(); i++) {
-            double close = candles.get(i).getClose().doubleValue();
+        for
+
+        (int i = 0; i < series.size(); i++) {
+            double close = series.getClose(i);
+
+            // Рекуррентная формула EMA
             ema = (close - ema) * multiplier + ema;
+
+            history.add(ema);
+        }
+    }
+
+    @Override
+    public Double calculate(CandleSeries series, int index) {
+        if (index < 0) return 0.0;
+
+        // Если значение уже есть в кэше history, берем его (для скорости)
+        if (index < history.size()) {
+            return history.get(index);
+        }
+
+        // Если кэша нет (например, одиночный расчет), считаем по всей цепочке от 0 до index
+        double multiplier = 2.0 / (period + 1);
+        double ema = series.getClose(0);
+        for (int i = 1; i <= index; i++) {
+            ema = (series.getClose(i) - ema) * multiplier + ema;
         }
         return ema;
     }

@@ -2,8 +2,10 @@ package com.techmatrix18.trading.rules;
 
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.trading.indicators.FibonacciIndicator;
+import com.techmatrix18.trading.series.CandleSeries;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * PriceNearFibRule checks if the current price is near a specific Fibonacci level.
@@ -14,21 +16,29 @@ import java.util.List;
  * @version 0.0.1
  */
 public class PriceNearFibRule implements Rule {
+    private final CandleSeries series; // Заменили List на наш универсальный интерфейс
     private final FibonacciIndicator fib;
-    private final String levelName;
+    private final String targetLevel;
+    private final double sensitivity; // Вынесли чувствительность в параметры
 
-    public PriceNearFibRule(FibonacciIndicator fib, String levelName) {
+    public PriceNearFibRule(CandleSeries series, FibonacciIndicator fib, String targetLevel, double sensitivity) {
+        this.series = series;
         this.fib = fib;
-        this.levelName = levelName;
+        this.targetLevel = targetLevel;
+        this.sensitivity = sensitivity;
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        double currentPrice = candles.get(0).getClose().doubleValue();
-        double levelPrice = fib.calculate(candles).get(levelName);
+    public boolean isSatisfied(int i) {
+        Map<String, Double> levels = fib.getValue(i);
+        if (levels == null || !levels.containsKey(targetLevel)) return false;
 
-        // Например, условие: цена находится в пределах 0.1% от уровня
-        return Math.abs(currentPrice - levelPrice) / levelPrice < 0.001;
+        // Используем методы нашей серии
+        double currentPrice = series.getClose(i);
+        double fibPrice = levels.get(targetLevel);
+
+        // Проверка близости к уровню
+        return Math.abs(currentPrice - fibPrice) / fibPrice <= sensitivity;
     }
 }
 

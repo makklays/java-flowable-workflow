@@ -1,7 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import java.util.List;
+import com.techmatrix18.trading.series.CandleSeries;
 
 /**
  * Interface for indicators, which calculates values based on a list of candles.
@@ -14,6 +13,16 @@ import java.util.List;
  * @param <T>
  */
 public interface Indicator<T> {
-    T calculate(List<Candle> candles);
+    /**
+     * Рассчитывает значение индикатора для конкретной свечи по индексу.
+     * Именно этот метод реализует математику индикатора.
+     */
+    T calculate(CandleSeries series, int index);
+
+    /**
+     * Возвращает заранее рассчитанное значение из кэша (history).
+     * Используется правилами (Rule) для мгновенного доступа.
+     */
+    T getValue(int index);
 }
 

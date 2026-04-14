@@ -24,19 +24,18 @@ public class IndicatorCrossedUpRule implements Rule {
     }
 
     @Override
-    public boolean isSatisfied(List<Candle> candles) {
-        if (candles.size() < 2) return false;
+    public boolean isSatisfied(int i) {
+        // Для пересечения нужно минимум 2 свечи (текущая и предыдущая)
+        if (i < 1) return false;
 
-        // Значения сейчас
-        double currentFast = fast.calculate(candles);
-        double currentSlow = slow.calculate(candles);
+        // Просто берем значения по индексам из индикаторов
+        double currentFast = fast.getValue(i);
+        double currentSlow = slow.getValue(i);
 
-        // Значения на предыдущей свече
-        List<Candle> previousCandles = candles.subList(1, candles.size());
-        double prevFast = fast.calculate(previousCandles);
-        double prevSlow = slow.calculate(previousCandles);
+        double prevFast = fast.getValue(i - 1);
+        double prevSlow = slow.getValue(i - 1);
 
-        // Условие: раньше быстрая была под медленной, теперь — над ней
+        // Логика пересечения: была снизу (или на уровне), стала сверху
         return prevFast <= prevSlow && currentFast > currentSlow;
     }
 }

@@ -1,7 +1,6 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
+import com.techmatrix18.trading.series.CandleSeries;
 
 import java.util.*;
 
@@ -17,55 +16,86 @@ import java.util.*;
  * @company TechMatrix18
  * @version 0.0.1
  */
-@Component
-public class VolumeProfileIndicator {
+public class VolumeProfileIndicator implements Indicator<Double> {
+    private final int lookbackPeriod;
+    private final int binCount;
+    private List<Double> pocHistory = new ArrayList<>();
 
-    public List<VolumeBin> calculateProfile(List<Candle> candles, int binCount) {
-        if (candles.isEmpty()) return Collections.emptyList();
+    public VolumeProfileIndicator(int lookbackPeriod, int binCount) {
+        this.lookbackPeriod = lookbackPeriod;
+        this.binCount = binCount;
+    }
 
-        // 1. Находим границы всего диапазона
-        double minPrice = candles.stream().mapToDouble(c -> c.getLow().doubleValue()).min().orElse(0);
-        double maxPrice = candles.stream().mapToDouble(c -> c.getHigh().doubleValue()).max().orElse(0);
-        double step = (maxPrice - minPrice) / binCount;
+    // Метод расчета профиля для конкретного окна индексов
+    public List<VolumeBin> calculateProfile(CandleSeries series, int start, int end) {
+        if (series.size() == 0 || start > end) return Collections.emptyList();
 
-        // 2. Инициализируем корзины
-        Map<Integer, Double> profileMap = new HashMap<>();
-        for (int i = 0; i < binCount; i++) profileMap.put(i, 0.0);
+        // 1. Находим границы диапазона в окне
+        double minPrice = series.getLow(start);
+        double maxPrice = series.getHigh(start);
+        for (int i = start + 1; i <= end; i++) {
+            if (series.getLow(i) < minPrice) minPrice = series.getLow(i);
+            if (series.getHigh(i) > maxPrice) maxPrice = series.getHigh(i);
+        }
 
-        // 3. Распределяем объем каждой свечи
-        for (Candle candle : candles) {
-            double price = candle.getClose().doubleValue();
-            double volume = candle.getVolume().doubleValue();
+        double range = maxPrice - minPrice;
+        if (range <= 0) return Collections.emptyList();
+        double step = range / binCount;
+
+        // 2. Группируем объемы по корзинам (Bins)
+        double[] profile = new double[binCount];
+        for (int i = start; i <= end; i++) {
+            double price = series.getClose(i);
+            double volume = series.getCandle(i).getVolume().doubleValue();
 
             int binIndex = (int) ((price - minPrice) / step);
             if (binIndex >= binCount) binIndex = binCount - 1;
-
-            profileMap.put(binIndex, profileMap.get(binIndex) + volume);
+            if (binIndex < 0) binIndex = 0;
+            profile[binIndex] += volume;
         }
 
-        // 4. Формируем список для фронтенда
+        // 3. Формируем результат
         List<VolumeBin> result = new ArrayList<>();
         for (int i = 0; i < binCount; i++) {
-            double binPrice = minPrice + (i * step);
-            result.add(new VolumeBin(binPrice, profileMap.get(i)));
+            // Возвращаем середину корзины для точности POC
+            double binPrice = minPrice + (i * step) + (step / 2);
+            result.add(new VolumeBin(binPrice, profile[i]));
         }
         return result;
     }
 
-    // Метод поиска POC в VolumeProfileIndicator - возвращает ценовой уровень с наибольшим объемом торгов
-    public double findPOC(List<Candle> candles, int binCount) {
-        List<VolumeBin> bins = calculateProfile(candles, binCount);
-
-        // Находим корзину с максимальным объемом
+    public double findPOC(CandleSeries series, int start, int end) {
+        List<VolumeBin> bins = calculateProfile(series, start, end);
         return bins.stream()
-                .max(Comparator.comparingDouble(VolumeBin::getVolume))
-                .map(VolumeBin::getPrice)
-                .orElse(0.0);
+            .max(Comparator.comparingDouble(VolumeBin::getVolume))
+            .map(VolumeBin::getPrice)
+            .orElse(0.0);
+    }
+
+    public void prepare(CandleSeries series) {
+        pocHistory.clear();
+        for (int i = 0; i < series.size(); i++) {
+            int start = Math.max(0, i - lookbackPeriod + 1);
+            // Считаем POC для окна [start, i]
+            pocHistory.add(findPOC(series, start, i));
+        }
+    }
+
+    @Override
+    public Double calculate(CandleSeries series, int index) {
+        int start = Math.max(0, index - lookbackPeriod + 1);
+        return findPOC(series, start, index);
+    }
+
+    @Override
+    public Double getValue(int index) {
+        if (index < 0 || index >= pocHistory.size()) return 0.0;
+        return pocHistory.get(index);
     }
 
     public static class VolumeBin {
-        private double price;
-        private double volume;
+        private final double price;
+        private final double volume;
         public VolumeBin(double price, double volume) { this.price = price; this.volume = volume; }
         public double getPrice() { return price; }
         public double getVolume() { return volume; }

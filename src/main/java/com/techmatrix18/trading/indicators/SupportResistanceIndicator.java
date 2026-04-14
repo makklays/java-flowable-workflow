@@ -1,10 +1,9 @@
 package com.techmatrix18.trading.indicators;
 
-import com.techmatrix18.model.Candle;
-import org.springframework.stereotype.Component;
+import com.techmatrix18.trading.series.CandleSeries;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,64 +18,83 @@ import java.util.stream.Collectors;
  * @company TechMatrix18
  * @version 0.0.1
  */
-@Component
 public class SupportResistanceIndicator {
 
-    // sensitivity — процент отклонения (например, 0.5%), при котором уровни считаются одним и тем же
-    public List<Level> findStrongLevels(List<Candle> candles, double sensitivity) {
-        List<Double> allPoints = new ArrayList<>();
+    // Кэшируем список уровней для каждой точки истории
+    private List<List<Level>> history = new ArrayList<>();
 
-        // 1. Находим все фракталы (минимумы и максимумы)
-        for (int i = 2; i < candles.size() - 2; i++) {
-            if (isLowFractal(candles, i)) allPoints.add(candles.get(i).getLow().doubleValue());
-            if (isHighFractal(candles, i)) allPoints.add(candles.get(i).getHigh().doubleValue());
-        }
+    public void prepare(CandleSeries series, double sensitivity) {
+        history.clear();
+        List<Double> fractalPoints = new ArrayList<>();
+        List<Level> currentLevels = new ArrayList<>();
 
-        // 2. Группируем близкие точки в уровни
-        List<Level> strongLevels = new ArrayList<>();
-        for (Double price : allPoints) {
-            boolean found = false;
-            for (Level level : strongLevels) {
-                // Если цена близка к уже существующему уровню (в пределах sensitivity %)
-                if (Math.abs(level.getPrice() - price) / price * 100 < sensitivity) {
-                    level.addTouch(); // Добавляем касание
-                    found = true;
-                    break;
+        for (int i = 0; i < series.size(); i++) {
+
+            // Фрактал (с плечом 2) подтверждается только через 2 свечи после экстремума.
+            // Проверяем свечу на индексе (i - 2)
+            int fractalIdx = i - 2;
+            if (fractalIdx >= 2 && fractalIdx < series.size() - 2) {
+                if (isLowFractal(series, fractalIdx)) {
+                    addPointToLevels(currentLevels, series.getLow(fractalIdx), sensitivity);
+                }
+                if (isHighFractal(series, fractalIdx)) {
+                    addPointToLevels(currentLevels, series.getHigh(fractalIdx), sensitivity);
                 }
             }
-            if (!found) {
-                strongLevels.add(new Level(price));
+
+            // Сохраняем копию текущих уровней (только те, что имеют >= 2 касаний)
+            List<Level> confirmedLevels = currentLevels.stream()
+                    .filter(l -> l.getTouches() >= 2)
+                    .map(Level::copy) // Глубокое копирование, чтобы история не менялась
+                    .collect(Collectors.toList());
+
+            history.add(confirmedLevels);
+        }
+    }
+
+    private void addPointToLevels(List<Level> levels, double price, double sensitivity) {
+        boolean found = false;
+        for (Level l : levels) {
+            if (Math.abs(l.getPrice() - price) / price * 100 < sensitivity) {
+                l.addTouch();
+                found = true;
+                break;
             }
         }
-
-        // 3. Оставляем только те, у которых > 2 касаний
-        return strongLevels.stream()
-            .filter(l -> l.getTouches() >= 2)
-            .sorted(Comparator.comparingDouble(Level::getPrice))
-            .collect(Collectors.toList());
+        if (!found) {
+            levels.add(new Level(price));
+        }
     }
 
-    private boolean isLowFractal(List<Candle> candles, int i) {
-        double p = candles.get(i).getLow().doubleValue();
-        return p < candles.get(i-1).getLow().doubleValue() && p < candles.get(i-2).getLow().doubleValue() &&
-            p < candles.get(i+1).getLow().doubleValue() && p < candles.get(i+2).getLow().doubleValue();
+    public List<Level> getLevels(int index) {
+        if (index < 0 || index >= history.size()) return Collections.emptyList();
+        return history.get(index);
     }
 
-    private boolean isHighFractal(List<Candle> candles, int i) {
-        double p = candles.get(i).getHigh().doubleValue();
-        return p > candles.get(i-1).getHigh().doubleValue() && p > candles.get(i-2).getHigh().doubleValue() &&
-            p > candles.get(i+1).getHigh().doubleValue() && p > candles.get(i+2).getHigh().doubleValue();
+    private boolean isLowFractal(CandleSeries series, int i) {
+        double p = series.getLow(i);
+        return p < series.getLow(i-1) && p < series.getLow(i-2) &&
+                p < series.getLow(i+1) && p < series.getLow(i+2);
     }
 
-    // Вспомогательный класс
+    private boolean isHighFractal(CandleSeries series, int i) {
+        double p = series.getHigh(i);
+        return p > series.getHigh(i-1) && p > series.getHigh(i-2) &&
+                p > series.getHigh(i+1) && p > series.getHigh(i+2);
+    }
+
     public static class Level {
         private double price;
-        private int touches = 1;
+        private int touches;
 
-        public Level(double price) { this.price = price; }
+        public Level(double price) { this.price = price; this.touches = 1; }
+        public Level(double price, int touches) { this.price = price; this.touches = touches; }
+
         public void addTouch() { this.touches++; }
         public double getPrice() { return price; }
         public int getTouches() { return touches; }
+
+        public Level copy() { return new Level(this.price, this.touches); }
     }
 }
 

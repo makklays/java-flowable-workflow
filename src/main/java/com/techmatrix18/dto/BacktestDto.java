@@ -12,7 +12,8 @@ import java.util.List;
  */
 public class BacktestDto {
     private List<CandleDto> candles;
-    private List<TradeSignalDto> signals;
+    private List<SignalDto> signals;
+    private List<TradeDto> trades;
     private List<PriceLevelDto> levels;
 
     // Рекомендуется добавить краткую статистику теста
@@ -26,8 +27,11 @@ public class BacktestDto {
     public List<CandleDto> getCandles() { return candles; }
     public void setCandles(List<CandleDto> candles) { this.candles = candles; }
 
-    public List<TradeSignalDto> getSignals() { return signals; }
-    public void setSignals(List<TradeSignalDto> signals) { this.signals = signals; }
+    public List<SignalDto> getSignals() { return signals; }
+    public void setSignals(List<SignalDto> signals) { this.signals = signals; }
+
+    public List<TradeDto> getTrades() { return trades; }
+    public void setTrades(List<TradeDto> trades) { this.trades = trades; }
 
     public List<PriceLevelDto> getLevels() { return levels; }
     public void setLevels(List<PriceLevelDto> levels) { this.levels = levels; }

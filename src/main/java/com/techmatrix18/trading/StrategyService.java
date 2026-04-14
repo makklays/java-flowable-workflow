@@ -2,7 +2,8 @@ package com.techmatrix18.trading;
 
 import com.techmatrix18.dto.BacktestDto;
 import com.techmatrix18.dto.PriceLevelDto;
-import com.techmatrix18.dto.TradeSignalDto;
+import com.techmatrix18.dto.SignalDto;
+import com.techmatrix18.dto.TradeDto;
 import com.techmatrix18.mapper.CandleMapper;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.telegram.TelegramService;
@@ -290,36 +291,49 @@ public class StrategyService {
         // Отправляем на фронтенд именно агрегированные свечи
         report.setCandles(CandleMapper.toDtoList(aggregatedList));
 
-        List<TradeSignalDto> signals = new ArrayList<>();
+        // Список сигналов
+        List<SignalDto> signals = new ArrayList<>();
+        // Список сделок
+        List<TradeDto> trades = new ArrayList<>();
 
-        // 4. ЦИКЛ БЭКТЕСТА (Идем по агрегированным свечам)
-        // Начинаем с 35-й свечи, чтобы MACD и RSI успели накопиться
+        // ПЕРЕМЕННАЯ ДЛЯ ТЕКУЩЕЙ ОТКРЫТОЙ СДЕЛКИ
+        TradeDto currentTrade = null;
+
         for (int i = 35; i < series.size(); i++) {
+            Candle currentCandle = series.getCandle(i);
+            BigDecimal closePrice = currentCandle.getClose();
 
-            // Проверка условий Входа (BUY)
-            if (checkBuyCondition(series, i)) {
-                signals.add(new TradeSignalDto(
-                        series.getCandle(i).getOpenTime(),
-                        "BUY",
-                        series.getCandle(i).getClose(),
-                        "MACD Cross Up"
-                ));
+            // ЕСЛИ СДЕЛКА НЕ ОТКРЫТА — ИЩЕМ ВХОД
+            if (currentTrade == null) {
+                if (checkBuyCondition(series, i)) {
+                    currentTrade = new TradeDto(currentCandle.getOpenTime(), closePrice, "BUY");
+
+                    signals.add(new SignalDto(currentCandle.getOpenTime(), "BUY", closePrice, "Entry"));
+                }
             }
-            // Проверка условий Выхода (SELL)
-            else if (checkSellCondition(series, i)) {
-                signals.add(new TradeSignalDto(
-                        series.getCandle(i).getOpenTime(),
-                        "SELL",
-                        series.getCandle(i).getClose(),
-                        "MACD Cross Down / RSI Overbought"
-                ));
+            // ЕСЛИ СДЕЛКА ОТКРЫТА — ИЩЕМ ВЫХОД
+            else {
+                if (checkSellCondition(series, i)) {
+                    // Заполняем данные выхода
+                    currentTrade.exitTime = currentCandle.getOpenTime();
+                    currentTrade.exitPrice = closePrice;
+
+                    // Считаем профит
+                    BigDecimal diff = currentTrade.exitPrice.subtract(currentTrade.entryPrice);
+                    currentTrade.profit = diff;
+                    currentTrade.profitPercent = diff.divide(currentTrade.entryPrice, 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal(100));
+
+                    trades.add(currentTrade); // Сохраняем завершенную сделку
+                    signals.add(new SignalDto(currentCandle.getOpenTime(), "SELL", closePrice, "Exit"));
+
+                    currentTrade = null; // Сбрасываем состояние
+                }
             }
         }
         report.setSignals(signals);
-
-        // 5. Уровни (используем агрегированные данные)
-        report.setLevels(findSupportResistanceLevels(aggregatedList));
-        report.setTotalTrades(signals.size());
+        report.setTrades(trades);
+        report.setTotalTrades(trades.size());
 
         return report;
     }
@@ -334,7 +348,7 @@ public class StrategyService {
     // Обновленный метод продажи (принимает Series и Index)
     private boolean checkSellCondition(CandleSeries series, int i) {
         Rule sellSignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_DOWN)
-                .or(new OverIndicatorRule(rsiIndicator, 70.0));
+            .or(new OverIndicatorRule(rsiIndicator, 70.0));
         return sellSignal.isSatisfied(i);
     }
 
@@ -349,7 +363,7 @@ public class StrategyService {
 
         // Группируем по интервалам времени
         Map<Long, List<Candle>> groups = candles.stream()
-                .collect(Collectors.groupingBy(c -> (c.getOpenTime() / intervalMs) * intervalMs, TreeMap::new, Collectors.toList()));
+            .collect(Collectors.groupingBy(c -> (c.getOpenTime() / intervalMs) * intervalMs, TreeMap::new, Collectors.toList()));
 
         for (Map.Entry<Long, List<Candle>> entry : groups.entrySet()) {
             List<Candle> group = entry.getValue();

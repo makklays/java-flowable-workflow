@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins, faSync, faPlay } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 
-
 const Backtest = () => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null);
@@ -38,6 +37,7 @@ const Backtest = () => {
     const priceLinesRef = useRef([]);
 
     const [tradesList, setTradesList] = useState([]);
+    const [totalAmount, setTotalAmount] = useState("0.00");
 
     useEffect(() => {
         const fetchSymbols = async () => {
@@ -72,9 +72,21 @@ const Backtest = () => {
             minHeight: '38px',
             borderColor: state.isFocused ? '#86b7fe' : '#dee2e6',
             boxShadow: state.isFocused ? '0 0 0 0.25rem rgba(13, 110, 253, 0.25)' : 'none',
+            // ВЫНЕСИТЕ ЭТИ КЛЮЧИ СЮДА:
+            menu: (provided) => ({
+                ...provided,
+                zIndex: 9999
+            }),
+            menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999
+            }),
+            container: (provided) => ({
+                ...provided,
+                zIndex: 1000 // Контейнер тоже должен быть выше
+            })
         }),
     };
-
 
     function handlePair(newPair) {
         console.log(newPair);
@@ -135,44 +147,40 @@ const Backtest = () => {
                 return;
             }
 
-            // Получаем данные для отображения в таблице - цена входа, выхода, профит..
-            if (data.signals && data.signals.length > 0) {
-                const formattedTrades = [];
-                let j = 1;
-                // Проходим по сигналам парами (предполагая: BUY -> SELL)
-                for (let i = 0; i < data.signals.length; i += 2) {
-                    const entry = data.signals[i];
-                    const exit = data.signals[i + 1];
+            // 1. Проверяем наличие массива сделок (trades) из бэкенда
+            if (data.trades && data.trades.length > 0) {
+                const formattedTrades = data.trades.map((trade, index) => {
+                    // Извлекаем данные из TradeDto, который прислал Java
+                    const entryPrice = parseFloat(trade.entryPrice);
+                    const exitPrice = parseFloat(trade.exitPrice);
+                    const profit = parseFloat(trade.profit);
+                    const profitPercent = parseFloat(trade.profitPercent);
 
-                    if (entry && exit) {
-                        const entryPrice = parseFloat(entry.price);
-                        const exitPrice = parseFloat(exit.price);
-
-                        // ОБЯЗАТЕЛЬНО: Объявляем переменные через let ПЕРЕД использованием в if
-                        let profit = 0;
-                        let profit_percent = 0;
-
-                        if (entry.type === 'BUY') {
-                            profit = exitPrice - entryPrice;
-                            profit_percent = ((exitPrice - entryPrice) / entryPrice) * 100;
-                        } else {
-                            profit = entryPrice - exitPrice;
-                            profit_percent = ((entryPrice - exitPrice) / entryPrice) * 100;
-                        }
-
-                        formattedTrades.push({
-                            id: j,
-                            entryTime: new Date(entry.time).toLocaleString(),
-                            exitTime: new Date(exit.time).toLocaleString(),
-                            entryPrice: entryPrice.toFixed(2),
-                            exitPrice: exitPrice.toFixed(2),
-                            profit: profit.toFixed(2),
-                            profit_percent: profit_percent.toFixed(2)
-                        });
-                        j++;
-                    }
-                }
+                    return {
+                        id: index + 1,
+                        // Превращаем метки времени в читаемую дату
+                        entryTime: new Date(trade.entryTime).toLocaleString(),
+                        exitTime: trade.exitTime ? new Date(trade.exitTime).toLocaleString() : 'Open',
+                        entryPrice: entryPrice.toFixed(2),
+                        exitPrice: exitPrice ? exitPrice.toFixed(2) : '—',
+                        type: trade.type,
+                        profit: profit.toFixed(2),
+                        profit_percent: profitPercent.toFixed(2),
+                        type: trade.type // BUY / SELL
+                    };
+                });
                 setTradesList(formattedTrades);
+
+                // 2. Считаем общую прибыль (Total Profit) одной операцией
+                const totalProfit = data.trades.reduce((sum, trade) => {
+                    return sum + (parseFloat(trade.profit) || 0);
+                }, 0);
+                // 3. Обновляем состояние один раз
+                setTotalAmount(totalProfit.toFixed(2));
+
+            } else {
+                setTradesList([]); // Очищаем список, если сделок нет
+                setTotalAmount("0.00"); // Обнуляем итоговую сумму
             }
 
             // 2. Маппинг и СТРОГАЯ СОРТИРОВКА (решает ошибку Assertion failed)
@@ -212,7 +220,6 @@ const Backtest = () => {
                             priceLineVisible: false,
                             lastValueVisible: false,
                         });
-
                         tradeLinesRef.current.push(singleTradeLine);
 
                         singleTradeLine.setData([
@@ -248,7 +255,6 @@ const Backtest = () => {
                     priceLinesRef.current.push(line);
                 });
             }
-
         } catch (err) {
             console.error("Backtest error:", err);
             alert("Критическая ошибка: " + err.message);
@@ -265,7 +271,6 @@ const Backtest = () => {
                 chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
             }
         };
-
         window.addEventListener('resize', handleResize);
 
         // 1. Создаем график
@@ -404,111 +409,64 @@ const Backtest = () => {
                 socketRef.current.close();
                 socketRef.current = null;
             }
-
             if (chartRef.current) {
                 chartRef.current.remove();
                 chartRef.current = null;
             }
         };
-        /*return () => {
-            isMounted = false;
-            window.removeEventListener('resize', handleResize);
-
-            // 1. Полностью "ослепляем" сокеты
-            [socketRef].forEach(s => {
-                if (s.current) {
-                    s.current.onmessage = null; // Критически важно
-                    s.current.onopen = null;
-                    s.current.onerror = null;
-                    s.current.onclose = null;
-                    s.current.close();
-                    s.current = null;
-                }
-            });
-
-            // 2. Удаляем графики и зануляем ссылки
-            const charts = [
-                { ref: chartRef, container: chartContainerRef },
-            ];
-
-            charts.forEach(({ ref, container }) => {
-                if (ref.current) {
-                    const instance = ref.current;
-                    ref.current = null; // Сначала зануляем ссылку в React
-                    try {
-                        instance.remove(); // Затем командуем библиотеке удалиться
-                    } catch (e) {
-                        // Игнорируем, если уже удалено
-                    }
-                }
-                // 3. Физическая зачистка DOM от canvas-элементов
-                if (container.current) {
-                    container.current.innerHTML = '';
-                }
-            });
-        };*/
     }, [pair, timeframe, isBacktesting]);
 
     return (
         <div>
-            <div className="card-header bg-dark text-white d-flex justify-content-between">
-                <h6 className="mb-0">
-                    {pair.toUpperCase()} / {timeframe}
-                    {/* Индикатор режима */}
-                    {isBacktesting && <span className="badge bg-warning text-dark ms-2">BACKTEST</span>}
-                </h6>
-                <small>{isBacktesting ? 'История из БД' : 'Binance Live'}</small>
-            </div>
-
             <div className="card p-3 mb-3 shadow-sm">
                 <div className="row align-items-end">
 
                     {/* Символ */}
                     <div className="col-md-2">
-                        <div className="mb-3">
-                            <label className="form-label required">Символ</label>
-                            <div className="input-group">
-                                <span className="small text-muted input-group-text">
-                                    <FontAwesomeIcon icon={faCoins} />
-                                </span>
-                                <Select className={`form-control p-0 border-0`}
-                                    options={options}
-                                    isLoading={loadingSymbols}
-                                    placeholder="Поиск символа..."
-                                    isSearchable={true} // Включает поиск по части слова
-                                    value={options.find(opt => opt.value === formData.symbol) || null}
-                                    onChange={(selectedOption) => {
-                                        const val = selectedOption ? selectedOption.value : '';
-                                        setFormData({...formData, symbol: val});
-                                        setSelectedSymbolId(val); // Обновляем ID для бэктеста
-                                        setPair(selectedOption ? selectedOption.symbolName.toLowerCase() : ''); // Обновляем тикер
-                                        if (val) setErrors(prev => ({...prev, symbol: null}));
-                                    }}
-                                    styles={customStyles }
-                                    noOptionsMessage={() => "Ничего не найдено"}
-                                />
-                            </div>
-                            {errors.symbol && <div className="text-danger small mt-1">{errors.symbol}</div>}
+                        <label className="small text-muted form-label required">Символ</label>
+                        <div className="input-group">
+                            <span className="small text-muted input-group-text">
+                                <FontAwesomeIcon icon={faCoins} />
+                            </span>
+                            <Select className={`form-control p-0 border-0`}
+                                options={options}
+                                isLoading={loadingSymbols}
+                                placeholder="Поиск символа..."
+                                isSearchable={true} // Включает поиск по части слова
+                                value={options.find(opt => opt.value === formData.symbol) || null}
+                                onChange={(selectedOption) => {
+                                    const val = selectedOption ? selectedOption.value : '';
+                                    setFormData({...formData, symbol: val});
+                                    setSelectedSymbolId(val); // Обновляем ID для бэктеста
+                                    setPair(selectedOption ? selectedOption.symbolName.toLowerCase() : ''); // Обновляем тикер
+                                    if (val) setErrors(prev => ({...prev, symbol: null}));
+                                }}
+                                menuPortalTarget={document.body}
+                                styles={customStyles}
+                                noOptionsMessage={() => "Ничего не найдено"}
+                            />
                         </div>
+                        {errors.symbol && <div className="text-danger small mt-1">{errors.symbol}</div>}
                     </div>
 
                     <div className="col-md-2">
-                        <label className="small text-muted">Дата начала</label>
+                        <label className="small text-muted form-label required">Дата начала</label>
                         <input type="date" className="form-control" value={backtestDates.start}
                             onChange={e => setBacktestDates({...backtestDates, start: e.target.value})} />
                     </div>
                     <div className="col-md-2">
-                        <label className="small text-muted">Дата конца</label>
+                        <label className="small text-muted form-label required">Дата конца</label>
                         <input type="date" className="form-control" value={backtestDates.end}
                             onChange={e => setBacktestDates({...backtestDates, end: e.target.value})} />
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <button className="btn btn-success w-100" onClick={() => setIsBacktesting(true)} disabled={isBacktesting}>
                             {isBacktesting ? 'Анализ...' : 'Запустить тест'}
                         </button>
                     </div>
+
                     {/* Новая кнопка для возврата к реальным данным */}
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <button
                             className="btn btn-outline-primary w-100"
                             onClick={() => setIsBacktesting(false)}
@@ -520,6 +478,7 @@ const Backtest = () => {
                 </div>
             </div>
 
+            {/*
             <div style={{ marginBottom: '20px' }} >
                 <button onClick={() => handlePair('solusdt')} >SOL USDT</button>
                 <button onClick={() => handlePair('btcusdt')} >BTC USDT</button>
@@ -528,11 +487,24 @@ const Backtest = () => {
             </div>
             <div style={{ marginBottom: '20px' }} >
                 <button onClick={() => handleTimeframe('1m')} >M1</button>
-                <button onClick={() => handleTimeframe('15m')} >M15</button>
+                <button onClick={() => handleTimeframe('15m')}>M15</button>
                 <button onClick={() => handleTimeframe('1h')} >H1</button>
                 <button onClick={() => handleTimeframe('4h')} >H4</button>
                 <button onClick={() => handleTimeframe('1d')} >D1</button>
                 <button onClick={() => handleTimeframe('1w')} >W1</button>
+            </div>
+            */}
+
+            <div className="row mt-4 mb-8">
+                <div className="col-md-6">
+                    <h1 className="mb-0">
+                        {pair.toUpperCase()} / {timeframe}
+
+                        {/* Индикатор режима */}
+                        {isBacktesting && <span className="badge bg-warning text-dark ms-2">BACKTEST</span>}
+                    </h1>
+                    <p>{isBacktesting ? 'История из БД' : 'Binance Live'}</p>
+                </div>
             </div>
 
             <div className="row">
@@ -549,40 +521,53 @@ const Backtest = () => {
                 </div>
             </div>
 
+            <div className="row mt-4 mb-4">
+                <div className="col-md-6">
+                    <h3>
+                        Итого: {' '}
+                        <span className={parseFloat(totalAmount) >= 0 ? 'text-success' : 'text-danger'}>
+                            {totalAmount} $
+                        </span>
+                    </h3>
+                </div>
+            </div>
+
             <div className="mt-4 card">
                 <div className="card-header">Результаты сделок</div>
                 <div className="table-responsive">
                     <table className="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Вход</th>
-                                <th>Выход</th>
-                                <th>Цена входа</th>
-                                <th>Цена выхода</th>
-                                <th>Профит</th>
-                                <th>Профит (%)</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >#</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Вход</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Выход</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Тип</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Цена входа</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Цена выхода</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Профит</th>
+                                <th style={{textAlign: 'center', verticalAlign: 'middle'}} >Профит (%)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {tradesList.map((trade) => (
                                 <tr key={trade.id}>
-                                    <td>{trade.id}</td>
-                                    <td>{trade.entryTime}</td>
-                                    <td>{trade.exitTime}</td>
-                                    <td>{trade.entryPrice}</td>
-                                    <td>{trade.exitPrice}</td>
-                                    <td className={trade.profit >= 0 ? 'text-success' : 'text-danger'}>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.id}</td>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.entryTime}</td>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.exitTime}</td>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.type}</td>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.entryPrice}</td>
+                                    <td style={{textAlign: 'center', verticalAlign: 'middle'}} >{trade.exitPrice}</td>
+                                    <td className={trade.profit >= 0 ? 'text-success' : 'text-danger'} style={{textAlign: 'center', verticalAlign: 'middle'}} >
                                         {trade.profit}
                                     </td>
-                                    <td className={trade.profit_percent >= 0 ? 'text-success' : 'text-danger'}>
+                                    <td className={trade.profit_percent >= 0 ? 'text-success' : 'text-danger'} style={{textAlign: 'center', verticalAlign: 'middle'}} >
                                         {trade.profit_percent}%
                                     </td>
                                 </tr>
                             ))}
                             {tradesList.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="text-center text-muted">Сделок не найдено</td>
+                                    <td colSpan="6" className="text-center text-muted">Сделок не найдено</td>
                                 </tr>
                             )}
                         </tbody>

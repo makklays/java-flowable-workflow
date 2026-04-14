@@ -10,14 +10,14 @@ import java.math.BigDecimal;
  * @company TechMatrix18
  * @version 0.0.1
  */
-public class TradeSignalDto {
+public class SignalDto {
     private Long time;          // Timestamp в миллисекундах (open_time свечи)
     private String type;        // "BUY" или "SELL"
     private BigDecimal price;   // Цена, на которой сработал сигнал
     private String label;       // Текст над/под стрелкой (например, "MACD Cross")
 
     // Добавьте этот конструктор
-    public TradeSignalDto(Long time, String type, BigDecimal price, String label) {
+    public SignalDto(Long time, String type, BigDecimal price, String label) {
         this.time = time;
         this.type = type;
         this.price = price;
@@ -25,7 +25,7 @@ public class TradeSignalDto {
     }
 
     // Не забудьте пустой конструктор для Jackson (JSON)
-    public TradeSignalDto() {}
+    public SignalDto() {}
 
     // Геттеры и сеттеры
 

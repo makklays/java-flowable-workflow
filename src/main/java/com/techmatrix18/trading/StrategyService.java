@@ -32,20 +32,20 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StrategyService {
+    // Индикаторы без параметров можно создать сразу (если они не @Component)
     private final RsiIndicator rsiIndicator = new RsiIndicator();
-    private final BollingerIndicator bollingerIndicator;
-    private final FibonacciIndicator fibonacciIndicator;
-    private final VolumeProfileIndicator volumeProfileIndicator; // Период для расчета профиля объема
-
     private final AtrIndicator atr14 = new AtrIndicator(14);
     private final SmaIndicator sma200 = new SmaIndicator(200);
     private final MacdIndicator macd = new MacdIndicator(12, 26, 9);
+
+    // Эти требуют параметров, их создадим позже или здесь с дефолтами
+    private final BollingerIndicator bollingerIndicator = new BollingerIndicator(20, 2.0, "MIDDLE");
+    private final FibonacciIndicator fibonacciIndicator = new FibonacciIndicator(100);
+    private final VolumeProfileIndicator volumeProfileIndicator = new VolumeProfileIndicator(200, 50);
+
     private final TelegramService telegramService;
 
-    public StrategyService(BollingerIndicator bollingerIndicator, FibonacciIndicator fibonacciIndicator, VolumeProfileIndicator volumeProfileIndicator, TelegramService telegramService) {
-        this.bollingerIndicator = bollingerIndicator;
-        this.fibonacciIndicator = fibonacciIndicator;
-        this.volumeProfileIndicator = volumeProfileIndicator;
+    public StrategyService(TelegramService telegramService) {
         this.telegramService = telegramService;
     }
 
@@ -296,9 +296,7 @@ public class StrategyService {
         // Начинаем с 35-й свечи, чтобы MACD и RSI успели накопиться
         for (int i = 35; i < series.size(); i++) {
 
-
-
-// Проверка условий Входа (BUY)
+            // Проверка условий Входа (BUY)
             if (checkBuyCondition(series, i)) {
                 signals.add(new TradeSignalDto(
                         series.getCandle(i).getOpenTime(),
@@ -317,7 +315,6 @@ public class StrategyService {
                 ));
             }
         }
-
         report.setSignals(signals);
 
         // 5. Уровни (используем агрегированные данные)

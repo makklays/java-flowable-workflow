@@ -75,12 +75,15 @@ import SymbolView from './pages/symbols/SymbolView';
 import Candles from './pages/candles/Candles';
 import CandleView from './pages/candles/CandleView';
 
+import Tasks from './pages/flowables/Tasks';
+
 import Trading from './pages/Trading';
 import Backtest from './pages/Backtest';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import Login from './pages/Login';
 import Learn from './pages/Learn';
+import Learn2 from './pages/Learn2';
 
 import myLogo from './assets/fl-logo1.png';
 
@@ -189,6 +192,14 @@ function App() {
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
+                      {t('Flowable')}
+                  </div>
+
+                  <Nav.Link as={NavLink} to="/tasks" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('tasks')}
+                  </Nav.Link>
+
+                  <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
                       {t('company')}
                   </div>
 
@@ -214,7 +225,10 @@ function App() {
                       <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('backtest')}
                   </Nav.Link>
                   <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn')}
+                      <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn') + ' counter' }
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/learn2" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn') + ' redux' }
                   </Nav.Link>
 
                   <hr className="my-auto opacity-25" />
@@ -254,6 +268,8 @@ function App() {
                       <Route path="/deals/:id/edit" element={<DealEdit />} />
                       <Route path="/deals/:id" element={<DealView />} />
 
+                      <Route path="/tasks" element={<Tasks />} />
+
                       <Route path="/symbols" element={<Symbols />} />
                       <Route path="/symbols/:id" element={<SymbolView />} />
 
@@ -282,10 +298,12 @@ function App() {
 
                       <Route path="/trading" element={<Trading />} />
                       <Route path="/backtest" element={<Backtest />} />
+
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/learn" element={<Learn />} />
+                      <Route path="/learn2" element={<Learn2 />} />
                       <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
                   </Routes>
                 </Container>

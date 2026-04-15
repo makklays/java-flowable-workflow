@@ -4,11 +4,16 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './i18n';
+import { Provider } from 'react-redux'; // 1. Импортируем Provider
+import { store } from './store';  // 2. Импортируем ваше созданное хранилище
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+      {/* 3. Оборачиваем всё приложение */}
+      <Provider store={store}>
+          <App />
+      </Provider>
   </React.StrictMode>
 );
 

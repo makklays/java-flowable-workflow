@@ -13,7 +13,7 @@ import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake, faChartBar, faListUl, faCoins,
-  faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks,
+  faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks, faHistory, faChartArea, faFlask,
   faGear, faCircleInfo, faChartLine, faLaptopCode
 }
 from '@fortawesome/free-solid-svg-icons';
@@ -76,6 +76,7 @@ import Candles from './pages/candles/Candles';
 import CandleView from './pages/candles/CandleView';
 
 import Tasks from './pages/flowables/Tasks';
+import History from './pages/flowables/History';
 
 import Trading from './pages/Trading';
 import Backtest from './pages/Backtest';
@@ -181,14 +182,20 @@ function App() {
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
-                      {t('symbols')}
+                      {t('trading')}
                   </div>
 
+                  <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/backtest" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faFlask} className="me-3 text-secondary" /> {t('backtest')}
+                  </Nav.Link>
                   <Nav.Link as={NavLink} to="/symbols" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faCoins} className="me-3 text-secondary" /> {t('symbols')}
                   </Nav.Link>
                   <Nav.Link as={NavLink} to="/candles" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('candles')}
+                      <FontAwesomeIcon icon={faChartArea} className="me-3 text-secondary" /> {t('candles')}
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
@@ -197,6 +204,9 @@ function App() {
 
                   <Nav.Link as={NavLink} to="/tasks" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faTasks} className="me-3 text-secondary" /> {t('tasks')}
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/history" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faHistory} className="me-3 text-secondary" /> {t('history')}
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
@@ -218,12 +228,6 @@ function App() {
 
                   <hr className="my-2 opacity-25" />
 
-                  <Nav.Link as={NavLink} to="/trading" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('trading')}
-                  </Nav.Link>
-                  <Nav.Link as={NavLink} to="/backtest" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('backtest')}
-                  </Nav.Link>
                   <Nav.Link as={NavLink} to="/learn" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faLaptopCode} className="me-3 text-secondary" /> {t('learn') + ' counter' }
                   </Nav.Link>
@@ -269,6 +273,7 @@ function App() {
                       <Route path="/deals/:id" element={<DealView />} />
 
                       <Route path="/tasks" element={<Tasks />} />
+                      <Route path="/history" element={<History />} />
 
                       <Route path="/symbols" element={<Symbols />} />
                       <Route path="/symbols/:id" element={<SymbolView />} />

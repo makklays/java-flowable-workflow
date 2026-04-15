@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPenToSquare, faCoins, faArrowLeft, faTimes, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPenToSquare, faCoins, faArrowLeft, faTimes, faTrashCan, faPlus, faChartArea } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext'; // Убрали лишний импорт user
 
@@ -61,7 +61,7 @@ const CandleView = () => {
             {/* Заголовок с кнопкой назад */}
             <div className="row">
                 <div className="col-md-6">
-                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('view_candle')}</h1>
+                    <h1><FontAwesomeIcon icon={faChartArea} className="me-2" /> {t('view_candle')}</h1>
                     <p>Детали символа {candle.symbolName}</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right' }}>

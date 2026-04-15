@@ -36,7 +36,8 @@ i18n
           upload_candles: "Загрузить свечи",
           view_candles: "Просмотр свечей",
           backtest: "Тесты",
-          tasks: "Задания",
+          tasks: "Мои задачи",
+          history: "История задач",
         }
       },
       en: {
@@ -67,7 +68,8 @@ i18n
           upload_candles: "Upload Candles",
           view_candles: "View Candles",
           backtest: "Backtest",
-          tasks: "Tasks",
+          tasks: "My tasks",
+          history: "Tasks history",
         }
       },
       es: {
@@ -98,7 +100,8 @@ i18n
           upload_candles: "Subir Velas",
           view_candles: "Ver Velas",
           backtest: "Backtest",
-          tasks: "Tasks",
+          tasks: "Mis tareas",
+          history: "Historial de tareas",
         }
       }
     }, // Закрываем resources здесь

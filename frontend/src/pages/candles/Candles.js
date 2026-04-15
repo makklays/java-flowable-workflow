@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import candleService from '../../services/candleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faDownload, faChartLine, faEye, faBolt, faSync,
+import { faTrashCan, faDownload, faChartLine, faEye, faBolt, faSync, faChartArea,
         faCoins, faSortUp, faSortDown, faSort,  } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 // Переводы текстов
@@ -297,7 +297,7 @@ const Candles = () => {
             <div className="row d-flex align-items-end">
                 <div className="col-md-6">
                     <h1>
-                        <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" />
+                        <FontAwesomeIcon icon={faChartArea} className="me-3 text-secondary" />
                         {t('candles')}
                     </h1>
                     <p>Список всех свечей (0)</p>

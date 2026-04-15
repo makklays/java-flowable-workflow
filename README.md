@@ -18,8 +18,9 @@ Simple structure of Bank 🏦 (UML schema)
 
 ## Description 
 This simple demo project demonstrates how I work with Flowable (dependencies on Maven + Flowable-UI from docker-compose.yml). 
-This is the monolithic project on Java (with Spring Security and login via username/password and the Thymeleaf template engine) 
-and with a REST API (accessible via JWT). 
+This is the monolithic project on Java (with Spring Security and login via username/password and React on the frontend / 
+the Thymeleaf template engine) and with a REST API (accessible via JWT). 
+I have added a directory 'frontend' with React and created frontend on React for this project. 
 
 For work with Flowable I created simple CRM with several Entities and html pages with CRUD functionality to manage them.
 After that, I started working with Flowable and creating different BPMN process (like application for user, example: 

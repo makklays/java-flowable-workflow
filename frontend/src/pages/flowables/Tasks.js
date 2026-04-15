@@ -14,12 +14,12 @@ const Tasks = () => {
 
     return (
         <div>
-            <small>Example of code using Redux Toolkit</small> <br/><br/>
+            <h1>My Flowable tasks</h1>
+            <small>Tasks from Flowable assigned to me</small> <br/><br/>
 
-            <h1>Counter: {count}</h1>
-            <button className="btn btn-primary" style={{ marginRight: '10px' }} onClick={() => dispatch(increment())}>+1</button>
-            <button className="btn btn-primary" style={{ marginRight: '10px' }} onClick={() => dispatch(decrement())}>-1</button>
-            <button className="btn btn-primary" onClick={() => dispatch(incrementByAmount(5))}>+5</button>
+            <div>
+                //
+            </div>
         </div>
     );
 };

@@ -13,7 +13,7 @@ import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake, faChartBar, faListUl, faCoins,
-  faSitemap, faBriefcase, faUserShield, faUserGroup,
+  faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks,
   faGear, faCircleInfo, faChartLine, faLaptopCode
 }
 from '@fortawesome/free-solid-svg-icons';
@@ -196,7 +196,7 @@ function App() {
                   </div>
 
                   <Nav.Link as={NavLink} to="/tasks" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                      <FontAwesomeIcon icon={faSitemap} className="me-3 text-secondary" /> {t('tasks')}
+                      <FontAwesomeIcon icon={faTasks} className="me-3 text-secondary" /> {t('tasks')}
                   </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { increment, decrement, incrementByAmount } from '../../slices/counterSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faSearch, faTasks, faSync, faChartLine, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 // Переводы текстов
 import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +12,12 @@ import { useTranslation } from 'react-i18next';
 const Tasks = () => {
     const { t, i18n } = useTranslation();
 
-    const count = useSelector((state) => state.counter.value); // Читаем данные
-    const dispatch = useDispatch(); // Получаем функцию отправки
+    const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        axios.get("/flowable-task/process-api/runtime/tasks")
+            .then(res => setTasks(res.data.data));
+    }, []);
 
     return (
         <div>
@@ -40,6 +45,13 @@ const Tasks = () => {
                     <br/><br/><br/>
                 </div>
             </div>
+
+            {/*
+            if (task.key === "review-form") {
+               return <ReviewForm task={task} />
+            }
+            */}
+
         </div>
     );
 };

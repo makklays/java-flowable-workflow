@@ -1,5 +1,6 @@
 package com.techmatrix18.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.techmatrix18.enums.Timeframe;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -59,6 +60,10 @@ public class Candle {
     @Column(name = "funding_rate", precision = 12, scale = 10)
     private BigDecimal fundingRate;
 
+    @Transient
+    @JsonProperty("x") // Сопоставляет поле "x" из JSON с переменной isClosed
+    private boolean isClosed;
+
     // constructs
 
     public Candle() { }
@@ -109,6 +114,9 @@ public class Candle {
         Timeframe tf = Timeframe.fromCode(timeframe);
         this.openTime = closeTime - tf.getMsec() + 1;
     }
+
+    public boolean isClosed() { return isClosed; }
+    public void setIsClosed(boolean closed) { isClosed = closed; }
 
     public BigDecimal getOpen() { return open; }
     public void setOpen(BigDecimal open) { this.open = open; }

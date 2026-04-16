@@ -226,6 +226,12 @@
         </dependency>
         <!-- END Open API -->
 
+        <!-- RabbitMQ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- DL4J AI -->
         <dependency>
             <groupId>org.deeplearning4j</groupId>
@@ -328,6 +334,9 @@
                 <configuration>
                     <!-- Указываем основной класс вашего CRM бэкенда -->
                     <mainClass>com.techmatrix18.Main</mainClass>
+                    <!-- Maven не будет пытаться проверить статус через порт 9001 -->
+                    <jmxPort>-1</jmxPort>
+                    <wait>0</wait> <!-- не ждать подтверждения старта -->
                 </configuration>
             </plugin>
         </plugins>

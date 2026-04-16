@@ -56,6 +56,11 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
   ai:
     openai:
       api-key: ${OPENAI_API_KEY:your_actual_key_here}

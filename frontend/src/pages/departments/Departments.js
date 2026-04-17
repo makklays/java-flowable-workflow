@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import departmentService from '../../services/departmentService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPenToSquare, faTrashCan, faPlus, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -86,8 +86,12 @@ const Departments = () => {
 
     return (
         <div>
-            <h1>{t('departments')}</h1>
-            <p>Здесь будет список отделений компании...</p>
+            <div className="row">
+                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+                    <h1><FontAwesomeIcon icon={faSitemap} className="me-2" /> {t('departments')}</h1>
+                    <p style={{ color: '#6c757d' }}>Список отделений компании</p>
+                </div>
+            </div>
 
             <div className="row align-items-center mb-3">
                 {/* Заголовок */}
@@ -102,7 +106,7 @@ const Departments = () => {
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Title</th>
                         <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>
@@ -112,7 +116,7 @@ const Departments = () => {
                 <tbody>
                     {departments.length > 0 ? departments.map(depart => (
                         <tr key={depart.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={depart.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" value={depart.id} /></td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(depart.id)} >{depart.title}</a>

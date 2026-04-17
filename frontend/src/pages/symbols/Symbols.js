@@ -215,8 +215,12 @@ const Symbols = () => {
 
     return (
         <div>
-            <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
-            <p>Список всех символов ({totalElements})</p>
+            <div className="row">
+                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+                    <h1><FontAwesomeIcon icon={faCoins} className="me-2" /> {t('symbols')}</h1>
+                    <p style={{ color: '#6c757d' }} >Список всех символов ({totalElements})</p>
+                </div>
+            </div>
 
             <div className="row align-items-center mb-3">
                 {/* Фильтр */}
@@ -247,7 +251,7 @@ const Symbols = () => {
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox"  name="checkbox_all" /></th>
 
                         <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                             ID

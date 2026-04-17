@@ -296,11 +296,8 @@ const Candles = () => {
         <div>
             <div className="row d-flex align-items-end">
                 <div className="col-md-6">
-                    <h1>
-                        <FontAwesomeIcon icon={faChartArea} className="me-3 text-secondary" />
-                        {t('candles')}
-                    </h1>
-                    <p>Список всех свечей (0)</p>
+                    <h1><FontAwesomeIcon icon={faChartArea} className="me-3 text-secondary" /> {t('candles')}</h1>
+                    <p style={{ color: '#6c757d' }} >Список всех свечей (0)</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right', marginBottom: '10px' }} >
                     <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
@@ -466,7 +463,7 @@ const Candles = () => {
                        }} className="table table-striped" >
                     <thead>
                         <tr>
-                            <th style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle' }}><input type="checkbox" name="checkbox_all" /></th>
+                            <th style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle' }}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
 
                             <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                                 ID

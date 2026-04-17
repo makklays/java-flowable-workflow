@@ -1,5 +1,7 @@
 import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartLine } from '@fortawesome/free-solid-svg-icons';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +36,16 @@ const Trading = () => {
     function handleTimeframe(timeframe) {
         console.log(timeframe);
         setTimeframe(timeframe);
+    }
+
+    function handleLong() {
+        alert('LONG!');
+        return false;
+    }
+
+    function handleShort() {
+        alert('SHORT!');
+        return false;
     }
 
     useLayoutEffect(() => {
@@ -558,19 +570,30 @@ const Trading = () => {
 
     return (
         <div>
-            <div style={{ marginBottom: '20px' }} >
-                <button onClick={() => handlePair('solusdt')} >SOL USDT</button>
-                <button onClick={() => handlePair('btcusdt')} >BTC USDT</button>
-                <button onClick={() => handlePair('ethusdt')} >ETH USDT</button>
-                <button onClick={() => handlePair('xrpusdt')} >XRP USDT</button>
+            <div className="row">
+                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+                    <h1><FontAwesomeIcon icon={faChartLine} className="me-2" /> {t('trading')}</h1>
+                    <p style={{ color: '#6c757d' }}>Терминал для торговли с графиками по выбранным символам и переключаемыми таймфреймами</p>
+                </div>
             </div>
-            <div style={{ marginBottom: '20px' }} >
-                <button onClick={() => handleTimeframe('1m')} >M1</button>
-                <button onClick={() => handleTimeframe('15m')} >M15</button>
-                <button onClick={() => handleTimeframe('1h')} >H1</button>
-                <button onClick={() => handleTimeframe('4h')} >H4</button>
-                <button onClick={() => handleTimeframe('1d')} >D1</button>
-                <button onClick={() => handleTimeframe('1w')} >W1</button>
+
+            <div className="row" style={{ marginBottom: '10px' }} >
+                <div className="col-md-6" >
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('solusdt')} >SOL USDT</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('btcusdt')} >BTC USDT</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('ethusdt')} >ETH USDT</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('xrpusdt')} >XRP USDT</button>
+                </div>
+                <div className="col-md-6" style={{ textAlign: 'right' }} >
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1m')} >M1</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('15m')} >M15</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('30m')} >M30</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1h')} >H1</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('4h')} >H4</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('12h')} >H12</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1d')} >D1</button>
+                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1w')} >W1</button>
+                </div>
             </div>
 
             <div className="row">
@@ -609,7 +632,13 @@ const Trading = () => {
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div className="row" style={{ marginTop: '20px' }} >
+                <div className="col-md-12" style={{ textAlign: 'center', verticalAlign: 'middle' }} >
+                    <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleShort()} >Short</button>
+                    <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleLong()} >Long</button>
+                </div>
             </div>
         </div>
     );

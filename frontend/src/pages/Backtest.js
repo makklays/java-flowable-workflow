@@ -4,7 +4,7 @@ import React, { useState, useLayoutEffect, useEffect, useRef, useMemo } from 're
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faSync, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faSync, faPlay, faFlask } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 
 const Backtest = () => {
@@ -418,6 +418,13 @@ const Backtest = () => {
 
     return (
         <div>
+            <div className="row">
+                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+                    <h1><FontAwesomeIcon icon={faFlask} className="me-2" /> {t('backtest')}</h1>
+                    <p style={{ color: '#6c757d' }} >Бектестер для проверки торговых алгоритмов и индикаторов на глубокой истории рынка</p>
+                </div>
+            </div>
+
             <div className="card p-3 mb-3 shadow-sm">
                 <div className="row align-items-end">
 
@@ -497,7 +504,7 @@ const Backtest = () => {
 
             <div className="row mt-4 mb-8">
                 <div className="col-md-6">
-                    <h1 className="mb-0">
+                    <h1 className="mb-0" style={{ color: '#03aac7' }} >
                         {pair.toUpperCase()} / {timeframe}
 
                         {/* Индикатор режима */}
@@ -567,7 +574,7 @@ const Backtest = () => {
                             ))}
                             {tradesList.length === 0 && (
                                 <tr>
-                                    <td colSpan="6" className="text-center text-muted">Сделок не найдено</td>
+                                    <td colSpan="8" className="text-center text-muted">Сделок не найдено</td>
                                 </tr>
                             )}
                         </tbody>

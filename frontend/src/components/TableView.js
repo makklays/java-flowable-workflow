@@ -94,7 +94,7 @@ const TableView = () => {
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Display name</th>
                         <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>Username</th>

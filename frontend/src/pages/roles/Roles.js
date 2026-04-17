@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import roleService from '../../services/roleService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSearch, faPenToSquare, faTrashCan, faPlus, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
 import i18n from '../../i18n';
@@ -95,8 +95,12 @@ const Roles = () => {
 
     return (
         <div>
-            <h1>{t('roles')}</h1>
-            <p>Здесь будет список ролей...</p>
+            <div className="row">
+                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+                    <h1><FontAwesomeIcon icon={faUserShield} className="me-2" /> {t('roles')}</h1>
+                    <p style={{ color: '#6c757d' }}>Список ролей компании</p>
+                </div>
+            </div>
 
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="d-flex gap-2">
@@ -129,7 +133,7 @@ const Roles = () => {
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Title</th>
                         <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>

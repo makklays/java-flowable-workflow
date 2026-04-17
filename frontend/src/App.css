@@ -153,6 +153,24 @@ a.dropdown-toggle.nav-link {
     border-color: #03aac7 !important;
 }
 
+.btn-green, .btn-green:hover {
+    background-color: #28a473 !important;
+    border-color: #28a473 !important;
+    color: #FFF;
+}
+.btn-red, .btn-red:hover {
+    background-color: #f63c55 !important;
+    border-color: #f63c55 !important;
+    color: #FFF;
+}
+
+.custom-checkbox {
+    accent-color: #03aac7 !important;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);

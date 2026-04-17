@@ -2,6 +2,7 @@ import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { Modal, Button } from 'react-bootstrap';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,11 @@ const Trading = () => {
 
     // Состояние для хранения ID активного таба
     const [activeTab, setActiveTab] = useState('trading');
+    const [show, setShow] = useState(false);
+
+    // Функции для управления состоянием
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useLayoutEffect(() => {
 
@@ -573,10 +579,13 @@ const Trading = () => {
 
     return (
         <div>
-            <div className="row">
-                <div className="col-md-6" style={{ marginBottom: '10px' }} >
+            <div className="row" style={{ marginBottom: '10px' }} >
+                <div className="col-md-6">
                     <h1><FontAwesomeIcon icon={faChartLine} className="me-2" /> {t('trading')}</h1>
                     <p style={{ color: '#6c757d' }}>Терминал для торговли с графиками по выбранным символам и переключаемыми таймфреймами</p>
+                </div>
+                <div className="col-md-6" style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '38px', color: '#28a473', fontWeight: 'bold' }} >Balance: 100 $</div>
                 </div>
             </div>
 
@@ -639,7 +648,7 @@ const Trading = () => {
 
             <div className="row" style={{ marginTop: '20px' }} >
                 <div className="col-md-12" style={{ textAlign: 'center', verticalAlign: 'middle' }} >
-                    <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleShort()} >Short</button>
+                    <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleShow()} >Short</button>
                     <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleLong()} >Long</button>
                 </div>
             </div>
@@ -718,6 +727,19 @@ const Trading = () => {
                 </div>
             </div>
 
+            {/* модальное окно */}
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>SHORT</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Здесь указывается символ, текущая цена, TP, SL, плечо, и т.д.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
+                    <Button className="btn btn-red" onClick={handleShort} >Short</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

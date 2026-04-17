@@ -30,6 +30,8 @@ npm install react-select --legacy-peer-deps
 npm install lucide-react
 // установка react-toastify (для уведомлений)
 npm install react-toastify
+// установка модальных окон в react
+npm install react-bootstrap bootstrap --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

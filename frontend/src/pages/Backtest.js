@@ -526,6 +526,14 @@ const Backtest = () => {
                         </div>
                     </div>
                 </div>
+                <div className="col-md-4">
+                    <h3>
+                        Итого: {' '}
+                        <span className={parseFloat(totalAmount) >= 0 ? 'text-success' : 'text-danger'}>
+                            {totalAmount} $
+                        </span>
+                    </h3>
+                </div>
             </div>
 
             <div className="row mt-4 mb-4">

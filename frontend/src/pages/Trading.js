@@ -48,6 +48,9 @@ const Trading = () => {
         return false;
     }
 
+    // Состояние для хранения ID активного таба
+    const [activeTab, setActiveTab] = useState('trading');
+
     useLayoutEffect(() => {
 
         let isMounted = true; // Флаг для отслеживания монтирования компонента
@@ -640,6 +643,81 @@ const Trading = () => {
                     <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleLong()} >Long</button>
                 </div>
             </div>
+
+            <div className="row" style={{ marginTop: '20px' }} >
+                <div className="col-md-12" style={{ textAlign: 'center', verticalAlign: 'middle' }} >
+                    {/* Навигация */}
+                    <ul className="nav nav-tabs" role="tablist">
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'trading' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('trading')}
+                                style={activeTab === 'trading' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Торговля
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'actives' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('actives')}
+                                style={activeTab === 'actives' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Активы
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'history' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('history')}
+                                style={activeTab === 'history' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                История
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'signals' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('signals')}
+                                style={activeTab === 'signals' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Сигналы
+                            </button>
+                        </li>
+                    </ul>
+
+
+                    {/* Контент */}
+                    <div className="tab-content p-3 border border-top-0">
+                        {activeTab === 'trading' && (
+                            <div className="tab-pane fade show active">
+                                <h4>Активные торговые сделки</h4>
+                                <p style={{ color: '#6c757d' }} >Контент активных торговых сделок...</p>
+                            </div>
+                        )}
+                        {activeTab === 'actives' && (
+                            <div className="tab-pane fade show active">
+                                <h4>Активы</h4>
+                                <p style={{ color: '#6c757d' }} >Контент по активам...</p>
+                            </div>
+                        )}
+                        {activeTab === 'history' && (
+                            <div className="tab-pane fade show active">
+                                <h4>История сделок</h4>
+                                <p style={{ color: '#6c757d' }} >Контент истории сделок - журнал сделок трейдера</p>
+                            </div>
+                        )}
+                        {activeTab === 'signals' && (
+                            <div className="tab-pane fade show active">
+                                <h4>Сигналы</h4>
+                                <p style={{ color: '#6c757d' }} >Контент по истории сигналов...</p>
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     );
 };

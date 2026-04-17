@@ -294,9 +294,9 @@ const Candles = () => {
 
     return (
         <div>
-            <div className="row d-flex align-items-end">
+            <div className="row d-flex align-items-end" style={{ marginBottom: '10px' }}>
                 <div className="col-md-6">
-                    <h1><FontAwesomeIcon icon={faChartArea} className="me-3 text-secondary" /> {t('candles')}</h1>
+                    <h1><FontAwesomeIcon icon={faChartArea} /> {t('candles')}</h1>
                     <p style={{ color: '#6c757d' }} >Список всех свечей (0)</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right', marginBottom: '10px' }} >

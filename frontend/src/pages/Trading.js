@@ -62,7 +62,7 @@ const Trading = () => {
         { id: 8, ticker: 'LINKUSDT', name: 'LINK' },
         { id: 9, ticker: 'XLMUSDT', name: 'XLM' },
         { id: 10, ticker: 'ADAUSDT', name: 'ADA' },
-        { id: 12, ticker: 'DASHUSDT', name: 'DASH' },
+        { id: 11, ticker: 'DASHUSDT', name: 'DASH' },
 
         { id: 12, ticker: 'ATOMUSDT', name: 'ATOM' },
         { id: 21, ticker: 'NEOUSDT', name: 'NEO' },

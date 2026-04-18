@@ -46,3 +46,35 @@ data = response.json()
 print(f"Текущий курс BTC: {data['price']} USD")
 //--------------------------------------
 
+// Устанавливаем FastAPI
+# pip install fastapi uvicorn
+
+// Создаем ваш первый сервер server.py
+from fastapi import FastAPI
+
+# Создаем экземпляр приложения (аналог @SpringBootApplication)
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Привет, Java-разработчик!", "target": "Flowable"}
+
+@app.get("/calculate")
+def calculate(a: int, b: int):
+    # Пример логики, которую проще написать на Python
+    result = a * b
+    return {"operation": "multiplication", "result": result}
+
+// Запускаем сервер!
+# uvicorn server:app --reload
+// Если всё ок, вы увидите: Uvicorn running on http://127.0.0.1:8000
+
+// Проверяем curl "http://127.0.0"
+// Должны получить: {"operation":"multiplication","result":50 }
+
+// $ curl "http://127.0.0.1:8000"
+// {"message":"Привет, Java-разработчик!","target":"Flowable"}
+
+// Swagger: Перейдите в браузере на http://127.0.0. Вы увидите готовую интерактивную документацию (OpenAPI), которую FastAPI сделал сам!
+//--------------------------------------
+

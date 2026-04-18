@@ -88,22 +88,23 @@ import Learn2 from './pages/Learn2';
 
 import myLogo from './assets/fl-logo1.png';
 
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   const { t, i18n } = useTranslation();
   //const isLoggedIn = false;
 
   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+      i18n.changeLanguage(lng);
   };
 
   // Вспомогательный стиль для активных ссылок
   const activeLinkStyle = ({ isActive }) => ({
-    backgroundColor: isActive ? '#e9ecef' : 'transparent',
-    fontWeight: isActive ? 'bold' : 'normal',
-    color: '#000'
+      backgroundColor: isActive ? '#e9ecef' : 'transparent',
+      fontWeight: isActive ? 'bold' : 'normal',
+      color: '#000'
   });
 
   // Создаем состояние для пользователя
@@ -119,10 +120,52 @@ function App() {
 
   // Вспомогательная функция для получения кода страны
   const getFlagClass = (lang) => {
-    if (lang === 'en') return 'fi fi-us'; // Для английского обычно ставят флаг США или Британии (gb)
-    if (lang === 'ru') return 'fi fi-ru';
-    if (lang === 'es') return 'fi fi-es';
-    return 'fi fi-ru'; // по умолчанию
+      if (lang === 'en') return 'fi fi-us'; // Для английского обычно ставят флаг США или Британии (gb)
+      if (lang === 'ru') return 'fi fi-ru';
+      if (lang === 'es') return 'fi fi-es';
+      return 'fi fi-ru'; // по умолчанию
+  };
+
+  useEffect(() => {
+      // Подключаемся к твоему новому Java WebSocket серверу
+      const socket = new WebSocket("ws://localhost:8082/ws/signals");
+      socket.onopen = () => {
+          console.log("✅ WebSocket подключен к бэкенду");
+          // Можно отправить тестовый тост, что связь установлена
+          toast.success("Связь с торговым сервером установлена");
+          playNotificationSound();
+      };
+
+      socket.onmessage = (event) => {
+          console.log("📩 Получено сообщение:", event.data);
+          const data = JSON.parse(event.data);
+          // Проверяем поле 'type', которое мы задали в Java SignalDto
+          //if (data.type === "SIGNAL") {
+              // Используем поле 'label', куда мы в Java пишем текст сообщения
+              toast.info(data.label, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+              });
+              playNotificationSound();
+          //}
+      };
+      socket.onerror = (error) => {
+          console.error("❌ Ошибка WebSocket:", error);
+      };
+      return () => socket.close();
+  }, []);
+
+  const showToast = (message) => {
+      toast.info(message); // или toast.success, toast.error
+  };
+
+  const playNotificationSound = () => {
+      const audio = new Audio('/sounds/magic.wav'); // Путь к файлу в папке public
+      audio.play().catch(error => console.error("Ошибка воспроизведения звука:", error));
   };
 
   // Следим за изменениями в localStorage

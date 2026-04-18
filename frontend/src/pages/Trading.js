@@ -1,8 +1,9 @@
 import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faChartArea, faChartLine, faArrowUp, faArrowDown, faCog, faFileInvoiceDollar } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
+import OrderModal from '../components/OrderModal';
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,49 @@ const Trading = () => {
         return false;
     }
 
+    // 1. Список символов (позже будешь загружать через fetch/axios из БД)
+    const [symbolsFromDB, setSymbolsFromDB] = useState([
+        { id: 1, ticker: 'BTCUSDT', name: 'Bitcoin' },
+        { id: 2, ticker: 'ETHUSDT', name: 'Ethereum' },
+        { id: 3, ticker: 'BCHUSDT', name: 'BCH' },
+        { id: 4, ticker: 'XRPUSDT', name: 'XRP' },
+        { id: 5, ticker: 'LTCUSDT', name: 'LTC' },
+        { id: 6, ticker: 'TRXUSDT', name: 'TRX' },
+        { id: 7, ticker: 'ETCUSDT', name: 'ETC' },
+        { id: 8, ticker: 'LINKUSDT', name: 'LINK' },
+        { id: 9, ticker: 'XLMUSDT', name: 'XLM' },
+        { id: 10, ticker: 'ADAUSDT', name: 'ADA' },
+        { id: 12, ticker: 'DASHUSDT', name: 'DASH' },
+
+        { id: 12, ticker: 'ATOMUSDT', name: 'ATOM' },
+        { id: 21, ticker: 'NEOUSDT', name: 'NEO' },
+        { id: 25, ticker: 'ALGOUSDT', name: 'ALGO' },
+        { id: 29, ticker: 'COMPUSDT', name: 'COMP' },
+
+        { id: 42, ticker: 'SOLUSDT', name: 'Solana' },
+    ]);
+    const [isUploading, setIsUploading] = useState(false);
+
+    // 2. Выбранная монета (объект)
+    const [selectedCoin, setSelectedCoin] = useState(symbolsFromDB[0]);
+
+    // 3. Цены (объект, куда будут капать данные из сокета)
+    // Например: { "BTCUSDT": 65000, "ETHUSDT": 3500 }
+    const [prices, setPrices] = useState({});
+
+    // 4. Состояние модального окна
+    const [isOrderOpen, setOrderOpen] = useState(false);
+
+    // 5. Тип ордера (long или short)
+    const [orderType, setOrderType] = useState('long');
+
+    // Функция-хелпер для открытия модалки
+    const openOrder = (type) => {
+        setOrderType(type);
+        setOrderOpen(true);
+    };
+
+
     // Состояние для хранения ID активного таба
     const [activeTab, setActiveTab] = useState('trading');
     const [show, setShow] = useState(false);
@@ -56,6 +100,8 @@ const Trading = () => {
     // Функции для управления состоянием
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const [isModalOpen, setModalOpen] = useState(false);
 
     useLayoutEffect(() => {
 
@@ -590,68 +636,143 @@ const Trading = () => {
             </div>
 
             <div className="row" style={{ marginBottom: '10px' }} >
-                <div className="col-md-6" >
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('solusdt')} >SOL USDT</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('btcusdt')} >BTC USDT</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('ethusdt')} >ETH USDT</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('xrpusdt')} >XRP USDT</button>
-                </div>
-                <div className="col-md-6" style={{ textAlign: 'right' }} >
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1m')} >M1</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('15m')} >M15</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('30m')} >M30</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1h')} >H1</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('4h')} >H4</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('12h')} >H12</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1d')} >D1</button>
-                    <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1w')} >W1</button>
-                </div>
-            </div>
-
-            <div className="row">
-                <div className="col-md-4">
-                    <div className="card shadow-sm" >
-                        <div className="card-header bg-dark text-white d-flex justify-content-between">
-                            <h6 className="mb-0">{pair.toUpperCase()} Live Chart / D1</h6>
-                            <small>Binance D1</small>
+                <div className="col-md-2"></div>
+                <div className="col-md-10">
+                    <div className="row">
+                        <div className="col-md-6" >
+                            {/*
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('solusdt')} >SOL USDT</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('btcusdt')} >BTC USDT</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('ethusdt')} >ETH USDT</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handlePair('xrpusdt')} >XRP USDT</button>
+                            */}
+                            <button className="btn btn-primary" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('short')} >
+                                <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" /> Новый ордер
+                            </button>
+                            {/*
+                            <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('short')} >Short</button>
+                            <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('long')} >Long</button>
+                            */}
                         </div>
-                        <div className="card-body p-0">
-                            <div ref={chartContainerRefD1} style={{ width: '100%', height: '500px' }} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-4">
-                    <div className="card shadow-sm" >
-                        <div className="card-header bg-dark text-white d-flex justify-content-between">
-                            <h6 className="mb-0">{pair.toUpperCase()} Live Chart / H1</h6>
-                            <small>Binance H1</small>
-                        </div>
-                        <div className="card-body p-0">
-                            <div ref={chartContainerRefH1} style={{ width: '100%', height: '500px' }} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-4">
-                    <div className="card shadow-sm" >
-                        <div className="card-header bg-dark text-white d-flex justify-content-between">
-                            <h6 className="mb-0">{pair.toUpperCase()} Live Chart / {timeframe}</h6>
-                            <small>Binance {timeframe}</small>
-                        </div>
-                        <div className="card-body p-0">
-                            <div ref={chartContainerRef} style={{ width: '100%', height: '500px' }} />
+                        <div className="col-md-6" style={{ textAlign: 'right' }} >
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1m')} >M1</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('15m')} >M15</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('30m')} >M30</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1h')} >H1</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('4h')} >H4</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('12h')} >H12</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1d')} >D1</button>
+                            <button className="btn btn-primary" style={{ marginRight: '5px' }} onClick={() => handleTimeframe('1w')} >W1</button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <div className="row" style={{ marginBottom: '10px' }} >
+                <div className="col-md-2">
+                    {/* Обертка для скролла */}
+                    <div style={{
+                        height: '540px',      // Фиксированная высота (подберите под экран)
+                        overflowY: 'auto',    // Включаем вертикальный скролл
+                        border: '1px solid #e7e7e7',
+                        backgroundColor: '#fff'
+                    }}>
+                        <table style={{
+                                width: '100%',
+                                marginBottom: 0, // Убираем лишний отступ снизу
+                                opacity: isUploading ? 0.5 : 1,
+                                pointerEvents: isUploading ? 'none' : 'auto'
+                            }} className="table table-striped table-hover" >
+                            {/* Чтобы шапка "прилипла" к верху при скролле */}
+                            <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
+                                <tr>
+                                    <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >ID</th>
+                                    <th style={{ textAlign: 'left', verticalAlign: 'middle' }} >Symbol</th>
+                                    <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >bid</th>
+                                    <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >ask</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {symbolsFromDB.length > 0 ? symbolsFromDB.map(coin => (
+                                    <tr
+                                        key={coin.id}
+                                        onClick={() => handlePair(coin.ticker)}
+                                        style={{ cursor: 'pointer', backgroundColor: selectedCoin?.id === coin.id ? '#e8f4f6' : '' }}
+                                    >
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{coin.id}</td>
+                                        <td style={{ textAlign: 'left', verticalAlign: 'middle', fontWeight: 'bold' }}>
+                                            {coin.ticker}
+                                        </td>
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'red' }}>
+                                            {prices[coin.ticker] || '0.00'}
+                                        </td>
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'green' }}>
+                                            {prices[coin.ticker] || '0.00'}
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="4" style={{ textAlign: 'center', padding: '40px' }}>
+                                            <FontAwesomeIcon icon={faChartArea} size="3x" className="mb-3 text-muted" />
+                                            <div className="text-muted">Данные в базе не найдены</div>
+                                            <small className="text-muted">Настройте фильтры или загрузите данные с Binance</small>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div className="col-md-10" >
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="card shadow-sm" >
+                                <div className="card-header bg-dark text-white d-flex justify-content-between">
+                                    <h6 className="mb-0">{pair.toUpperCase()} Live Chart / D1</h6>
+                                    <small>Binance D1</small>
+                                </div>
+                                <div className="card-body p-0">
+                                    <div ref={chartContainerRefD1} style={{ width: '100%', height: '500px' }} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-md-4">
+                            <div className="card shadow-sm" >
+                                <div className="card-header bg-dark text-white d-flex justify-content-between">
+                                    <h6 className="mb-0">{pair.toUpperCase()} Live Chart / H1</h6>
+                                    <small>Binance H1</small>
+                                </div>
+                                <div className="card-body p-0">
+                                    <div ref={chartContainerRefH1} style={{ width: '100%', height: '500px' }} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-md-4">
+                            <div className="card shadow-sm" >
+                                <div className="card-header bg-dark text-white d-flex justify-content-between">
+                                    <h6 className="mb-0">{pair.toUpperCase()} Live Chart / {timeframe}</h6>
+                                    <small>Binance {timeframe}</small>
+                                </div>
+                                <div className="card-body p-0">
+                                    <div ref={chartContainerRef} style={{ width: '100%', height: '500px' }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/*
             <div className="row" style={{ marginTop: '20px' }} >
                 <div className="col-md-12" style={{ textAlign: 'center', verticalAlign: 'middle' }} >
-                    <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleShow()} >Short</button>
-                    <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => handleLong()} >Long</button>
+                    <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('short')} >Short</button>
+                    <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('long')} >Long</button>
                 </div>
             </div>
+            */}
 
             <div className="row" style={{ marginTop: '20px' }} >
                 <div className="col-md-12" style={{ textAlign: 'center', verticalAlign: 'middle' }} >
@@ -664,6 +785,15 @@ const Trading = () => {
                                 style={activeTab === 'trading' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
                             >
                                 Торговля
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'signals' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('signals')}
+                                style={activeTab === 'signals' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Сигналы
                             </button>
                         </li>
                         <li className="nav-item">
@@ -684,15 +814,6 @@ const Trading = () => {
                                 История
                             </button>
                         </li>
-                        <li className="nav-item">
-                            <button
-                                className={`nav-link ${activeTab === 'signals' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('signals')}
-                                style={activeTab === 'signals' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
-                            >
-                                Сигналы
-                            </button>
-                        </li>
                     </ul>
 
 
@@ -702,6 +823,12 @@ const Trading = () => {
                             <div className="tab-pane fade show active">
                                 <h4>Активные торговые сделки</h4>
                                 <p style={{ color: '#6c757d' }} >Контент активных торговых сделок...</p>
+                            </div>
+                        )}
+                        {activeTab === 'signals' && (
+                            <div className="tab-pane fade show active">
+                                <h4>Сигналы</h4>
+                                <p style={{ color: '#6c757d' }} >Контент по истории сигналов...</p>
                             </div>
                         )}
                         {activeTab === 'actives' && (
@@ -714,12 +841,6 @@ const Trading = () => {
                             <div className="tab-pane fade show active">
                                 <h4>История сделок</h4>
                                 <p style={{ color: '#6c757d' }} >Контент истории сделок - журнал сделок трейдера</p>
-                            </div>
-                        )}
-                        {activeTab === 'signals' && (
-                            <div className="tab-pane fade show active">
-                                <h4>Сигналы</h4>
-                                <p style={{ color: '#6c757d' }} >Контент по истории сигналов...</p>
                             </div>
                         )}
                     </div>
@@ -740,6 +861,21 @@ const Trading = () => {
                     <Button className="btn btn-red" onClick={handleShort} >Short</Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Модалка получает данные из стейта selectedCoin */}
+            {selectedCoin && (
+                <OrderModal
+                    isOpen={isOrderOpen}
+                    onClose={() => setOrderOpen(false)}
+                    symbol={selectedCoin.ticker}
+                    symbolId={selectedCoin.id}
+                    type={orderType}
+                    // Передаем живую цену или 0 если данных еще нет
+                    bidPrice={prices[selectedCoin.ticker] || '0.00'}
+                    askPrice={prices[selectedCoin.ticker] || '0.00'}
+                />
+            )}
+
         </div>
     );
 };

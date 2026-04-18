@@ -56,9 +56,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/**")
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf
-
-                        -> csrf.disable())
+                .csrf(csrf-> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Используем прямое сравнение строк (AntPathRequestMatcher), оно самое легкое
@@ -109,7 +107,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/actuator/**"),
                     new AntPathRequestMatcher("/css/**"),
                     new AntPathRequestMatcher("/js/**"),
-                    new AntPathRequestMatcher("/images/**")
+                    new AntPathRequestMatcher("/images/**"),
+                    new AntPathRequestMatcher("/ws/**")
                 ).permitAll()
                 .anyRequest().authenticated()
             )

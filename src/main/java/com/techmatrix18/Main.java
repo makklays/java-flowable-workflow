@@ -14,10 +14,9 @@ import java.io.IOException;
  *
  * @company for TechMatrix18
  * @author Alexander Kuziv
- * @since 05-09-2025
+ * @since 05.09.2025
  * @version 0.0.1
  */
-
 @SpringBootApplication
 public class Main {
 

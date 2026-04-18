@@ -307,6 +307,12 @@
             <version>6.9.7.1</version>
         </dependency>
 
+        <!-- WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!-- Специфично для устранения ошибки javax.xml.bind в Java 11+ -->
         <dependency>
             <groupId>javax.xml.bind</groupId>

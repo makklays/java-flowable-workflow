@@ -1,5 +1,8 @@
 package com.techmatrix18.trading;
 
+import com.techmatrix18.dto.SignalDto;
+import com.techmatrix18.model.Candle;
+import com.techmatrix18.service.WebSocketService;
 import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.trading.indicators.BollingerIndicator;
 import com.techmatrix18.trading.indicators.FibonacciIndicator;
@@ -10,6 +13,7 @@ import com.techmatrix18.trading.rules.UnderIndicatorRule;
 import com.techmatrix18.trading.series.CandleSeries;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -31,10 +35,12 @@ public class SignalService {
     // Добавьте остальные, если они там есть...
     private final StrategyService strategyService;
     private final TelegramService telegramService;
+    private final WebSocketService webSocketService;
 
-    public SignalService(StrategyService strategyService, TelegramService telegramService) {
+    public SignalService(StrategyService strategyService, TelegramService telegramService, WebSocketService webSocketService) {
         this.strategyService = strategyService;
         this.telegramService = telegramService;
+        this.webSocketService = webSocketService;
     }
 
     // Пример объединяет анализ Фибоначчи для генерации сигналов в Telegram
@@ -128,11 +134,27 @@ public class SignalService {
 
         // 4. Проверка условий
         if (rsiOversold.isSatisfied(lastIndex)) {
-            telegramService.sendMessage("📉 " + symbol + ": RSI ниже 30. Зона перепроданности.");
+            String text = "📉 " + symbol + ": RSI ниже 30. Зона перепроданности.";
+            telegramService.sendMessage(text);
+
+            // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)
+            Candle lastCandle = series.getCandle(lastIndex);
+            BigDecimal currentPrice = lastCandle.getClose();
+            // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
+            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), "SIGNAL", currentPrice, text));
+            System.out.println("----- web socket RSI: send to websocket signal: " + text);
         }
 
         if (nearSupport.isSatisfied(lastIndex)) {
-            telegramService.sendMessage("🎯 " + symbol + ": Цена подошла к уровню Фибо 0.618.");
+            String text = "🎯 " + symbol + ": Цена подошла к уровню Фибо 0.618.";
+            telegramService.sendMessage(text);
+
+            // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)
+            Candle lastCandle = series.getCandle(lastIndex);
+            BigDecimal currentPrice = lastCandle.getClose();
+            // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
+            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), "SIGNAL", currentPrice, text));
+            System.out.println("----- web socket FIBO: send to websocket signal: " + text);
         }
     }
 

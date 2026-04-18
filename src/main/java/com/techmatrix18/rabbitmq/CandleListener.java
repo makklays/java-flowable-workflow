@@ -44,7 +44,7 @@ public class CandleListener {
         System.out.println("Analyzing signals for: " + symbolId + " | Candles in series: " + series.size());
 
         // Вызываем ваш метод анализа из SignalService
-        signalService.analyzeMarket(symbolId, series);
+        //signalService.analyzeMarket(symbolId, series);
 
         // Можно также вызвать комплексные правила
         signalService.processSignals(symbolId, series);

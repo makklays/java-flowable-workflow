@@ -32,7 +32,14 @@ const Trading = () => {
 
     function handlePair(newPair) {
         console.log(newPair);
-        setPair(newPair); // Это спровоцирует перезапуск useEffect выше
+        const coin = symbolsFromDB.find(s => s.ticker === newPair);
+        if (coin) {
+            setSelectedCoin(coin); // обновляем стейт, чтобы модалка увидела изменения
+        }
+        // код для смены графика TradingView
+        if (chartContainerRef.current) {
+            setPair(newPair); // Это спровоцирует перезапуск useEffect выше
+        }
     }
 
     function handleTimeframe(timeframe) {
@@ -92,10 +99,35 @@ const Trading = () => {
         setOrderOpen(true);
     };
 
-
     // Состояние для хранения ID активного таба
     const [activeTab, setActiveTab] = useState('trading');
     const [show, setShow] = useState(false);
+
+    const [activeOrders, setActiveOrders] = useState([
+        { id: 101, ticker: 'BTCUSDT', type: 'long', volume: 0.5, entryPrice: 64200.00 },
+        { id: 102, ticker: 'ETHUSDT', type: 'short', volume: 2.0, entryPrice: 3450.50 }
+    ]);
+    const totalPnL = activeOrders.reduce((sum, order) => {
+        const currentPrice = prices[order.ticker] || order.entryPrice;
+        const pnl = order.type === 'long'
+            ? (currentPrice - order.entryPrice) * order.volume
+            : (order.entryPrice - currentPrice) * order.volume;
+        return sum + pnl;
+    }, 0);
+
+    const totalVolume = activeOrders.reduce((sum, order) => sum + (parseFloat(order.volume) || 0), 0);
+
+    const handleCloseOrder = (id) => {
+        console.log("Закрытие ордера:", id);
+        // Здесь будет вызов API на бэкенд
+    };
+
+    const [tradeHistory, setTradeHistory] = useState([
+        { id: 1, ticker: 'BTCUSDT', type: 'long', volume: 0.1, entryPrice: 63100, exitPrice: 63550, profit: 45.0, closeTime: '2026-04-18 14:20' },
+        { id: 2, ticker: 'SOLUSDT', type: 'short', volume: 10, entryPrice: 145.2, exitPrice: 146.5, profit: -13.0, closeTime: '2026-04-18 15:45' }
+    ]);
+
+    const [signals, setSignals] = useState([]);
 
     // Функции для управления состоянием
     const handleClose = () => setShow(false);
@@ -451,7 +483,17 @@ const Trading = () => {
 
             const parsed = JSON.parse(event.data);
             const k = parsed.k;
-            if (!k) return;
+            const symbol = parsed.s;
+            if (!k || !symbol) return; // Если данных нет, выходим
+
+            const currentPrice = parseFloat(k.c).toFixed(2);
+            // ОБНОВЛЯЕМ СТЕЙТ ЦЕН (для модалки и списка монет)
+            setPrices(prev => ({
+                ...prev,
+                [symbol]: currentPrice
+            }));
+            // Обновляем список сигналов (?)
+            //setSignals(prev => [...prev, data]);
 
             const candle = {
                 time: k.t / 1000,
@@ -631,7 +673,7 @@ const Trading = () => {
                     <p style={{ color: '#6c757d' }}>Терминал для торговли с графиками по выбранным символам и переключаемыми таймфреймами</p>
                 </div>
                 <div className="col-md-6" style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '38px', color: '#28a473', fontWeight: 'bold' }} >Balance: 100 $</div>
+                    <div style={{ fontSize: '38px', color: '#28a473', fontWeight: 'bold' }} >Balance: 100 USDT</div>
                 </div>
             </div>
 
@@ -821,14 +863,139 @@ const Trading = () => {
                     <div className="tab-content p-3 border border-top-0">
                         {activeTab === 'trading' && (
                             <div className="tab-pane fade show active">
-                                <h4>Активные торговые сделки</h4>
-                                <p style={{ color: '#6c757d' }} >Контент активных торговых сделок...</p>
+                                <div className="table-responsive">
+                                    <table className="table table-dark-custom table-hover align-middle" style={{ fontSize: '14px', marginBottom: '0', marginTop: '0' }}>
+                                        <thead className="text-muted" style={{ borderBottom: '2px solid #dee2e6' }}>
+                                            <tr>
+                                                <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
+                                                <th>ID</th>
+                                                <th>Символ</th>
+                                                <th>Тип</th>
+                                                <th>Объем</th>
+                                                <th>Цена входа</th>
+                                                <th>Текущая цена</th>
+                                                <th>Прибыль (USDT)</th>
+                                                <th className="text-end">Действие</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {activeOrders.length > 0 ? (
+                                                <>
+                                                    {activeOrders.map((order, index) => {
+                                                        const currentPrice = prices[order.ticker] || order.entryPrice;
+                                                        const pnl = order.type === 'long'
+                                                            ? (currentPrice - order.entryPrice) * order.volume
+                                                            : (order.entryPrice - currentPrice) * order.volume;
+
+                                                        return (
+                                                            <tr key={order.id} style={{ borderBottom: '1px solid #dee2e6' }}>
+                                                                <td className="text-muted">{index + 1}</td>
+                                                                <td className="text-muted small">{order.id}</td>
+                                                                <td className="fw-bold">{order.ticker}</td>
+                                                                <td>
+                                                                    <span className={`badge ${order.type === 'long' ? 'bg-success' : 'bg-danger'}`}>
+                                                                        {order.type.toUpperCase()}
+                                                                    </span>
+                                                                </td>
+                                                                <td>{order.volume}</td>
+                                                                <td>{order.entryPrice}</td>
+                                                                <td className="fw-bold">{currentPrice}</td>
+                                                                <td className={pnl >= 0 ? 'text-success' : 'text-danger'}>
+                                                                    {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}
+                                                                </td>
+                                                                <td className="text-end">
+                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} style={{ fontSize: '12px' }}>
+                                                                        Закрыть
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                    {/* БАЛАНС */}
+                                                    <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)', fontWeight: 'bold', borderTop: '2px solid #dee2e6' }}>
+                                                        <td colSpan="7" className="text-muted" style={{ textAlign: 'left' }} >Баланс: {totalVolume.toFixed(2)} USTD</td>
+                                                        <td className={totalPnL >= 0 ? 'text-success' : 'text-danger'}>
+                                                            {totalPnL >= 0 ? '+' : ''}{totalPnL.toFixed(2)}
+                                                        </td>
+                                                        <td className="text-end">
+                                                            {/*<button
+                                                                className="btn btn-danger btn-sm"
+                                                                style={{ fontSize: '11px', padding: '2px 10px' }}
+                                                                onClick={() => console.log("Закрыть все сделки")}
+                                                            > Закрыть все</button>*/}
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="9" className="text-center py-5 text-muted">
+                                                        Нет активных сделок
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                         {activeTab === 'signals' && (
                             <div className="tab-pane fade show active">
-                                <h4>Сигналы</h4>
-                                <p style={{ color: '#6c757d' }} >Контент по истории сигналов...</p>
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 className="m-0">История сигналов</h4>
+                                    <button
+                                        className="btn btn-sm btn-outline-danger"
+                                        onClick={() => setSignals([])} // Очистка списка
+                                    >
+                                        Очистить лог
+                                    </button>
+                                </div>
+
+                                <div className="table-responsive">
+                                    <table className="table table-hover align-middle" style={{ fontSize: '13px' }}>
+                                        <thead className="bg-light text-muted">
+                                            <tr>
+                                                <th style={{ width: '50px' }}>№</th>
+                                                <th>Время</th>
+                                                <th>Символ</th>
+                                                <th>Тип сигнала</th>
+                                                <th>Цена</th>
+                                                <th>Сообщение</th>
+                                                <th className="text-end">График</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {signals.length > 0 ? signals.slice().reverse().map((sig, index) => (
+                                                <tr key={index} style={{ borderLeft: sig.type.includes('BUY') || sig.label.includes('ниже 30') ? '3px solid #198754' : '3px solid #dc3545' }}>
+                                                    <td className="text-muted">{signals.length - index}</td>
+                                                    <td className="text-muted">{new Date(sig.time).toLocaleTimeString()}</td>
+                                                    <td className="fw-bold">{sig.symbol || sig.ticker}</td>
+                                                    <td>
+                                                        <span className={`badge ${sig.label.includes('ниже 30') || sig.label.includes('BUY') ? 'bg-success' : 'bg-warning text-dark'}`}>
+                                                            {sig.type}
+                                                        </span>
+                                                    </td>
+                                                    <td className="fw-bold">{sig.price}</td>
+                                                    <td>{sig.label}</td>
+                                                    <td className="text-end">
+                                                        <button
+                                                            className="btn btn-sm btn-light border"
+                                                            onClick={() => handlePair(sig.symbol || sig.ticker)}
+                                                        >
+                                                            Посмотреть
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="7" className="text-center py-5 text-muted">
+                                                        <div className="mb-2">📡 Ожидание новых сигналов от анализатора...</div>
+                                                        <small>Сигналы появятся здесь автоматически при срабатывании стратегий</small>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                         {activeTab === 'actives' && (
@@ -839,8 +1006,54 @@ const Trading = () => {
                         )}
                         {activeTab === 'history' && (
                             <div className="tab-pane fade show active">
-                                <h4>История сделок</h4>
-                                <p style={{ color: '#6c757d' }} >Контент истории сделок - журнал сделок трейдера</p>
+                                <div className="table-responsive">
+                                    <table className="table table-hover align-middle" style={{ fontSize: '13px' }}>
+                                        <thead className="bg-light text-muted">
+                                            <tr>
+                                                <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
+                                                <th>ID</th>
+                                                <th>Время закрытия</th>
+                                                <th>Символ</th>
+                                                <th>Тип</th>
+                                                <th>Объем</th>
+                                                <th>Вход</th>
+                                                <th>Выход</th>
+                                                <th>Результат (USDT)</th>
+                                                <th>Статус</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tradeHistory.length > 0 ? tradeHistory.map((trade, index) => (
+                                                <tr key={trade.id}>
+                                                    <td>{index + 1}</td> {/* Порядковый номер */}
+                                                    <td className="text-muted">{trade.id}</td>
+                                                    <td className="text-muted">{trade.closeTime}</td>
+                                                    <td className="fw-bold">{trade.ticker}</td>
+                                                    <td>
+                                                        <span className={trade.type === 'long' ? 'text-success' : 'text-danger'}>
+                                                            {trade.type.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td>{trade.volume}</td>
+                                                    <td>{trade.entryPrice}</td>
+                                                    <td>{trade.exitPrice}</td>
+                                                    <td className={`fw-bold ${trade.profit >= 0 ? 'text-success' : 'text-danger'}`}>
+                                                        {trade.profit >= 0 ? '+' : ''}{trade.profit.toFixed(2)}
+                                                    </td>
+                                                    <td>
+                                                        <span className="badge bg-light text-dark border">Completed</span>
+                                                    </td>
+                                                </tr>
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="10" className="text-center py-5 text-muted">
+                                                        История сделок пуста. Совершите свою первую сделку!
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -867,12 +1080,15 @@ const Trading = () => {
                 <OrderModal
                     isOpen={isOrderOpen}
                     onClose={() => setOrderOpen(false)}
-                    symbol={selectedCoin.ticker}
-                    symbolId={selectedCoin.id}
+                    // Список для выпадающего меню
+                    symbols={symbolsFromDB}
+                    // Текущие данные
+                    selectedCoin={selectedCoin}
+                    // Функция для смены (та же, что и в боковой таблице)
+                    onSymbolChange={(ticker) => handlePair(ticker)}
                     type={orderType}
-                    // Передаем живую цену или 0 если данных еще нет
-                    bidPrice={prices[selectedCoin.ticker] || '0.00'}
-                    askPrice={prices[selectedCoin.ticker] || '0.00'}
+                    // Цены (будут обновляться на лету)
+                    allPrices={prices}
                 />
             )}
 

@@ -1,9 +1,11 @@
 package com.techmatrix18.controller.api;
 
+import com.techmatrix18.dto.OpenTradeDto;
 import com.techmatrix18.model.Trade;
 import com.techmatrix18.service.TradeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,9 +67,11 @@ public class TradeController {
     }
 
     @PostMapping("/open")
-    @Operation(summary = "Open new trade (new order)", description = "Creates a new trade with status OPEN")
-    public ResponseEntity<Trade> open(@RequestBody Trade trade) {
-        return ResponseEntity.ok(tradeService.openTrade(trade));
+    @Operation(summary = "Open trade (open order)", description = "Creates a new trade in the system")
+    public ResponseEntity<Trade> openTrade(@RequestBody OpenTradeDto dto) {
+        log.info("Opening trade for user " + dto.getUserId() + " on " + dto.getSymbol());
+        Trade trade = tradeService.openTrade(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(trade);
     }
 
     @PostMapping("/{id}/close")

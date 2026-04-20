@@ -1,6 +1,6 @@
 package com.techmatrix18.service;
 
-import com.techmatrix18.controller.api.RoleController;
+import com.techmatrix18.dto.OpenTradeDto;
 import com.techmatrix18.enums.TradeSide;
 import com.techmatrix18.enums.TradeStatus;
 import com.techmatrix18.repository.TradeRepository;
@@ -34,15 +34,32 @@ public class TradeService {
 
     // Open a new trade
     @Transactional
-    public Trade openTrade(Trade trade) {
-        log.info("Opening new trade for user: " + trade.getUserId() + ", symbol: " + trade.getSymbol());
+    public Trade openTrade(OpenTradeDto dto) {
+        log.info("Opening new trade for user: " + dto.getUserId() + ", symbol: " + dto.getSymbol());
 
+        Trade trade = new Trade();
+
+        // Переносим данные из DTO в Entity
+        trade.setUserId(dto.getUserId());
+        trade.setExchangeId(dto.getExchangeId());
+        trade.setExchange(dto.getExchange());
+        trade.setSymbolId(dto.getSymbolId());
+        trade.setSymbol(dto.getSymbol());
+        // Если в Entity это Enum, используйте TradeSide.valueOf(dto.getSide())
+        trade.setSide(TradeSide.valueOf(dto.getSide()));
+        trade.setQuantity(dto.getQuantity());
+        trade.setOpenPrice(dto.getOpenPrice());
+        trade.setStopLoss(dto.getStopLoss());
+        trade.setTakeProfit(dto.getTakeProfit());
+        trade.setTradeComment(dto.getTradeComment());
+
+        // Логика по умолчанию
         trade.setStatus(TradeStatus.OPEN);
         trade.setOpenedAt(LocalDateTime.now());
 
-        // Устанавливаем начальные значения, если они не присланы
-        if (trade.getFeeEntry() == null) trade.setFeeEntry(BigDecimal.ZERO);
-        if (trade.getLeverage() == null) trade.setLeverage(1);
+        // Проверки на null
+        trade.setFeeEntry(BigDecimal.ZERO);
+        trade.setLeverage(dto.getLeverage() != null ? dto.getLeverage() : 1);
 
         return tradeRepository.save(trade);
     }

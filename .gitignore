@@ -1,4 +1,12 @@
+# Python
+python_app/venv/
+python_app/neural_network_simple.py
+__pycache__/
+*.pyc
+
+# Java / IDE
 target/
+*.class
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

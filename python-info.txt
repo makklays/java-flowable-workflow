@@ -78,3 +78,8 @@ def calculate(a: int, b: int):
 // Swagger: Перейдите в браузере на http://127.0.0. Вы увидите готовую интерактивную документацию (OpenAPI), которую FastAPI сделал сам!
 //--------------------------------------
 
+// установить tensorflow
+# pip install tensorflow
+или в (venv)
+# python -m pip install tensorflow
+

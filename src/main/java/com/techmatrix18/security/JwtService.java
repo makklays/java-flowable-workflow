@@ -21,7 +21,6 @@ import java.util.function.Function;
  * @company TechMatrix18
  * @version 0.0.1
  */
-
 @Service
 public class JwtService {
 
@@ -37,11 +36,11 @@ public class JwtService {
     public String generateToken(Authentication authentication) {
         String username = authentication.getName(); // get username
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+            .setSubject(username)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     /**
@@ -83,11 +82,11 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            .parserBuilder()
+            .setSigningKey(getSignInKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     /**
@@ -107,12 +106,12 @@ public class JwtService {
      * @return
      */
     public UsernamePasswordAuthenticationToken getAuthentication(
-            String token, UserDetails userDetails, HttpServletRequest request) {
+        String token, UserDetails userDetails, HttpServletRequest request) {
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails, // principal
-                null,        // credentials (don't need, use JWT)
-                userDetails.getAuthorities() // roles, etc.
+            userDetails, // principal
+            null,        // credentials (don't need, use JWT)
+            userDetails.getAuthorities() // roles, etc.
         );
     }
 }

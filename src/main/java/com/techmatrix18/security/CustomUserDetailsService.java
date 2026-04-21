@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
  * @company TechMatrix18
  * @version 0.0.1
  */
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -26,18 +25,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+            .findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         //System.out.println("--------------- username ---------------> " + username);
         //System.out.println("--------------- user ---------------> " + user.toString());
 
         // Transform User to UserDetails
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .authorities(user.getRole().getTitle()) // add roles, etc.
-                .build();
+            .withUsername(user.getUsername())
+            .password(user.getPassword())
+            .authorities(user.getRole().getTitle()) // add roles, etc.
+            .build();
     }
 }
 

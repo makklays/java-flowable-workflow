@@ -1,34 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Добавь все эти переменные в фигурные скобки здесь:
-const OrderModal = ({
-  isOpen,
-  onClose,
-  symbols,
-  selectedCoin,
-  onSymbolChange,
-  type,
-  allPrices
-}) => {
+const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, type, allPrices }) => {
+
+    // form validation
+    const [formData, setFormData] = useState({
+        volume: 1.00,
+        stopLoss: 0.00,
+        takeProfit: 0.00,
+        comment: "",
+        orderType: "MARKET"
+    });
+
     if (!isOpen) return null;
 
     // Достаем актуальную цену для ВЫБРАННОГО в данный момент тикера
     const currentPrice = allPrices[selectedCoin.ticker] || '0.00';
 
-    const handlePlaceOrder = (side) => {
-        // Формируем объект для Java бэкенда
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handlePlaceOrder = async (side) => {
         const orderData = {
+            userId: 1,
+            exchangeId: 1,
+            exchange: "Binance",
             symbolId: selectedCoin.id,
-            ticker: selectedCoin.ticker,
-            side: side, // 'BUY' или 'SELL'
-            type: 'MARKET',
-            volume: 1.0, // Тут можно добавить стейт для инпута объема
-            price: currentPrice,
+            symbol: selectedCoin.ticker,
+            side: side,
+            quantity: parseFloat(formData.volume),
+            openPrice: currentPrice,
+            leverage: 1,
+            stopLoss: parseFloat(formData.stopLoss) || null,
+            takeProfit: parseFloat(formData.takeProfit) || null,
+            comment: formData.comment,
+            type: formData.orderType
         };
 
-        console.log("Отправка ордера:", orderData);
-        // Здесь будет вызов: api.post('/orders', orderData)
-        onClose(); // Закрываем после клика
+        try {
+            console.log("Отправка ордера:", orderData);
+            const response = await fetch('http://localhost:8082/api/v1/trades/open', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', },
+                body: JSON.stringify(orderData),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Сделка открыта:", result);
+                onClose(); // Закрываем модалку при успехе
+            } else {
+                console.error("Ошибка при открытии сделки:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Ошибка сети:", error);
+        }
     };
 
     return (
@@ -63,9 +94,15 @@ const OrderModal = ({
                                 {/* Тип ордера */}
                                 <div className="col-4 text-end pt-1"><small>Тип:</small></div>
                                 <div className="col-8">
-                                    <select className="form-select form-select-sm text-white" style={{ backgroundColor: '#03aac7' }}>
-                                        <option>Исполнение по рынку</option>
-                                        <option>Лимитный ордер</option>
+                                    {/* Тип ордера */}
+                                    <select
+                                        name="orderType"
+                                        value={formData.orderType}
+                                        onChange={handleChange}
+                                        className="form-select form-select-sm"
+                                    >
+                                        <option value="MARKET">Исполнение по рынку</option>
+                                        <option value="LIMIT">Лимитный ордер</option>
                                     </select>
                                 </div>
 
@@ -74,7 +111,14 @@ const OrderModal = ({
                                 {/* Объем */}
                                 <div className="col-4 text-end pt-1"><small>Объем:</small></div>
                                 <div className="col-8 d-flex align-items-center gap-2">
-                                    <input type="number" className="form-control form-control-sm w-50" defaultValue="1.00" step="0.01" />
+                                    <input
+                                        type="number"
+                                        name="volume"
+                                        value={formData.volume}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm w-50"
+                                        step="0.01"
+                                    />
                                     <small className="text-muted">лот {selectedCoin.ticker}</small>
                                 </div>
 
@@ -83,12 +127,24 @@ const OrderModal = ({
                                 <div className="col-8 text-end pt-1">
                                     <div className="row">
                                         <div className="col-4 align-items-center">
-                                            <input type="number" className="form-control form-control-sm" defaultValue="0.00" step="0.1" />
+                                            <input
+                                                type="number"
+                                                name="stopLoss"
+                                                value={formData.stopLoss}
+                                                onChange={handleChange}
+                                                className="form-control form-control-sm"
+                                            />
                                         </div>
 
                                         <div className="col-4 text-end pt-1"><small>Take Profit:</small></div>
                                         <div className="col-4 align-items-center">
-                                            <input type="number" className="form-control form-control-sm" defaultValue="0.00" step="0.1" />
+                                            <input
+                                                type="number"
+                                                name="takeProfit"
+                                                value={formData.takeProfit}
+                                                onChange={handleChange}
+                                                className="form-control form-control-sm"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +152,13 @@ const OrderModal = ({
                                 {/* Комментарий */}
                                 <div className="col-4 text-end pt-2"><small>Комментарий:</small></div>
                                 <div className="col-8 text-end pt-1">
-                                    <input type="text" className="form-control form-control-sm" value="" />
+                                    <input
+                                        type="text"
+                                        name="comment"
+                                        value={formData.comment}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm"
+                                    />
                                 </div>
 
                                 {/* ЦЕНЫ ИЗ PROPS */}

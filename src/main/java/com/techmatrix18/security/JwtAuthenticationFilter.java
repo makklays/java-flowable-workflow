@@ -19,7 +19,6 @@ import java.io.IOException;
  * @company TechMatrix18
  * @version 0.0.1
  */
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

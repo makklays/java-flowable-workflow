@@ -2,11 +2,13 @@ import React, { useState, useEffect, useReducer } from 'react';
 import userService from '../services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { user, useApp } from '../context/AppContext';
 
 const TableView = () => {
 
+    const { t } = useTranslation();
     // 1. Состояние для пользователей
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -135,7 +137,7 @@ const TableView = () => {
 
             {selected.size > 0 && (
                 <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
-                    <a href="#" onClick={deletedSelected} >Delete selected</a>
+                    <a href="#" onClick={deletedSelected} >{t('deleteSelected')}</a>
                 </div>
             )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >

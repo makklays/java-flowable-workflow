@@ -147,7 +147,7 @@ const Positions = () => {
 
             {selected.size > 0 && (
                 <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
-                    <a href="#" onClick={deletedSelected} >Delete selected</a>
+                    <a href="#" onClick={deletedSelected} >{t('deleteSelected')}</a>
                 </div>
             )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >

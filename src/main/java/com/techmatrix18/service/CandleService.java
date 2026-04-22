@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -83,6 +84,12 @@ public class CandleService {
             candleRepository.delete(candle);
             return true;
         }).orElse(false);
+    }
+
+    @Transactional
+    public void deleteCandlesByIds(List<Long> ids) {
+        // В Spring Data JPA есть готовый метод
+        candleRepository.deleteAllById(ids);
     }
 }
 

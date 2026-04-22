@@ -152,5 +152,23 @@ public class CandleController {
             return ResponseEntity.notFound().build(); // Не найден, статус 404
         }
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple candles", description = "Deletes candles by a list of IDs")
+    public ResponseEntity<?> deleteCandles(@RequestBody List<Long> ids) {
+        log.info("Deleting Candles IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            candleService.deleteCandlesByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

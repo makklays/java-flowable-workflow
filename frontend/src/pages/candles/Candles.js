@@ -240,8 +240,6 @@ const Candles = () => {
         loadCandles();
     }, [currentPage, pageSize, sortBy, direction, search]);// Добавьте search в зависимости
 
-
-
     // 2. Стили для соответствия Bootstrap
     const customStyles = {
         control: (base, state) => ({
@@ -291,6 +289,47 @@ const Candles = () => {
         }
         return pages;
     };
+
+    const [selected, setSelected] = useState(new Set());
+
+    // Переключение одной строки
+    const toggleRow = (id) => {
+        setSelected((prev) => {
+            const newSet = new Set(prev);
+            newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+            return newSet;
+        });
+    };
+
+    // Выбрать / снять все
+    const toggleAll = () => {
+        if (selected.size === candles.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(candles.map((item) => item.id)));
+        }
+    };
+
+    // Удалить выбранные
+    const deletedSelected = async () => {
+        if (selected.size === 0) return;
+        try {
+            // Отправляем массив ID на ваш Java Backend
+            const response = await fetch('http://localhost:8082/api/v1/candles/ids-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Array.from(selected)) // Set превращаем в массив
+            });
+            if (response.ok) {
+                // 1. Фильтруем данные в стейте
+                setCandles((prev) => prev.filter((item) => !selected.has(item.id)));
+                // 2. Очищаем выбор
+                setSelected(new Set());
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    }
 
     return (
         <div>
@@ -455,6 +494,11 @@ const Candles = () => {
                     </div>
                 )}
 
+                {selected.size > 0 && (
+                    <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
+                        <a href="#" onClick={deletedSelected} >{t('deleteSelected')}</a>
+                    </div>
+                )}
                 <table style={{
                             width: '100%',
                             border: '1px solid #e7e7e7',
@@ -463,7 +507,9 @@ const Candles = () => {
                        }} className="table table-striped" >
                     <thead>
                         <tr>
-                            <th style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle' }}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
+                            <th style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                <input type="checkbox" className="custom-checkbox" onChange={toggleAll} checked={selected.size === candles.length && candles.length > 0} />
+                            </th>
 
                             <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                                 ID
@@ -588,7 +634,7 @@ const Candles = () => {
                         {candles.length > 0 ? candles.map(candle => (
                             <tr key={candle.id}>
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <input type="checkbox" name="checkbox_all" value={candle.id} />
+                                    <input type="checkbox" className="custom-checkbox" value={candle.id} checked={selected.has(candle.id)} onChange={() => toggleRow(candle.id)} />
                                 </td>
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{candle.id}</td>
 

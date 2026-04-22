@@ -213,6 +213,47 @@ const Symbols = () => {
         return pages;
     };
 
+    const [selected, setSelected] = useState(new Set());
+
+    // Переключение одной строки
+    const toggleRow = (id) => {
+        setSelected((prev) => {
+            const newSet = new Set(prev);
+            newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+            return newSet;
+        });
+    };
+
+    // Выбрать / снять все
+    const toggleAll = () => {
+        if (selected.size === symbols.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(symbols.map((item) => item.id)));
+        }
+    };
+
+    // Удалить выбранные
+    const deletedSelected = async () => {
+        if (selected.size === 0) return;
+        try {
+            // Отправляем массив ID на ваш Java Backend
+            const response = await fetch('http://localhost:8082/api/v1/symbols/ids-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Array.from(selected)) // Set превращаем в массив
+            });
+            if (response.ok) {
+                // 1. Фильтруем данные в стейте
+                setSymbols((prev) => prev.filter((item) => !selected.has(item.id)));
+                // 2. Очищаем выбор
+                setSelected(new Set());
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    }
+
     return (
         <div>
             <div className="row">
@@ -248,10 +289,17 @@ const Symbols = () => {
                 </div>
             </div>
 
+            {selected.size > 0 && (
+                <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
+                    <a href="#" onClick={deletedSelected} >{t('deleteSelected')}</a>
+                </div>
+            )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox"  name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}>
+                            <input type="checkbox" className="custom-checkbox" onChange={toggleAll} checked={selected.size === symbols.length && symbols.length > 0} />
+                        </th>
 
                         <th style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle', cursor: 'pointer' }} onClick={() => handleSort('id')} >
                             ID
@@ -347,7 +395,7 @@ const Symbols = () => {
                         symbols.map(symbol => (
                             <tr key={symbol.id}>
                                 <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
-                                    <input type="checkbox" name="checkbox_all" value={symbol.id} />
+                                    <input type="checkbox" className="custom-checkbox" value={symbol.id} checked={selected.has(symbol.id)} onChange={() => toggleRow(symbol.id)} />
                                 </td>
                                 <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{symbol.id}</td>
                                 <td style={{verticalAlign: 'middle'}}>

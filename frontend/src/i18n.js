@@ -38,6 +38,7 @@ i18n
           backtest: "Тесты",
           tasks: "Мои задачи",
           history: "История задач",
+          deleteSelected: "Удалить выбранное",
         }
       },
       en: {
@@ -70,6 +71,7 @@ i18n
           backtest: "Backtest",
           tasks: "My tasks",
           history: "Tasks history",
+          deleteSelected: "Delete selected",
         }
       },
       es: {
@@ -102,6 +104,7 @@ i18n
           backtest: "Backtest",
           tasks: "Mis tareas",
           history: "Historial de tareas",
+          deleteSelected: "Eliminar seleccionados",
         }
       }
     }, // Закрываем resources здесь

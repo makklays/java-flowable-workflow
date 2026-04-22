@@ -100,5 +100,23 @@ public class SymbolController {
             return ResponseEntity.notFound().build(); // Не найден, статус 404
         }
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple symbols", description = "Deletes symbols by a list of IDs")
+    public ResponseEntity<?> deleteSymbols(@RequestBody List<Long> ids) {
+        log.info("Deleting Symbols IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            symbolService.deleteSymbolsByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

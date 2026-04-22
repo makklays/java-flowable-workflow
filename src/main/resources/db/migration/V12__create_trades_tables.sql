@@ -7,7 +7,7 @@ CREATE TABLE trades (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     user_id BIGINT NOT NULL,                                -- ID пользователя
-    exchange_id INT NOT NULL,                           -- ID=1 Binance, ID=2 ByBit, etc. (для получения ключей и закрытия сделки)
+    exchange_id INT NOT NULL,                               -- ID=1 Binance, ID=2 ByBit, etc. (для получения ключей и закрытия сделки)
     exchange VARCHAR(25) NOT NULL,                          -- Binance, ByBit, etc.
     symbol_id BIGINT NOT NULL,                              -- 1, 2 и т.д. (для получения ключей и закрытия сделки)
     symbol VARCHAR(25) NOT NULL,                            -- BTCUSDT, AAPL и т.д.
@@ -32,8 +32,28 @@ CREATE TABLE trades (
 
     profit_loss DECIMAL(24, 10) DEFAULT NULL,
 
-    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    closed_at TIMESTAMP NULL,
+    -- Поля для аналитики сделки
+
+    -- Экстремумы (обновляются фоновым процессом Java, пока статус OPEN)
+    max_pnl DECIMAL(24, 10) DEFAULT 0,                      -- рекордная нереализованная прибыль
+    max_drawdown DECIMAL(24, 10) DEFAULT 0,                 -- худшая просадка за время сделки
+    high_price_reached DECIMAL(24, 10) DEFAULT NULL,        -- максимальная цена (пик), зафиксированная рынком за всё время, пока сделка была открыта
+    low_price_reached DECIMAL(24, 10) DEFAULT NULL,         -- минимальная цена (дно), зафиксированная рынком за всё время
+
+    -- Метрики эффективности (считаются при закрытии)
+    mae DECIMAL(24, 10) DEFAULT 0,                          -- максимальное отклонение цены против вашей позиции в валюте (или пунктах)
+    mfe DECIMAL(24, 10) DEFAULT 0,                          -- максимальное отклонение цены в сторону вашей прибыли за всё время сделки
+    efficiency_ratio DECIMAL(10, 4) DEFAULT NULL,           -- коэффициент эффективности сделки (от 0 до 1)
+
+    -- Рыночный контекст
+    entry_volatility DECIMAL(10, 4) DEFAULT NULL,           -- волатильность рынка на момент входа (для оценки адекватности риска)
+    slippage DECIMAL(24, 10) DEFAULT 0,                     -- разница между ценой запроса и ценой реального исполнения (качество входа)
+
+    -- Автоматизация
+    is_close_auto BOOLEAN DEFAULT FALSE,                    -- сделка закрыта автоматически (роботом или лимитным ордером)
+
+    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,          -- время открытия сделки
+    closed_at TIMESTAMP NULL,                               -- время закрытия сделки
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

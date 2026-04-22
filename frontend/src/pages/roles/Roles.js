@@ -23,11 +23,6 @@ const Roles = () => {
 
     const [selectedItems, setSelectedItems] = useState([]);
 
-    // 2. Исправленная функция клика
-    const handleClick = (id) => {
-        console.log("Клик по ID:", id);
-    };
-
     // Просмотр роли по ID
     const handleView = (id) => {
         navigate(`/roles/${id}`);
@@ -51,6 +46,47 @@ const Roles = () => {
             setRoles(prevRoles => prevRoles.filter(role => role.id !== id));
         } catch (error) {
             console.error("Ошибка при удалении роли", error);
+        }
+    }
+
+    const [selected, setSelected] = useState(new Set());
+
+    // Переключение одной строки
+    const toggleRow = (id) => {
+        setSelected((prev) => {
+            const newSet = new Set(prev);
+            newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+            return newSet;
+        });
+    };
+
+    // Выбрать / снять все
+    const toggleAll = () => {
+        if (selected.size === roles.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(roles.map((item) => item.id)));
+        }
+    };
+
+    // Удалить выбранные
+    const deletedSelected = async () => {
+        if (selected.size === 0) return;
+        try {
+            // Отправляем массив ID на ваш Java Backend
+            const response = await fetch('http://localhost:8082/api/v1/roles/ids-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Array.from(selected)) // Set превращаем в массив
+            });
+            if (response.ok) {
+                // 1. Фильтруем данные в стейте
+                setRoles((prev) => prev.filter((item) => !selected.has(item.id)));
+                // 2. Очищаем выбор
+                setSelected(new Set());
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
         }
     }
 
@@ -130,10 +166,17 @@ const Roles = () => {
                 </div>
             </div>
 
+            {selected.size > 0 && (
+                <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
+                    <a href="#" onClick={deletedSelected} >Delete selected</a>
+                </div>
+            )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}>
+                            <input type="checkbox" className="custom-checkbox" onChange={toggleAll} checked={selected.size === roles.length && roles.length > 0} />
+                        </th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Title</th>
                         <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>
@@ -143,7 +186,9 @@ const Roles = () => {
                 <tbody>
                     {roles.length > 0 ? roles.map(role => (
                         <tr key={role.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={role.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <input type="checkbox" className="custom-checkbox" value={role.id} checked={selected.has(role.id)} onChange={() => toggleRow(role.id)} />
+                            </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{role.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(role.id)} >{role.title}</a>

@@ -110,5 +110,23 @@ public class DepartmentController {
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple departments", description = "Deletes departments by a list of IDs")
+    public ResponseEntity<?> deleteDepartments(@RequestBody List<Long> ids) {
+        log.info("Deleting Departments IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            departmentService.deleteDepartmentsByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

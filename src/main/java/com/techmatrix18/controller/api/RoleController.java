@@ -112,5 +112,23 @@ public class RoleController {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple roles", description = "Deletes roles by a list of IDs")
+    public ResponseEntity<?> deleteRoles(@RequestBody List<Long> ids) {
+        log.info("Deleting Roles IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            roleService.deleteRolesByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

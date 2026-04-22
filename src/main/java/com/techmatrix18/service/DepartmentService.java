@@ -6,6 +6,7 @@ import com.techmatrix18.model.Department;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.DepartmentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -132,6 +133,12 @@ public class DepartmentService {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public void deleteDepartmentsByIds(List<Long> ids) {
+        // В Spring Data JPA есть готовый метод
+        departmentRepository.deleteAllById(ids);
     }
 }
 

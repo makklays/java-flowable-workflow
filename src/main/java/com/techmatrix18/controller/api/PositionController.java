@@ -112,5 +112,23 @@ public class PositionController {
         positionService.deletePosition(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple positions", description = "Deletes positions by a list of IDs")
+    public ResponseEntity<?> deletePositions(@RequestBody List<Long> ids) {
+        log.info("Deleting Positions IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            positionService.deletePositionsByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

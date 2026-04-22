@@ -141,5 +141,23 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/ids-delete")
+    @Operation(summary = "Delete multiple users", description = "Deletes users by a list of IDs")
+    public ResponseEntity<?> deleteUsers(@RequestBody List<Long> ids) {
+        log.info("Deleting Users IDs: " + ids);
+
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID list is empty");
+        }
+
+        try {
+            userService.deleteUsersByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            //log.error("Error deleting departments: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 

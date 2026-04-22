@@ -47,6 +47,47 @@ const TableView = () => {
         }
     }
 
+    const [selected, setSelected] = useState(new Set());
+
+    // Переключение одной строки
+    const toggleRow = (id) => {
+        setSelected((prev) => {
+            const newSet = new Set(prev);
+            newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+            return newSet;
+        });
+    };
+
+    // Выбрать / снять все
+    const toggleAll = () => {
+        if (selected.size === users.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(users.map((item) => item.id)));
+        }
+    };
+
+    // Удалить выбранные
+    const deletedSelected = async () => {
+        if (selected.size === 0) return;
+        try {
+            // Отправляем массив ID на ваш Java Backend
+            const response = await fetch('http://localhost:8082/api/v1/users/ids-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Array.from(selected)) // Set превращаем в массив
+            });
+            if (response.ok) {
+                // 1. Фильтруем данные в стейте
+                setUsers((prev) => prev.filter((item) => !selected.has(item.id)));
+                // 2. Очищаем выбор
+                setSelected(new Set());
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    }
+
     useEffect(() => {
         // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
         if (!user) {
@@ -91,10 +132,18 @@ const TableView = () => {
                     </Link>
                 </div>
             </div>
+
+            {selected.size > 0 && (
+                <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
+                    <a href="#" onClick={deletedSelected} >Delete selected</a>
+                </div>
+            )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}>
+                            <input type="checkbox" className="custom-checkbox" onChange={toggleAll} checked={selected.size === users.length && users.length > 0} />
+                        </th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Display name</th>
                         <th style={{width: '280px', textAlign: 'center', verticalAlign: 'middle'}}>Username</th>
@@ -109,7 +158,9 @@ const TableView = () => {
                 <tbody>
                     {users.length > 0 ? users.map(user => (
                         <tr key={user.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" name="checkbox_all" value={user.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <input type="checkbox" className="custom-checkbox" value={user.id} checked={selected.has(user.id)} onChange={() => toggleRow(user.id)} />
+                            </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{user.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(user.id)} >{user.displayname}</a>

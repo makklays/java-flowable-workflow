@@ -145,7 +145,7 @@ public class SignalService {
             System.out.println("----- web socket RSI: send to websocket signal: " + text);
         }
 
-        if (nearSupport.isSatisfied(lastIndex)) {
+        /*if (nearSupport.isSatisfied(lastIndex)) {
             String text = "🎯 " + symbol + ": Цена подошла к уровню Фибо 0.618.";
             telegramService.sendMessage(text);
 
@@ -155,7 +155,7 @@ public class SignalService {
             // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
             webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), "SIGNAL", currentPrice, text));
             System.out.println("----- web socket FIBO: send to websocket signal: " + text);
-        }
+        }*/
     }
 
     private boolean isCrossedUp(double curr, double prev, double level) {

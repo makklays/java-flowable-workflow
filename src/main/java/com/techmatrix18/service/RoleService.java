@@ -4,6 +4,7 @@ import com.techmatrix18.dto.RoleDto;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -131,6 +132,12 @@ public class RoleService {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public void deleteRolesByIds(List<Long> ids) {
+        // В Spring Data JPA есть готовый метод
+        roleRepository.deleteAllById(ids);
     }
 }
 

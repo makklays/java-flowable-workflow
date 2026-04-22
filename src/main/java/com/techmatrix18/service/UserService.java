@@ -211,6 +211,12 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void deleteUsersByIds(List<Long> ids) {
+        // В Spring Data JPA есть готовый метод
+        userRepository.deleteAllById(ids);
+    }
+
     /**
      * Assign head of department by UserID, DepartmentID
      *

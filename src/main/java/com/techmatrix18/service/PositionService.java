@@ -6,6 +6,7 @@ import com.techmatrix18.model.Position;
 import com.techmatrix18.model.Role;
 import com.techmatrix18.repository.PositionRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -131,6 +132,12 @@ public class PositionService {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public void deletePositionsByIds(List<Long> ids) {
+        // В Spring Data JPA есть готовый метод
+        positionRepository.deleteAllById(ids);
     }
 }
 

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import departmentService from '../../services/departmentService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrashCan, faPlus, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 // Переводы текстов
-import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { user, useApp } from '../../context/AppContext';
 
@@ -17,14 +16,9 @@ const Departments = () => {
     const [pageSize, setPageSize] = useState(10); // элементов на странице
     const [totalPages, setTotalPages] = useState(0);
 
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useApp();
-
-    // 2. Исправленная функция клика
-    const handleClick = (id) => {
-        console.log("Клик по ID:", id);
-    };
 
     // Просмотр роли по ID
     const handleView = (id) => {
@@ -51,6 +45,46 @@ const Departments = () => {
             console.error("Ошибка при удалении отделения", error);
         }
     }
+
+    const [selected, setSelected] = useState(new Set());
+
+    // Переключение одной строки
+    const toggleRow = (id) => {
+        setSelected((prev) => {
+            const newSet = new Set(prev);
+            newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+            return newSet;
+        });
+    };
+
+    // Выбрать / снять все
+    const toggleAll = () => {
+        if (selected.size === departments.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(departments.map((item) => item.id)));
+        }
+    };
+
+    // Удалить выбранные
+    const deletedSelected = async () => {
+        if (selected.size === 0) return;
+        const idsArray = Array.from(selected); // Превращаем Set в массив для JSON
+        try {
+            const response = await fetch('http://localhost:8082/api/v1/departments/ids-delete', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(idsArray)
+            });
+            if (response.ok) {
+                // Удаляем локально из стейта только после успешного ответа сервера
+                setDepartments((prev) => prev.filter((item) => !selected.has(item.id)));
+                setSelected(new Set());
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
 
     useEffect(() => {
         // 1. Если пользователя нет (разлогинился), очищаем данные и делаем редирект
@@ -103,10 +137,18 @@ const Departments = () => {
                     </Link>
                 </div>
             </div>
+
+            {selected.size > 0 && (
+                <div style={{ marginBottom: '10px', marginLeft: '20px' }} >
+                    <a href="#" onClick={deletedSelected} >Delete selected</a>
+                </div>
+            )}
             <table style={{width: '100%', border: '1px solid #e7e7e7', borderRadius: '10px', borderCollapse: 'collapse'}} className="table table-striped" >
                 <thead>
                     <tr>
-                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" /></th>
+                        <th style={{width: '40px', textAlign: 'center', verticalAlign: 'middle'}}>
+                            <input type="checkbox" className="custom-checkbox" onChange={toggleAll} checked={selected.size === departments.length && departments.length > 0} />
+                        </th>
                         <th style={{width: '60px', textAlign: 'center', verticalAlign: 'middle'}}>ID</th>
                         <th style={{verticalAlign: 'middle'}}>Title</th>
                         <th style={{width: '120px', textAlign: 'center', verticalAlign: 'middle'}}>Created</th>
@@ -116,7 +158,9 @@ const Departments = () => {
                 <tbody>
                     {departments.length > 0 ? departments.map(depart => (
                         <tr key={depart.id}>
-                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}><input type="checkbox" className="custom-checkbox" name="checkbox_all" value={depart.id} /></td>
+                            <td style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                                <input type="checkbox" className="custom-checkbox" value={depart.id} checked={selected.has(depart.id)} onChange={() => toggleRow(depart.id)} />
+                            </td>
                             <td style={{textAlign: 'center', verticalAlign: 'middle'}}>{depart.id}</td>
                             <td style={{verticalAlign: 'middle'}}>
                                 <a href="#" onClick={() => handleView(depart.id)} >{depart.title}</a>

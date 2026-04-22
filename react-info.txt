@@ -32,6 +32,8 @@ npm install lucide-react
 npm install react-toastify
 // установка модальных окон в react
 npm install react-bootstrap bootstrap --legacy-peer-deps
+// установка графиков круговых
+npm install recharts --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

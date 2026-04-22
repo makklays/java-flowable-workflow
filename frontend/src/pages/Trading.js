@@ -10,6 +10,7 @@ import AuthService from "../services/authService";
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const Trading = () => {
     const chartContainerRef = useRef(null);
@@ -130,6 +131,12 @@ const Trading = () => {
         //    return () => clearInterval(interval);
         }
     }, [userId]);
+
+    useEffect(() => {
+        if (activeTab === 'actives' && userId) {
+            fetchActiveOrders(); // Принудительно обновляем данные при открытии вкладки
+        }
+    }, [activeTab, userId]);
 
     // 4. Расчеты (всегда после стейтов)
     const totalPnL = activeOrders.reduce((sum, order) => {
@@ -1014,7 +1021,7 @@ const Trading = () => {
                                                 </>
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="9" className="text-center py-5 text-muted">
+                                                    <td colSpan="12" className="text-center py-5 text-muted">
                                                         Нет активных сделок
                                                     </td>
                                                 </tr>
@@ -1037,7 +1044,7 @@ const Trading = () => {
                                 </div>
 
                                 <div className="table-responsive">
-                                    <table className="table table-hover align-middle" style={{ fontSize: '13px' }}>
+                                    <table className="table table-hover align-middle" style={{ fontSize: '14px' }}>
                                         <thead className="bg-light text-muted">
                                             <tr>
                                                 <th style={{ width: '50px' }}>№</th>
@@ -1086,14 +1093,80 @@ const Trading = () => {
                         )}
                         {activeTab === 'actives' && (
                             <div className="tab-pane fade show active">
-                                <h4>Активы</h4>
-                                <p style={{ color: '#6c757d' }} >Контент по активам...</p>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="p-3">
+                                            <h5 style={{ color: '#6c757d' }}>Анализ портфеля</h5>
+                                            {activeOrders.length > 0 ? (
+                                                <ul className="list-unstyled mt-3">
+                                                    <li className="mb-2">Активных сделок: <strong>{activeOrders.length}</strong></li>
+                                                    <li className="mb-2">Общая стоимость: <strong>{totalVolume.toFixed(2)} USDT</strong></li>
+                                                    <li className="mb-2">Средний объем: <strong>{(totalVolume / activeOrders.length).toFixed(2)} USDT</strong></li>
+                                                </ul>
+                                            ) : (
+                                                <p className="text-muted">Загрузите данные для анализа...</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <div className="card shadow-sm" style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid #333', borderRadius: '15px' }}>
+                                            <div className="card-body">
+                                                <h5 className="card-title text-center mb-4" style={{ color: '#6c757d' }}>Распределение активов (USDT)</h5>
+
+                                                <div style={{ width: '100%', height: '300px' }}>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <PieChart>
+                                                            <Pie
+                                                                data={activeOrders.length > 0 ? activeOrders.reduce((acc, order) => {
+                                                                    const symbol = order.symbol || order.ticker || 'Unknown';
+                                                                    // Важно: приводим к числу, так как из БД могут прийти строки
+                                                                    const qty = parseFloat(order.quantity) || 0;
+                                                                    const price = parseFloat(order.openPrice) || parseFloat(order.entryPrice) || 0;
+                                                                    const volume = qty * price;
+
+                                                                    if (volume > 0) {
+                                                                        const existing = acc.find(item => item.name === symbol);
+                                                                        if (existing) {
+                                                                            existing.value += volume;
+                                                                        } else {
+                                                                            acc.push({ name: symbol, value: parseFloat(volume.toFixed(2)) });
+                                                                        }
+                                                                    }
+                                                                    return acc;
+                                                                }, []) : [{ name: 'Нет данных', value: 1 }]} // Заглушка, если пусто
+                                                                cx="50%"
+                                                                cy="50%"
+                                                                innerRadius={70}
+                                                                outerRadius={100}
+                                                                paddingAngle={5}
+                                                                dataKey="value"
+                                                                stroke="none"
+                                                            >
+                                                                {/* Цвета */}
+                                                                <Cell fill="#0088FE" />
+                                                                <Cell fill="#00C49F" />
+                                                                <Cell fill="#FFBB28" />
+                                                                <Cell fill="#FF8042" />
+                                                                <Cell fill="#8884d8" />
+                                                            </Pie>
+                                                            <Tooltip
+                                                                contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #444', color: '#fff' }}
+                                                            />
+                                                            <Legend />
+                                                        </PieChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                         {activeTab === 'history' && (
                             <div className="tab-pane fade show active">
                                 <div className="table-responsive">
-                                    <table className="table table-hover align-middle" style={{ fontSize: '13px' }}>
+                                    <table className="table table-hover align-middle" style={{ fontSize: '14px' }}>
                                         <thead className="bg-light text-muted">
                                             <tr>
                                                 <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
@@ -1165,7 +1238,7 @@ const Trading = () => {
                                                 );
                                             }) : (
                                                 <tr>
-                                                    <td colSpan="10" className="text-center py-5 text-muted">
+                                                    <td colSpan="14" className="text-center py-5 text-muted">
                                                         История сделок пуста. Совершите свою первую сделку!
                                                     </td>
                                                 </tr>

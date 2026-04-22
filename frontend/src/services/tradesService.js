@@ -33,5 +33,16 @@ const getTradesClosedByUserId = async (userId) => {
     });
 }
 
-export default { getAllTrades, getAllTradesByPages, getTradesActiveByUserId, getTradesClosedByUserId };
+const closeTrade = (id, currentPrice) => {
+    // Используем POST, так как мы меняем состояние ресурса на сервере
+    return axios.post(`${API_URL}/${id}/close`, {}, {
+        params: {
+            closePrice: currentPrice, // Отправляем цену бэкенду
+            reason: "Closed by user"  // Опционально
+        },
+        headers: authHeader()
+    });
+};
+
+export default { getAllTrades, getAllTradesByPages, getTradesActiveByUserId, getTradesClosedByUserId, closeTrade };
 

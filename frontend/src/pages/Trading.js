@@ -133,7 +133,7 @@ const Trading = () => {
 
     // 4. Расчеты (всегда после стейтов)
     const totalPnL = activeOrders.reduce((sum, order) => {
-        const currentPrice = prices[order.ticker] || order.entryPrice;
+        const currentPrice = prices[order.symbol] || order.openPrice;
         const orderType = order.side || 'BUY';
 
         const pnl = orderType === 'BUY'
@@ -144,16 +144,46 @@ const Trading = () => {
 
     const totalVolume = activeOrders.reduce((sum, order) => sum + (parseFloat(order.volume) || 0), 0);
 
+    // Закрываем сделку по клику
+    const handleCloseOrder = async (id) => {
+        // Находим наш ордер, чтобы взять актуальную цену
+        const order = activeOrders.find(o => o.id === id);
+        if (!order) return;
+        // Берем цену из WebSocket (prices) или цену входа, если обновлений еще нет
+        const currentPrice = prices[order.symbol] || order.openPrice;
+        if (!window.confirm(`Вы уверены, что хотите закрыть ${order.symbol} сделку ID=${id} по цене ${currentPrice}?`)) return;
+        try {
+            // Передаем и ID, и цену закрытия
+            const response = await TradesService.closeTrade(id, currentPrice);
 
-    const handleCloseOrder = (id) => {
-        console.log("Закрытие ордера:", id);
-        // Здесь будет вызов API на бэкенд
+            if (response.status === 200 || response.status === 204) {
+                console.log("Сделка успешно закрыта");
+                fetchActiveOrders(); // Перезагружаем таблицу
+            }
+        } catch (error) {
+            console.error("Ошибка сервера:", error.response?.data);
+            alert("Ошибка при закрытии: " + (error.response?.data?.message || "Неизвестная ошибка"));
+        }
     };
 
-    const [tradeHistory, setTradeHistory] = useState([
-        { id: 1, ticker: 'BTCUSDT', type: 'long', volume: 0.1, entryPrice: 63100, exitPrice: 63550, profit: 45.0, closeTime: '2026-04-18 14:20' },
-        { id: 2, ticker: 'SOLUSDT', type: 'short', volume: 10, entryPrice: 145.2, exitPrice: 146.5, profit: -13.0, closeTime: '2026-04-18 15:45' }
-    ]);
+    const [tradeHistory, setTradeHistory] = useState([]);
+    const fetchClosedOrders = async () => {
+        if (!userId) return;
+        try {
+            const response = await TradesService.getTradesClosedByUserId(userId);
+            console.log("History received:", response.data);
+            setTradeHistory(response.data);
+        } catch (error) {
+            console.error("Ошибка при загрузке истории:", error);
+        }
+    };
+
+    // Вызываем загрузку при переключении на вкладку 'history' или при загрузке страницы
+    useEffect(() => {
+        if (userId && activeTab === 'history') {
+            fetchClosedOrders();
+        }
+    }, [userId, activeTab]);
 
     const [signals, setSignals] = useState([]);
 
@@ -162,6 +192,19 @@ const Trading = () => {
     const handleShow = () => setShow(true);
 
     const [isModalOpen, setModalOpen] = useState(false);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleString('ru-RU', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    };
 
     useLayoutEffect(() => {
 
@@ -898,9 +941,14 @@ const Trading = () => {
                                                 <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
                                                 <th>ID</th>
                                                 <th>Символ</th>
+                                                <th>Время открытия</th>
                                                 <th>Тип</th>
                                                 <th>Объем</th>
+
                                                 <th>Цена входа</th>
+                                                <th>S / L</th>
+                                                <th>T / P</th>
+
                                                 <th>Текущая цена</th>
                                                 <th>Прибыль (USDT)</th>
                                                 <th className="text-end">Действие</th>
@@ -912,8 +960,8 @@ const Trading = () => {
                                                     {activeOrders.map((order, index) => {
                                                         // 1. Защита от пустых данных (fallback)
                                                         const orderType = order.side || 'buy';
-                                                        const currentPrice = prices[order.ticker] || order.entryPrice || 0;
-                                                        const entryPrice = order.entryPrice || 0;
+                                                        const currentPrice = prices[order.symbol] || order.openPrice || 0;
+                                                        const entryPrice = order.openPrice || 0;
                                                         const volume = order.quantity || 0;
 
                                                         const pnl = orderType === 'BUY'
@@ -925,20 +973,25 @@ const Trading = () => {
                                                                 <td className="text-muted">{index + 1}</td>
                                                                 <td className="text-muted small">{order.id}</td>
                                                                 <td className="fw-bold">{order.symbol}</td>
+                                                                <td className="text-muted">{formatDate(order.openedAt)}</td>
                                                                 <td>
                                                                     <span className={`badge ${orderType === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
                                                                         {orderType}
                                                                     </span>
                                                                 </td>
                                                                 <td>{order.quantity}</td>
+
                                                                 <td>{order.openPrice}</td>
+                                                                <td>{order.stopLoss ? order.stopLoss : '-'}</td>
+                                                                <td>{order.takeProfit ? order.takeProfit : '-'}</td>
+
                                                                 <td className="fw-bold">{currentPrice ? currentPrice : '-'}</td>
                                                                 <td className={pnl >= 0 ? 'text-success' : 'text-danger'}>
                                                                     {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}
                                                                 </td>
                                                                 <td className="text-end">
                                                                     <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} style={{ fontSize: '12px' }}>
-                                                                        Закрыть
+                                                                        Закрыть {currentPrice}
                                                                     </button>
                                                                 </td>
                                                             </tr>
@@ -946,7 +999,7 @@ const Trading = () => {
                                                     })}
                                                     {/* БАЛАНС */}
                                                     <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)', fontWeight: 'bold', borderTop: '2px solid #dee2e6' }}>
-                                                        <td colSpan="7" className="text-muted" style={{ textAlign: 'left' }} >Баланс: {totalVolume.toFixed(2)} USTD</td>
+                                                        <td colSpan="10" className="text-muted" style={{ textAlign: 'left' }} >Баланс: {totalVolume.toFixed(2)} USTD</td>
                                                         <td className={totalPnL >= 0 ? 'text-success' : 'text-danger'}>
                                                             {totalPnL >= 0 ? '+' : ''}{totalPnL.toFixed(2)}
                                                         </td>
@@ -1045,39 +1098,72 @@ const Trading = () => {
                                             <tr>
                                                 <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
                                                 <th>ID</th>
-                                                <th>Время закрытия</th>
+                                                <th>Время открытия</th>
                                                 <th>Символ</th>
                                                 <th>Тип</th>
                                                 <th>Объем</th>
+
                                                 <th>Вход</th>
+                                                <th>S / L</th>
+                                                <th>T / P</th>
+
+                                                <th>Время закрытия</th>
                                                 <th>Выход</th>
                                                 <th>Результат (USDT)</th>
+                                                <th>Изменение (%)</th>
                                                 <th>Статус</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {tradeHistory.length > 0 ? tradeHistory.map((trade, index) => (
-                                                <tr key={trade.id}>
-                                                    <td>{index + 1}</td> {/* Порядковый номер */}
-                                                    <td className="text-muted">{trade.id}</td>
-                                                    <td className="text-muted">{trade.closeTime}</td>
-                                                    <td className="fw-bold">{trade.ticker}</td>
-                                                    <td>
-                                                        <span className={trade.type === 'long' ? 'text-success' : 'text-danger'}>
-                                                            {trade.type.toUpperCase()}
-                                                        </span>
-                                                    </td>
-                                                    <td>{trade.volume}</td>
-                                                    <td>{trade.entryPrice}</td>
-                                                    <td>{trade.exitPrice}</td>
-                                                    <td className={`fw-bold ${trade.profit >= 0 ? 'text-success' : 'text-danger'}`}>
-                                                        {trade.profit >= 0 ? '+' : ''}{trade.profit.toFixed(2)}
-                                                    </td>
-                                                    <td>
-                                                        <span className="badge bg-light text-dark border">Completed</span>
-                                                    </td>
-                                                </tr>
-                                            )) : (
+                                            {tradeHistory.length > 0 ? tradeHistory.map((trade, index) => {
+                                                const side = (trade.side || trade.type || 'BUY').toUpperCase();
+                                                const openPrice = parseFloat(trade.openPrice || trade.entryPrice || 0);
+                                                const closePrice = parseFloat(trade.closePrice || trade.exitPrice || 0);
+                                                const profit = parseFloat(trade.profitLoss || 0);
+
+                                                // Расчет процента
+                                                let pnlPercent = 0;
+                                                if (openPrice > 0) {
+                                                    pnlPercent = side === 'BUY' || side === 'LONG'
+                                                        ? ((closePrice - openPrice) / openPrice) * 100
+                                                        : ((openPrice - closePrice) / openPrice) * 100;
+                                                }
+
+                                                return (
+                                                    <tr key={trade.id}>
+                                                        <td>{index + 1}</td> {/* Порядковый номер */}
+                                                        <td className="text-muted">{trade.id}</td>
+                                                        <td className="text-muted">{formatDate(trade.openedAt)}</td>
+                                                        <td className="fw-bold">{trade.symbol}</td>
+                                                        <td>
+                                                            <span className={`badge ${side.toUpperCase() === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
+                                                                {side.toUpperCase()}
+                                                            </span>
+                                                        </td>
+                                                        <td>{trade.quantity}</td>
+
+                                                        <td>{trade.openPrice}</td>
+                                                        <td>{trade.stopLoss ? trade.stopLoss : '-'}</td>
+                                                        <td>{trade.takeProfit ? trade.takeProfit : '-'}</td>
+
+                                                        <td className="text-muted">{formatDate(trade.closedAt)}</td>
+                                                        <td>{trade.closePrice}</td>
+
+                                                        {/* Результат в USDT */}
+                                                        <td className={profit >= 0 ? 'text-success' : 'text-danger'}>
+                                                            {profit >= 0 ? '+' : ''}{profit.toFixed(2)}
+                                                        </td>
+
+                                                        {/* Изменение в % */}
+                                                        <td className={pnlPercent >= 0 ? 'text-success' : 'text-danger'}>
+                                                            {pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%
+                                                        </td>
+                                                        <td>
+                                                            <span className="badge bg-light text-dark border">Completed</span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }) : (
                                                 <tr>
                                                     <td colSpan="10" className="text-center py-5 text-muted">
                                                         История сделок пуста. Совершите свою первую сделку!

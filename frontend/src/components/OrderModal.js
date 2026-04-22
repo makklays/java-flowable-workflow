@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // Добавь все эти переменные в фигурные скобки здесь:
-const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, type, allPrices }) => {
+const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, type, allPrices, onSuccess }) => {
 
     // form validation
     const [formData, setFormData] = useState({
@@ -52,6 +52,9 @@ const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, ty
 
             if (response.ok) {
                 const result = await response.json();
+
+                if (onSuccess) onSuccess(); // Вызываем колбэк из родителя
+
                 console.log("Сделка открыта:", result);
                 onClose(); // Закрываем модалку при успехе
             } else {
@@ -174,12 +177,12 @@ const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, ty
                                 {/* Кнопки */}
                                 <div className="col-6">
                                     <button className="btn btn-danger w-100" onClick={() => handlePlaceOrder('SELL')}>
-                                        Sell by Market
+                                        Sell по рынку
                                     </button>
                                 </div>
                                 <div className="col-6">
                                     <button className="btn btn-primary w-100" onClick={() => handlePlaceOrder('BUY')}>
-                                        Buy by Market
+                                        Buy по рынку
                                     </button>
                                 </div>
                             </div>

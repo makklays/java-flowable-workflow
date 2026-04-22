@@ -32,11 +32,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         //System.out.println("--------------- user ---------------> " + user.toString());
 
         // Transform User to UserDetails
-        return org.springframework.security.core.userdetails.User
+        /*return org.springframework.security.core.userdetails.User
             .withUsername(user.getUsername())
             .password(user.getPassword())
             .authorities(user.getRole().getTitle()) // add roles, etc.
-            .build();
+            .build();*/
+        return new com.techmatrix18.security.CustomUserDetails(user);
     }
 }
 

@@ -56,6 +56,7 @@ const Login = () => {
                 // Передаем данные в контекст. Он сам сохранит всё в localStorage
                 // и оповестит все компоненты (включая Navbar), что юзер вошел.
                 login({
+                    id: data.id,
                     username: loginName,
                     token: data.token,
                     role: data.role,

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -35,7 +37,14 @@ public class JwtService {
      */
     public String generateToken(Authentication authentication) {
         String username = authentication.getName(); // get username
+
+        // Приводим Principal к вашему UserDetails (CustomUserDetails из предыдущего шага)
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", userDetails.getId()); // Добавляем ID в токен!
+
         return Jwts.builder()
+            .setClaims(extraClaims)
             .setSubject(username)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + 3600000))

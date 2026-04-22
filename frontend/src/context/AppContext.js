@@ -3,9 +3,10 @@ import React, { createContext, useState, useContext } from 'react';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    // Состояние для размера шрифта (наши "Увеличить/Уменьшить")
     const [fontSize, setFontSize] = useState(16);
-    // Состояние для текущего пользователя (после логина)
+
+    // ДОБАВЛЯЕМ состояние для ID пользователя
+    const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
     const [user, setUser] = useState(localStorage.getItem('username') || null);
     const [role, setRole] = useState(localStorage.getItem('role') || null);
 
@@ -13,14 +14,19 @@ export const AppProvider = ({ children }) => {
     const decreaseFont = () => setFontSize(prev => Math.max(prev - 2, 12));
 
     const login = (userData) => {
+        // 1. Обновляем стейты (чтобы React сразу перерисовал компоненты)
+        setUserId(userData.id);
         setUser(userData.username);
         setRole(userData.role);
 
+        // 2. Сохраняем в localStorage
+        localStorage.setItem('userId', userData.id);
         localStorage.setItem('username', userData.username);
         localStorage.setItem('role', userData.role);
-        localStorage.setItem('token', userData.token); // Сохраняем JWT для API
+        localStorage.setItem('token', userData.token);
 
         console.log("Пользователь:", userData);
+        console.log("Пользователь ID:", userData.id);
         console.log("Пользователь вошел:", userData.username);
         console.log("Пользователя роль:", userData.role);
         console.log("Пользователя token:", userData.token);
@@ -28,13 +34,14 @@ export const AppProvider = ({ children }) => {
 
     const logout = () => {
         // Очищаем всё
+        setUserId(null);
         setUser(null);
         setRole(null);
 
+        localStorage.removeItem('userId');
         localStorage.removeItem('username');
-        localStorage.removeItem('token');
         localStorage.removeItem('role');
-        // Можно добавить принудительный редирект, если импортировать useNavigate
+        localStorage.removeItem('token');
         window.location.href = '/login';
     };
 
@@ -43,8 +50,8 @@ export const AppProvider = ({ children }) => {
             fontSize,
             increaseFont,
             decreaseFont,
+            userId,
             user,
-            setUser,
             role,
             login,
             logout

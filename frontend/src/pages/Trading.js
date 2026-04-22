@@ -4,9 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartArea, faChartLine, faArrowUp, faArrowDown, faCog, faFileInvoiceDollar } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
 import OrderModal from '../components/OrderModal';
+import TradesService from '../services/tradesService';
+import AuthService from "../services/authService";
 // Переводы текстов
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
+import { useApp } from '../context/AppContext';
 
 const Trading = () => {
     const chartContainerRef = useRef(null);
@@ -26,6 +29,8 @@ const Trading = () => {
     const socketRefH1 = useRef(null);
 
     const { t, i18n } = useTranslation();
+
+    const { userId } = useApp();
 
     const [pair, setPair] = useState('solusdt');
     const [timeframe, setTimeframe] = useState('1m');
@@ -99,23 +104,46 @@ const Trading = () => {
         setOrderOpen(true);
     };
 
-    // Состояние для хранения ID активного таба
+    // 1. Сначала объявляем стейты
+    const [activeOrders, setActiveOrders] = useState([]);
     const [activeTab, setActiveTab] = useState('trading');
     const [show, setShow] = useState(false);
 
-    const [activeOrders, setActiveOrders] = useState([
-        { id: 101, ticker: 'BTCUSDT', type: 'long', volume: 0.5, entryPrice: 64200.00 },
-        { id: 102, ticker: 'ETHUSDT', type: 'short', volume: 2.0, entryPrice: 3450.50 }
-    ]);
+    // 2. Объявляем функцию загрузки (ДО useEffect)
+    const fetchActiveOrders = async () => {
+        if (!userId) return;
+        try {
+            const response = await TradesService.getTradesActiveByUserId(userId);
+            console.log("Data received:", response.data); // Проверьте консоль!
+            setActiveOrders(response.data);
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
+    };
+
+    // 3. Запускаем useEffect
+    useEffect(() => {
+        console.log("🛠 useEffect СРАБОТАЛ. Текущий юзер ID:", userId);
+        if (userId) {
+            fetchActiveOrders();
+        //    const interval = setInterval(fetchActiveOrders, 30000);
+        //    return () => clearInterval(interval);
+        }
+    }, [userId]);
+
+    // 4. Расчеты (всегда после стейтов)
     const totalPnL = activeOrders.reduce((sum, order) => {
         const currentPrice = prices[order.ticker] || order.entryPrice;
-        const pnl = order.type === 'long'
+        const orderType = order.side || 'BUY';
+
+        const pnl = orderType === 'BUY'
             ? (currentPrice - order.entryPrice) * order.volume
             : (order.entryPrice - currentPrice) * order.volume;
         return sum + pnl;
     }, 0);
 
     const totalVolume = activeOrders.reduce((sum, order) => sum + (parseFloat(order.volume) || 0), 0);
+
 
     const handleCloseOrder = (id) => {
         console.log("Закрытие ордера:", id);
@@ -882,24 +910,29 @@ const Trading = () => {
                                             {activeOrders.length > 0 ? (
                                                 <>
                                                     {activeOrders.map((order, index) => {
-                                                        const currentPrice = prices[order.ticker] || order.entryPrice;
-                                                        const pnl = order.type === 'long'
-                                                            ? (currentPrice - order.entryPrice) * order.volume
-                                                            : (order.entryPrice - currentPrice) * order.volume;
+                                                        // 1. Защита от пустых данных (fallback)
+                                                        const orderType = order.side || 'buy';
+                                                        const currentPrice = prices[order.ticker] || order.entryPrice || 0;
+                                                        const entryPrice = order.entryPrice || 0;
+                                                        const volume = order.quantity || 0;
+
+                                                        const pnl = orderType === 'BUY'
+                                                            ? (currentPrice - entryPrice) * volume
+                                                            : (entryPrice - currentPrice) * volume;
 
                                                         return (
                                                             <tr key={order.id} style={{ borderBottom: '1px solid #dee2e6' }}>
                                                                 <td className="text-muted">{index + 1}</td>
                                                                 <td className="text-muted small">{order.id}</td>
-                                                                <td className="fw-bold">{order.ticker}</td>
+                                                                <td className="fw-bold">{order.symbol}</td>
                                                                 <td>
-                                                                    <span className={`badge ${order.type === 'long' ? 'bg-success' : 'bg-danger'}`}>
-                                                                        {order.type.toUpperCase()}
+                                                                    <span className={`badge ${orderType === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
+                                                                        {orderType}
                                                                     </span>
                                                                 </td>
-                                                                <td>{order.volume}</td>
-                                                                <td>{order.entryPrice}</td>
-                                                                <td className="fw-bold">{currentPrice}</td>
+                                                                <td>{order.quantity}</td>
+                                                                <td>{order.openPrice}</td>
+                                                                <td className="fw-bold">{currentPrice ? currentPrice : '-'}</td>
                                                                 <td className={pnl >= 0 ? 'text-success' : 'text-danger'}>
                                                                     {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}
                                                                 </td>
@@ -1089,6 +1122,10 @@ const Trading = () => {
                     type={orderType}
                     // Цены (будут обновляться на лету)
                     allPrices={prices}
+                    onSuccess={() => {
+                        fetchActiveOrders();   // Функция, которая делает GET запрос к API ордеров
+                        setOrderOpen(false);   // Закрываем модалку после успеха
+                    }}
                 />
             )}
 

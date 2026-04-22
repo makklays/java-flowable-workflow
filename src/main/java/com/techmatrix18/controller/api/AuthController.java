@@ -49,7 +49,8 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        // Используем модель с полем userId (добавленое поле для расширения данных для frontend в Local Storage)
+        com.techmatrix18.security.CustomUserDetails userDetails = (com.techmatrix18.security.CustomUserDetails) authentication.getPrincipal();
 
         //log.info("Authenticated? {}", authentication.isAuthenticated());
 
@@ -60,6 +61,8 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         response.put("username", userDetails.getUsername());
+
+        response.put("id", String.valueOf(userDetails.getId()));
 
         // Получаем роль (обычно это первый элемент в Authorities)
         String role = userDetails.getAuthorities().stream()

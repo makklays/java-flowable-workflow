@@ -93,6 +93,44 @@ public class Trade {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Fields for analytics trades
+
+    // --- Поля для аналитики (Экстремумы) ---
+
+    @Column(name = "max_pnl", precision = 24, scale = 10)
+    private BigDecimal maxPnl = BigDecimal.ZERO;
+
+    @Column(name = "max_drawdown", precision = 24, scale = 10)
+    private BigDecimal maxDrawdown = BigDecimal.ZERO;
+
+    @Column(name = "high_price_reached", precision = 24, scale = 10)
+    private BigDecimal highPriceReached;
+
+    @Column(name = "low_price_reached", precision = 24, scale = 10)
+    private BigDecimal lowPriceReached;
+
+    // --- Метрики эффективности ---
+
+    @Column(precision = 24, scale = 10)
+    private BigDecimal mae = BigDecimal.ZERO;
+
+    @Column(precision = 24, scale = 10)
+    private BigDecimal mfe = BigDecimal.ZERO;
+
+    @Column(name = "efficiency_ratio", precision = 10, scale = 4)
+    private BigDecimal efficiencyRatio;
+
+    // --- Рыночный контекст ---
+
+    @Column(name = "entry_volatility", precision = 10, scale = 4)
+    private BigDecimal entryVolatility;
+
+    @Column(precision = 24, scale = 10)
+    private BigDecimal slippage = BigDecimal.ZERO;
+
+    @Column(name = "is_close_auto")
+    private Boolean isCloseAuto = false;
+
     // constructs
 
     public Trade() { }
@@ -167,5 +205,35 @@ public class Trade {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public BigDecimal getMaxPnl() { return maxPnl; }
+    public void setMaxPnl(BigDecimal maxPnl) { this.maxPnl = maxPnl; }
+
+    public BigDecimal getMaxDrawdown() { return maxDrawdown; }
+    public void setMaxDrawdown(BigDecimal maxDrawdown) { this.maxDrawdown = maxDrawdown; }
+
+    public BigDecimal getHighPriceReached() { return highPriceReached; }
+    public void setHighPriceReached(BigDecimal highPriceReached) { this.highPriceReached = highPriceReached; }
+
+    public BigDecimal getLowPriceReached() { return lowPriceReached; }
+    public void setLowPriceReached(BigDecimal lowPriceReached) { this.lowPriceReached = lowPriceReached; }
+
+    public BigDecimal getMae() { return mae; }
+    public void setMae(BigDecimal mae) { this.mae = mae; }
+
+    public BigDecimal getMfe() { return mfe; }
+    public void setMfe(BigDecimal mfe) { this.mfe = mfe; }
+
+    public BigDecimal getEfficiencyRatio() { return efficiencyRatio; }
+    public void setEfficiencyRatio(BigDecimal efficiencyRatio) { this.efficiencyRatio = efficiencyRatio; }
+
+    public BigDecimal getEntryVolatility() { return entryVolatility; }
+    public void setEntryVolatility(BigDecimal entryVolatility) { this.entryVolatility = entryVolatility; }
+
+    public BigDecimal getSlippage() { return slippage; }
+    public void setSlippage(BigDecimal slippage) { this.slippage = slippage; }
+
+    public Boolean getCloseAuto() { return isCloseAuto; }
+    public void setCloseAuto(Boolean closeAuto) { isCloseAuto = closeAuto; }
 }
 

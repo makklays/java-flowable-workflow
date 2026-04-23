@@ -1,6 +1,7 @@
 package com.techmatrix18.rabbitmq;
 
 import com.techmatrix18.model.Candle;
+import com.techmatrix18.service.PriceStorage;
 import com.techmatrix18.trading.SignalService;
 import com.techmatrix18.trading.series.LiveCandleSeries;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Candle Listener -
+ * Candle Listener - слушатель RabbitMQ для получения свечей и анализа сигналов.
  *
  * @author Alexander Kuziv <makklays@gmail.com>
  * @company TechMatrix18
@@ -21,18 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CandleListener {
 
     private final SignalService signalService;
+    private final PriceStorage priceStorage;
 
     // Используем LiveCandleSeries в качестве значения
     private final Map<String, LiveCandleSeries> seriesMap = new ConcurrentHashMap<>();
 
-    public CandleListener(SignalService signalService) {
+    public CandleListener(SignalService signalService, PriceStorage priceStorage) {
         this.signalService = signalService;
+        this.priceStorage = priceStorage;
     }
 
     @RabbitListener(queues = "binance.prices")
     public void onMessage(Candle candle) {
         // Получаем или создаем серию для конкретного символа
         String symbolId = candle.getSymbolId().toString(); // или candle.getSymbolName()
+
+        // Обновляем цену для аналитики сделок в PriceStorage,
+        // используем цену закрытия свечи (closePrice) как текущую рыночную цену
+        priceStorage.updatePrice(symbolId, candle.getClose());
 
         // Теперь создаем LiveCandleSeries и задаем maxSize (например, 200)
         LiveCandleSeries series = seriesMap.computeIfAbsent(symbolId, k -> new LiveCandleSeries(200));

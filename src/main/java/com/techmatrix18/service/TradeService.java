@@ -122,5 +122,43 @@ public class TradeService {
     public List<Trade> getAll() {
         return tradeRepository.findAll();
     }
+
+    public List<Trade> getByStatus(TradeStatus status) {
+        return tradeRepository.findByStatus(status);
+    }
+
+    @Transactional
+    public void updateLiveMetrics(Long tradeId, BigDecimal currentPrice) {
+        Trade trade = tradeRepository.findById(tradeId).orElseThrow();
+
+        // 1. Обновляем абсолютные экстремумы цены
+        if (trade.getHighPriceReached() == null || currentPrice.compareTo(trade.getHighPriceReached()) > 0) {
+            trade.setHighPriceReached(currentPrice);
+        }
+        if (trade.getLowPriceReached() == null || currentPrice.compareTo(trade.getLowPriceReached()) < 0) {
+            trade.setLowPriceReached(currentPrice);
+        }
+
+        // 2. Расчет MFE и MAE в зависимости от направления (BUY/SELL)
+        if (TradeSide.BUY.equals(trade.getSide())) {
+            // Для BUY: Прибыль вверх (High), Просадка вниз (Low)
+            trade.setMfe(trade.getHighPriceReached().subtract(trade.getOpenPrice()));
+            trade.setMae(trade.getOpenPrice().subtract(trade.getLowPriceReached()));
+        } else {
+            // Для SELL: Прибыль вниз (Low), Просадка вверх (High)
+            trade.setMfe(trade.getOpenPrice().subtract(trade.getLowPriceReached()));
+            trade.setMae(trade.getHighPriceReached().subtract(trade.getOpenPrice()));
+        }
+
+        // 3. Расчет Max Drawdown (просадка от локального пика прибыли)
+        // Логика: насколько цена сейчас хуже, чем лучший зафиксированный результат
+        // Для простоты часто используют процентное отношение MAE к OpenPrice
+        BigDecimal drawdown = trade.getMae().divide(trade.getOpenPrice(), 10, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if (drawdown.compareTo(trade.getMaxDrawdown()) > 0) {
+            trade.setMaxDrawdown(drawdown);
+        }
+
+        tradeRepository.save(trade);
+    }
 }
 

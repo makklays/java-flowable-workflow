@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 /**
- * Candle Publisher -
+ * Candle Publisher - служба для публикации свечей в RabbitMQ.
  *
  * @author Alexander Kuziv <makklays@gmail.com>
  * @company TechMatrix18

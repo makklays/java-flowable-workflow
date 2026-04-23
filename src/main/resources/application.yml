@@ -68,6 +68,8 @@ spring:
         enabled: false
         options:
           model: gpt-3.5-turbo
+  main:
+    allow-bean-definition-overriding: true
 
 management:
   endpoints:
@@ -84,10 +86,18 @@ slack:
     url: ${SLACK_WEBHOOK_URL}
 
 flowable:
+  common:
+    app:
+      idm-url:
   rest:
     app:
-      enabled: false
+      enabled: true
+      authentication-mode: none
   check-process-definitions: true
+  process:
+    enabled: true
+    servlet:
+      path: /process-api
   cmmn:
     enabled: true
   dmn:

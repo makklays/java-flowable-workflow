@@ -3,6 +3,7 @@ package com.techmatrix18.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -42,14 +44,25 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain apiSecurity(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
-            .securityMatcher("/api/**")
+            //.securityMatcher("/api/**", "/flowable-task/**")
+            .securityMatcher(new OrRequestMatcher(
+                new AntPathRequestMatcher("/api/**"),
+                new AntPathRequestMatcher("/flowable-task/**")
+            ))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf-> csrf.disable())
+            // ОТКЛЮЧАЕМ РЕДИРЕКТЫ И ВХОД ПО ПАРОЛЮ ДЛЯ API
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Используем прямое сравнение строк (AntPathRequestMatcher), оно самое легкое
+                // 1. Разрешаем OPTIONS для CORS preflight
+                //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // 2. Используем прямое сравнение строк (AntPathRequestMatcher), оно самое легкое
+                .requestMatchers(new AntPathRequestMatcher("/**", "OPTIONS")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/flowable-task/**")).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -96,9 +109,9 @@ public class SecurityConfig {
 
         // Добавьте все ваши порты фронтенда сюда
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://localhost:5173"
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:5173"
         ));
 
         //config.setAllowedOrigins(List.of("http://localhost:3001"));

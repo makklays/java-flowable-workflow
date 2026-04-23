@@ -21,7 +21,7 @@ const Header = () => {
         <Navbar bg="white" expand="lg" className="border-bottom px-3 shadow-sm">
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
                 <img src={myLogo} width="30" height="30" className="me-2" alt="Logo" />
-                <span className="fw-bold text-primary">CRM Flowable</span>
+                <span className="fw-bold text-primary">CRM Flowable Ocean</span>
             </Navbar.Brand>
 
             <Navbar.Collapse id="top-nav">

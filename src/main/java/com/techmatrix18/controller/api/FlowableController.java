@@ -20,8 +20,6 @@ public class FlowableController {
 
     public FlowableController(RepositoryService repositoryService, TaskService taskService, RuntimeService runtimeService) {
         this.repositoryService = repositoryService;
-
-
         this.taskService = taskService;
         this.runtimeService = runtimeService;
     }

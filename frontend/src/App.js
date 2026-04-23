@@ -13,7 +13,7 @@ import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake, faChartBar, faListUl, faCoins,
-  faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks, faHistory, faChartArea, faFlask,
+  faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks, faHistory, faCalendarDays, faChartArea, faFlask,
   faGear, faCircleInfo, faChartLine, faLaptopCode
 }
 from '@fortawesome/free-solid-svg-icons';
@@ -77,6 +77,7 @@ import CandleView from './pages/candles/CandleView';
 
 import Tasks from './pages/flowables/Tasks';
 import History from './pages/flowables/History';
+import Calendar from './pages/flowables/Calendar';
 
 import Trading from './pages/Trading';
 import Backtest from './pages/Backtest';
@@ -251,6 +252,9 @@ function App() {
                   <Nav.Link as={NavLink} to="/history" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                       <FontAwesomeIcon icon={faHistory} className="me-3 text-secondary" /> {t('history')}
                   </Nav.Link>
+                  <Nav.Link as={NavLink} to="/calendar" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                      <FontAwesomeIcon icon={faCalendarDays} className="me-3 text-secondary" /> {t('calendar')}
+                  </Nav.Link>
 
                   <div className="small text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style={{ fontSize: '0.7rem' }}>
                       {t('company')}
@@ -317,6 +321,7 @@ function App() {
 
                       <Route path="/tasks" element={<Tasks />} />
                       <Route path="/history" element={<History />} />
+                      <Route path="/calendar" element={<Calendar />} />
 
                       <Route path="/symbols" element={<Symbols />} />
                       <Route path="/symbols/:id" element={<SymbolView />} />

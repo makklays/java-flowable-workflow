@@ -34,6 +34,10 @@ npm install react-toastify
 npm install react-bootstrap bootstrap --legacy-peer-deps
 // установка графиков круговых
 npm install recharts --legacy-peer-deps
+// установить календарь
+npm install @uiw/react-heat-map --legacy-peer-deps
+// установить плеер для видео
+npm install react-player --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

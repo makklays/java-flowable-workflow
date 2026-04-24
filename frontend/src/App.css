@@ -152,6 +152,9 @@ a.dropdown-toggle.nav-link {
     background-color: #03aac7 !important;
     border-color: #03aac7 !important;
 }
+.bg-primary {
+    background-color: #03aac7 !important;
+}
 
 .btn-green, .btn-green:hover {
     background-color: #28a473 !important;

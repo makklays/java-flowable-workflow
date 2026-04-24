@@ -44,5 +44,12 @@ const closeTrade = (id, currentPrice) => {
     });
 };
 
-export default { getAllTrades, getAllTradesByPages, getTradesActiveByUserId, getTradesClosedByUserId, closeTrade };
+// get trade by id
+const getTradeById = async (id) => {
+    return await axios.get(`${API_URL}/${id}`, {
+        headers: authHeader()
+    });
+};
+
+export default { getAllTrades, getAllTradesByPages, getTradesActiveByUserId, getTradesClosedByUserId, closeTrade, getTradeById };
 

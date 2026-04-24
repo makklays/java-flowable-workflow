@@ -1,16 +1,18 @@
 import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartArea, faChartLine, faArrowUp, faArrowDown, faCog, faFileInvoiceDollar } from '@fortawesome/free-solid-svg-icons';
+import { faChartArea, faChartLine, faArrowUp, faArrowDown, faCog, faPencilAlt, faEdit, faPenToSquare, faEye, faFileInvoiceDollar } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
-import OrderModal from '../components/OrderModal';
-import TradesService from '../services/tradesService';
-import AuthService from "../services/authService";
+import OrderModal from '../../components/OrderModal';
+import TradesService from '../../services/tradesService';
+import AuthService from "../../services/authService";
 // Переводы текстов
-import i18n from '../i18n';
+import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../context/AppContext';
+import { useApp } from '../../context/AppContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const Trading = () => {
     const chartContainerRef = useRef(null);
@@ -63,6 +65,37 @@ const Trading = () => {
         return false;
     }
 
+    // Форматируем время один раз (или используем живые часы)
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const [infoAboutTradingSessions, setInfoAboutTradingSessions] = useState("");
+    // Добавляем состояние загрузки
+    const [isLoadingTradingSessions, setIsLoadingTradingSessions] = useState(true);
+    useEffect(() => {
+        const fetchSessionInfo = async () => {
+                setIsLoadingTradingSessions(true); // Начало загрузки
+                try {
+                    const response = await fetch('http://localhost:8082/api/v1/trades/info-trading-sessions', {
+                        method: 'GET',
+                        headers: {
+                            'Accept-Language': localStorage.getItem('i18nextLng') || 'en'
+                        }
+                    });
+                    if (response.ok) {
+                        const text = await response.text();
+                        setInfoAboutTradingSessions(text);
+                    } else {
+                        console.error("Сервер вернул ошибку:", response.status);
+                    }
+                } catch (error) {
+                    console.error("Ошибка сети:", error);
+                } finally {
+                    // 3. Устанавливаем false в любом случае (успех или провал)
+                    setIsLoadingTradingSessions(false);
+                }
+            };
+            fetchSessionInfo();
+    }, []); // Пустой массив — запрос выполнится один раз при загрузке
+
     // 1. Список символов (позже будешь загружать через fetch/axios из БД)
     const [symbolsFromDB, setSymbolsFromDB] = useState([
         { id: 1, ticker: 'BTCUSDT', name: 'Bitcoin' },
@@ -105,9 +138,23 @@ const Trading = () => {
         setOrderOpen(true);
     };
 
+    // Чтобы прочитать параметр Таба из URL при линке на страницу, например: /trading?tab=history
+    const location = useLocation();
+
     // 1. Сначала объявляем стейты
     const [activeOrders, setActiveOrders] = useState([]);
-    const [activeTab, setActiveTab] = useState('trading');
+    const [activeTab, setActiveTab] = useState(() => {
+        const params = new URLSearchParams(location.search);
+        return params.get('tab') || 'trading';
+    });
+    // Если нужно, чтобы табы переключались "на лету" при изменении URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab) {
+            setActiveTab(tab);
+        }
+    }, [location]);
     const [show, setShow] = useState(false);
 
     // 2. Объявляем функцию загрузки (ДО useEffect)
@@ -212,6 +259,14 @@ const Trading = () => {
             second: '2-digit'
         });
     };
+
+    const navigate = useNavigate();
+    const handleView = async (tradeId, tab) => {
+        //alert("Просмотр!");
+        // Переход на страницу конкретной сделки
+        // Вместо "1" подставляем динамический ID
+        navigate(`/trade/${tradeId}?tab=${tab}`);
+    }
 
     useLayoutEffect(() => {
 
@@ -934,6 +989,15 @@ const Trading = () => {
                                 История
                             </button>
                         </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'theory' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('theory')}
+                                style={activeTab === 'theory' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Теория
+                            </button>
+                        </li>
                     </ul>
 
 
@@ -997,13 +1061,30 @@ const Trading = () => {
                                                                     {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}
                                                                 </td>
                                                                 <td className="text-end">
-                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} style={{ fontSize: '12px' }}>
+                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleView(order.id, 'trading')} title={t('view_details')} style={{ fontSize: '12px', marginRight: '5px' }}>
+                                                                        <FontAwesomeIcon icon={faEye} />
+                                                                    </button>
+                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} title={t('edit_trade')} style={{ fontSize: '12px', marginRight: '5px' }}>
+                                                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                                                    </button>
+                                                                    {/*
+                                                                    <a href="#" onClick={(e) => {  }} title="Edit" style={{ cursor: "pointer" }} >
+                                                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                                                    </a>
+                                                                    */}
+                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} title={t('close_trade')} style={{ fontSize: '12px' }}>
                                                                         Закрыть {currentPrice}
                                                                     </button>
                                                                 </td>
                                                             </tr>
                                                         );
                                                     })}
+                                                    {/* Торговые сессии */}
+                                                    <tr>
+                                                        <td colSpan="12" className="text-muted" style={{ textAlign: 'left' }} >
+                                                            {isLoadingTradingSessions ? "Загрузка торговых сессий..." : (infoAboutTradingSessions || currentTime)}
+                                                        </td>
+                                                    </tr>
                                                     {/* БАЛАНС */}
                                                     <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)', fontWeight: 'bold', borderTop: '2px solid #dee2e6' }}>
                                                         <td colSpan="10" className="text-muted" style={{ textAlign: 'left' }} >Баланс: {totalVolume.toFixed(2)} USTD</td>
@@ -1184,7 +1265,10 @@ const Trading = () => {
                                                 <th>Выход</th>
                                                 <th>Результат (USDT)</th>
                                                 <th>Изменение (%)</th>
+                                                {/*
                                                 <th>Статус</th>
+                                                */}
+                                                <th className="text-end">Действие</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1231,8 +1315,15 @@ const Trading = () => {
                                                         <td className={pnlPercent >= 0 ? 'text-success' : 'text-danger'}>
                                                             {pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%
                                                         </td>
+                                                        {/*
                                                         <td>
                                                             <span className="badge bg-light text-dark border">Completed</span>
+                                                        </td>
+                                                        */}
+                                                        <td style={{ textAlign: 'right' }}>
+                                                            <button className="btn btn-primary btn-sm" onClick={() => handleView(trade.id, 'history')} title={t('view_details')} style={{ fontSize: '12px', marginRight: '5px' }}>
+                                                                <FontAwesomeIcon icon={faEye} />
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 );
@@ -1245,6 +1336,127 @@ const Trading = () => {
                                             )}
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'theory' && (
+                            <div className="tab-pane fade show active">
+                                <div className="row">
+                                    <div className="col-md-12 text-muted" style={{ textAlign: 'left' }}>
+                                        <div style={{ marginBottom: '10px' }}><b>Плечо (leverage)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Плечо (leverage) - влияет на размер позиции и риск.<br/>
+                                            Плечо не влияет на расчет прибыли/убытка в USDT, так как для этого используется величина лота. <br/>
+                                            Только величина лота влияет на величину прибыли/убытка в USDT.<br/>
+                                            Чем выше плечо, тем меньше лот нужно использовать, чтобы достичь той же прибыли в USDT.
+                                            Но при этом риск увеличивается, так как цена может двигаться против вас с большей силой.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Трейлинг-стоп (Trailing Stop)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Трейлинг-стоп — это динамический защитный ордер, который автоматически следует
+                                            за ценой актива, если она движется в сторону прибыли, и остается на месте,
+                                            если цена разворачивается.<br/>
+                                            Как это работает:<br/>
+                                            - Для Long (покупка): Если цена растет, Трейлинг-стоп «подтягивается» вверх на
+                                            заданном расстоянии (например, 1% от текущей цены). Если цена падает, стоп не двигается вниз.<br/>
+                                            - Для Short (продажа): Если цена падает, Трейлинг-стоп «сползает» вниз за ней. <br/>
+                                            Это условие, при котором «стоп» начинает двигаться. Суть: Пока цена не прошла,
+                                            например, +1.5% от входа, стоп стоит мертво (защищает от убытка). Как только порог
+                                            пройден — включается механизм подтягивания.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Трейлинг Тейк-Профит (Trailing Take Profit)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Более продвинутая штука.
+                                            Суть: Когда цена доходит до твоего Тейк-Профита, сделка не закрывается сразу.
+                                            Вместо этого включается трейлинг. Если цена пойдет еще выше — ты заработаешь больше.
+                                            Если упадет чуть ниже Тейка — тогда закроется.<br/>
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Уровни коррекции (Fibonacci Retracement)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Используются, чтобы понять, как глубоко откатится цена против текущего тренда, прежде чем продолжить движение.<br/>
+                                            Как строить:<br/>
+                                                - При восходящем тренде: тянем сетку от минимума (Swing Low) к максимуму (Swing High).<br/>
+                                                - При нисходящем тренде: от максимума к минимуму.<br/>
+                                            Ключевые уровни:<br/>
+                                                - 0.382 (38%) — неглубокая коррекция (сильный тренд).<br/>
+                                                - 0.5 (50%) — психологический уровень (не число Фибоначчи, но важен).<br/>
+                                                - 0.618 (62%) — «Золотое сечение», зона самого вероятного разворота.<br/>
+                                            Логика: Трейдеры ищут точку входа в покупку/продажу именно на этих уровнях, ожидая отскока. Коррекция: отвечает на вопрос «Где мне войти в сделку?»
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Расширения Фибоначчи (Fibonacci Extension)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Используются, чтобы определить цели (Take Profit) — куда цена может дойти после завершения коррекции.<br/>
+                                            Как строить: Обычно требуется три точки (начало импульса, конец импульса, конец коррекции).<br/>
+                                            Ключевые уровни:<br/>
+                                                - 1.618 — основная цель. <br/>
+                                                - 2.618 — цель при очень сильном импульсе. <br/>
+                                                - 4.236 — экстремальное движение. <br/>
+                                            Логика: Позволяет спрогнозировать, насколько цена «выстрелит» выше предыдущего максимума. Расширение: отвечает на вопрос «Где мне закрыть сделку с прибылью?»
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Уровень поддержки (Support) — «Пол»</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Это уровень, ниже которого цене трудно опуститься.<br/>
+                                            Логика: Когда цена падает к этому уровню, покупатели считают её дешевой и начинают активно покупать.<br/>
+                                            На графике: Проводится по двум и более минимумам (Low) на одной линии.<br/>
+                                            Действие: Трейдеры ищут здесь точку для покупки (BUY).
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Уровень сопротивления (Resistance) — «Потолок»</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Это уровень, выше которого цене трудно подняться.<br/>
+                                            Логика: Когда цена растет к этому уровню, продавцы считают её дорогой и начинают фиксировать прибыль или открывать шорты.<br/>
+                                            На графике: Проводится по двум и более максимумам (High) на одной линии.<br/>
+                                            Действие: Трейдеры ищут здесь точку для продажи (SELL).
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>Зеркальный уровень (Ротация)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Один из самых сильных сигналов. Если цена пробивает сопротивление, оно часто становится поддержкой при возврате (тесте) сверху. И наоборот.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px', fontSize: '20px' }}><b style={{ color: '#03aac7' }}>Топ-5 самых надежных сигналов</b></div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>1. Дивергенция (Расхождение)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Это когда график цены и индикатор (RSI, MACD) показывают разные направления.<br/>
+                                            Медвежья: Цена ставит новый максимум, а индикатор — нет. Это сигнал о слабости покупателей.<br/>
+                                            Бычья: Цена ставит новый минимум, а индикатор — нет. Пора покупать.<br/>
+                                            ⚓️ Сила: Считается одним из самых точных опережающих сигналов.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>2. Тест «Зеркального уровня»</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Когда сильный уровень сопротивления пробивается и цена возвращается к нему сверху, чтобы подтвердить его как поддержку.<br/>
+                                            Логика: Рынок «согласился» с новой ценой.<br/>
+                                            Сила: Вероятность отскока от зеркального уровня гораздо выше, чем от обычного.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>3. Паттерны Price Action на крупных таймфреймах</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Свечные модели на дневных (D1) или 4-часовых (H4) графиках:<br/>
+                                            Пин-бар (Pin Bar): Длинная тень в сторону уровня («ложный пробой»).<br/>
+                                            Поглощение (Engulfing): Когда одна свеча полностью перекрывает предыдущую.<br/>
+                                            Сила: Чем выше таймфрейм, тем сложнее манипулировать ценой крупным игрокам.
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>4. Пробой накопления (Consolidation Breakout)</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Когда цена долгое время зажата в узком боковике, а затем резко выходит из него с повышенным объемом.<br/>
+                                            Логика: В боковике копится энергия (позиции). Выход из него — это начало мощного импульса.<br/>
+                                        </div>
+
+                                        <div style={{ marginBottom: '10px' }}><b>5. Сочетание Фибоначчи и Уровня POC</b></div>
+                                        <div style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                                            Если уровень коррекции 0.618 совпадает с горизонтальным уровнем объема (POC) или сильной поддержкой.<br/>
+                                            Логика: «Смарт-мани» видят эти уровни и ставят там свои ордера.
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
                         )}

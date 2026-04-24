@@ -3,7 +3,9 @@ package com.techmatrix18.service;
 import com.techmatrix18.dto.OpenTradeDto;
 import com.techmatrix18.enums.TradeSide;
 import com.techmatrix18.enums.TradeStatus;
+import com.techmatrix18.model.Symbol;
 import com.techmatrix18.repository.TradeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.techmatrix18.model.Trade;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,17 @@ public class TradeService {
 
     public TradeService(TradeRepository tradeRepository) {
         this.tradeRepository = tradeRepository;
+    }
+
+    /**
+     * Find a trade by id
+     *
+     * @param id Trade ID
+     * @return found trade
+     * @throws EntityNotFoundException if the trade is not found
+     */
+    public Trade getById(Long id) {
+        return tradeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("The trade didn't find"));
     }
 
     // Open a new trade

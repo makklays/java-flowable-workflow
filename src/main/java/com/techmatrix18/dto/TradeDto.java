@@ -19,6 +19,8 @@ public class TradeDto {
     public BigDecimal profit;
     public BigDecimal profitPercent;
 
+    public TradeDto() { }
+
     public TradeDto(Long entryTime, BigDecimal entryPrice, String type) {
         this.entryTime = entryTime;
         this.entryPrice = entryPrice;

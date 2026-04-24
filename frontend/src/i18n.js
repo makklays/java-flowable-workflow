@@ -40,6 +40,12 @@ i18n
                     history: "История задач",
                     deleteSelected: "Удалить выбранное",
                     calendar: 'Календарь',
+                    back: "Назад",
+                    back_to_list: "Вернуться к списку",
+                    trade_details: "Детали сделки",
+                    close_trade: "Закрыть сделку",
+                    edit_trade: "Редактировать сделку",
+                    view_details: "Просмотреть детали",
                 }
             },
             en: {
@@ -74,6 +80,12 @@ i18n
                     history: "Tasks history",
                     deleteSelected: "Delete selected",
                     calendar: 'Calendar',
+                    back: "Back",
+                    back_to_list: "Back to list",
+                    trade_details: "Trade Details",
+                    close_trade: "Close Trade",
+                    edit_trade: "Edit Trade",
+                    view_details: "View Details",
                 }
             },
             es: {
@@ -108,6 +120,12 @@ i18n
                     history: "Historial de tareas",
                     deleteSelected: "Eliminar seleccionados",
                     calendar: 'Calendario',
+                    back: "Volver",
+                    back_to_list: "Volver a la lista",
+                    trade_details: "Detalles de la operación",
+                    close_trade: "Cerrar operación",
+                    edit_trade: "Editar operación",
+                    view_details: "Ver detalles",
                 }
             }
         }, // Закрываем resources здесь

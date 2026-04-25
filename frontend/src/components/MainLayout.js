@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faHouse, faAddressBook, faHeartPulse, faUsers, faHandshake, faChartBar, faListUl, faCoins,
     faSitemap, faBriefcase, faUserShield, faUserGroup, faTasks, faHistory, faCalendarDays, faChartArea, faFlask,
-    faGear, faCircleInfo, faChartLine, faLaptopCode
+    faGear, faCircleInfo, faChartLine, faLaptopCode, faDisplay
 } from '@fortawesome/free-solid-svg-icons';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -168,7 +168,7 @@ const MainLayout = () => {
                             <FontAwesomeIcon icon={faFlask} className="me-3 text-secondary" /> {t('backtest')}
                         </Nav.Link>
                         <Nav.Link as={NavLink} to="/grafics" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                            <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('grafics')}
+                            <FontAwesomeIcon icon={faDisplay} className="me-3 text-secondary" /> {t('grafics')}
                         </Nav.Link>
                         <Nav.Link as={NavLink} to="/symbols" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                             <FontAwesomeIcon icon={faCoins} className="me-3 text-secondary" /> {t('symbols')}

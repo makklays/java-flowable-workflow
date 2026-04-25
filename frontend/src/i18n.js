@@ -46,6 +46,7 @@ i18n
                     close_trade: "Закрыть сделку",
                     edit_trade: "Редактировать сделку",
                     view_details: "Просмотреть детали",
+                    grafics: "Графики",
                 }
             },
             en: {
@@ -86,6 +87,7 @@ i18n
                     close_trade: "Close Trade",
                     edit_trade: "Edit Trade",
                     view_details: "View Details",
+                    grafics: "Grafics",
                 }
             },
             es: {
@@ -126,6 +128,7 @@ i18n
                     close_trade: "Cerrar operación",
                     edit_trade: "Editar operación",
                     view_details: "Ver detalles",
+                    grafics: "Gráficos",
                 }
             }
         }, // Закрываем resources здесь

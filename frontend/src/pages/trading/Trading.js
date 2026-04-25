@@ -12,8 +12,7 @@ import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function calculateRSI(data, period = 14) {
     const rsiData = [];
@@ -201,8 +200,6 @@ const Trading = () => {
         console.log("🛠 useEffect СРАБОТАЛ. Текущий юзер ID:", userId);
         if (userId) {
             fetchActiveOrders();
-        //    const interval = setInterval(fetchActiveOrders, 30000);
-        //    return () => clearInterval(interval);
         }
     }, [userId]);
 
@@ -294,6 +291,31 @@ const Trading = () => {
         // Вместо "1" подставляем динамический ID
         navigate(`/trade/${tradeId}?tab=${tab}`);
     }
+
+    // WebSocket - с минутными данными Backend
+    useEffect(() => {
+        const socket = new WebSocket('ws://localhost:8082/ws/signals');
+        socket.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type !== "CANDLE") return; // отбрасываем SIGNAL и другие типы сообщений
+
+            // ВАЖНО: Проверьте названия полей, которые шлет ваша Java (candle.getClose() и т.д.)
+            // Если Java шлет объект Candle, приводим его к формату Lightweight Charts
+            const newCandle = {
+                time: msg.openTime / 1000, // Конвертируем в секунды
+                open: parseFloat(msg.open),
+                high: parseFloat(msg.high),
+                low: parseFloat(msg.low),
+                close: parseFloat(msg.close),
+            };
+
+            // Обновляем серию (метод update либо добавит новую свечу, либо обновит текущую)
+            if (chartRef.current) {
+                chartRef.current.update(newCandle);
+            }
+        };
+        return () => socket.close();
+    }, []);
 
     useLayoutEffect(() => {
 
@@ -477,13 +499,14 @@ const Trading = () => {
         seriesRefH1.current = candleSeriesH1;
 
         // 3. Загружаем историю
+        // Исторические данные для M1 (200 последних свечей)
+        alert(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=${timeframe}&limit=200`);
         fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=${timeframe}&limit=200`)
             .then(res => res.json())
             .then(data => {
                 if (!isMounted || !Array.isArray(data)) return;
 
-                const formattedCandles = data
-                    .map(c => {
+                const formattedCandles = data.map(c => {
                         const timeRaw = c?.openTime;
                         const time = Number(timeRaw);
                         return {
@@ -581,6 +604,7 @@ const Trading = () => {
             })
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
+        // Исторические данные для D1 (200 последних свечей)
         fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=1d&limit=200`)
             .then(res => res.json())
             .then(data => {
@@ -674,6 +698,7 @@ const Trading = () => {
             })
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
+        // Исторические данные для H1 (200 последних свечей)
         fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=1h&limit=200`)
             .then(res => res.json())
             .then(data => {

@@ -1,9 +1,10 @@
 import React, { useLayoutEffect, useEffect, useRef } from 'react';
 import { createChart } from 'lightweight-charts';
+import { faCoins, faSync, faPlay, faFlask, faDisplay } from '@fortawesome/free-solid-svg-icons';
+import i18n from '../../i18n';
+import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// =========================
-// SAFE SYNC CHARTS
-// =========================
 function syncCharts(chart1, chart2) {
     let isSyncing = false;
 
@@ -30,9 +31,6 @@ function syncCharts(chart1, chart2) {
     };
 }
 
-// =========================
-// SAFE CROSSHAIR SYNC
-// =========================
 function syncCrosshair(chart1, chart2) {
     const handler1 = param => {
         if (!param?.time) return;
@@ -53,9 +51,6 @@ function syncCrosshair(chart1, chart2) {
     };
 }
 
-// =========================
-// MAIN COMPONENT
-// =========================
 const Grafics = ({ candlesData = [], rsiData = [] }) => {
     const priceRef = useRef(null);
     const rsiRef = useRef(null);
@@ -63,12 +58,12 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
     const candleSeriesRef = useRef(null);
     const rsiSeriesRef = useRef(null);
 
+    const { t, i18n } = useTranslation();
+
     useLayoutEffect(() => {
         if (!priceRef.current || !rsiRef.current) return;
 
-        // =========================
         // PRICE CHART
-        // =========================
         const priceChart = createChart(priceRef.current, {
             width: priceRef.current.clientWidth,
             height: 400,
@@ -92,9 +87,7 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
 
         candleSeriesRef.current = candleSeries;
 
-        // =========================
         // RSI CHART
-        // =========================
         const rsiChart = createChart(rsiRef.current, {
             width: rsiRef.current.clientWidth,
             height: 150,
@@ -137,15 +130,11 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
             });
         });
 
-        // =========================
         // SYNC
-        // =========================
         const unsync1 = syncCharts(priceChart, rsiChart);
         const unsync2 = syncCrosshair(priceChart, rsiChart);
 
-        // =========================
         // RESIZE
-        // =========================
         const handleResize = () => {
             if (!priceRef.current) return;
             const width = priceRef.current.clientWidth;
@@ -165,28 +154,7 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
         };
     }, []);
 
-    // =========================
-    // SAFE DATA UPDATE
-    // =========================
-    /*useEffect(() => {
-        if (!candleSeriesRef.current) return;
-        if (!Array.isArray(candlesData)) return;
-        if (candlesData.length === 0) return;
-
-        const safe = candlesData.filter(c =>
-            c &&
-            Number.isFinite(c.time) &&
-            Number.isFinite(c.open) &&
-            Number.isFinite(c.high) &&
-            Number.isFinite(c.low) &&
-            Number.isFinite(c.close)
-        );
-
-        if (safe.length > 0) {
-            candleSeriesRef.current.setData(safe);
-        }
-    }, [candlesData]);*/
-
+    // Data update from WebSocket
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8082/ws/signals');
         socket.onmessage = (event) => {
@@ -209,8 +177,36 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
                 candleSeriesRef.current.update(newCandle);
             }
         };
-
         return () => socket.close();
+    }, []);
+
+    useEffect(() => {
+        // 1. Сбрасываем график при смене пары или таймфрейма (если нужно)
+        if (candleSeriesRef.current) {
+            candleSeriesRef.current.setData([]);
+        }
+
+        fetch(`https://api.binance.com/api/v3/klines?symbol=SOLUSDT&interval=1m&limit=200`)
+            .then(res => res.json())
+            .then(data => {
+                if (!Array.isArray(data)) return;
+
+                // 2. Форматируем массив данных под формат библиотеки
+                const formattedCandles = data.map(c => ({
+                    time: c[0] / 1000,          // Binance ms -> Seconds
+                    open: parseFloat(c[1]),
+                    high: parseFloat(c[2]),
+                    low: parseFloat(c[3]),
+                    close: parseFloat(c[4]),
+                })).filter(c => !isNaN(c.close)); // Удаляем битые данные
+
+                // 3. Заполняем историю через setData
+                if (candleSeriesRef.current && formattedCandles.length > 0) {
+                    candleSeriesRef.current.setData(formattedCandles);
+                }
+            })
+            .catch(err => console.error("Ошибка загрузки истории Binance:", err));
+
     }, []);
 
     useEffect(() => {
@@ -229,7 +225,17 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
     }, [rsiData]);
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div>
+            <div className="row" style={{ marginBottom: '10px' }} >
+                <div className="col-md-6">
+                    <h1><FontAwesomeIcon icon={faDisplay} className="me-2" /> {t('Grafics')}</h1>
+                    <p style={{ color: '#6c757d' }}>Терминал для торговли с графиками по выбранным символам и переключаемыми таймфреймами</p>
+                </div>
+                <div className="col-md-6" style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '38px', color: '#28a473', fontWeight: 'bold' }} >Balance: 100 USDT</div>
+                </div>
+            </div>
+
             <div style={{ marginBottom: '10px', border: '1px solid #eee' }}>
                 <div ref={priceRef} />
             </div>
@@ -241,3 +247,4 @@ const Grafics = ({ candlesData = [], rsiData = [] }) => {
 };
 
 export default Grafics;
+

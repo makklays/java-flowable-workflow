@@ -15,7 +15,7 @@ const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, ty
     if (!isOpen) return null;
 
     // Достаем актуальную цену для ВЫБРАННОГО в данный момент тикера
-    const currentPrice = allPrices[selectedCoin.ticker] || '0.00';
+    const currentPrice = allPrices[selectedCoin.ticker]?.close || '0.00';
 
     const handleChange = (e) => {
         const { name, value } = e.target;

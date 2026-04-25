@@ -18,8 +18,7 @@ const BinanceChart = ({ symbol = 'BTCUSDT', interval = '1h' }) => {
                 horzLines: { color: '#f0f0f0' },
             },
             timeScale: {
-                timeVisible: true,
-                secondsVisible: false,
+                borderColor: '#cccccc',
             },
         });
 

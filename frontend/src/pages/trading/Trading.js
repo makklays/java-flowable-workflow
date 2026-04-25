@@ -11,6 +11,7 @@ import AuthService from "../../services/authService";
 import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
+import { usePrices } from '../../context/PricesContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -63,6 +64,15 @@ const Trading = () => {
 
     const [pair, setPair] = useState('solusdt');
     const [timeframe, setTimeframe] = useState('1m');
+
+    const prices = usePrices(); // из контекста получаем текущие цены, которые приходят с бекенда через WebSocket
+    const currentPriceSOLUSDT = prices['SOLUSDT']?.close || 0;
+    const currentSymbol = pair.toUpperCase();
+    const livePrice = prices[currentSymbol]?.close || "0.00";
+
+    /*useEffect(() => {
+        console.log("Prices updated in Trading component:", prices);
+    }, [prices]);*/
 
     function handlePair(newPair) {
         console.log(newPair);
@@ -150,7 +160,7 @@ const Trading = () => {
 
     // 3. Цены (объект, куда будут капать данные из сокета)
     // Например: { "BTCUSDT": 65000, "ETHUSDT": 3500 }
-    const [prices, setPrices] = useState({});
+    //const [prices, setPrices] = useState({});
 
     // 4. Состояние модального окна
     const [isOrderOpen, setOrderOpen] = useState(false);
@@ -211,7 +221,7 @@ const Trading = () => {
 
     // 4. Расчеты (всегда после стейтов)
     const totalPnL = activeOrders.reduce((sum, order) => {
-        const currentPrice = prices[order.symbol] || order.openPrice;
+        const currentPrice = prices[order.symbol]?.close || order.openPrice;
         const orderType = order.side || 'BUY';
 
         const pnl = orderType === 'BUY'
@@ -228,7 +238,7 @@ const Trading = () => {
         const order = activeOrders.find(o => o.id === id);
         if (!order) return;
         // Берем цену из WebSocket (prices) или цену входа, если обновлений еще нет
-        const currentPrice = prices[order.symbol] || order.openPrice;
+        const currentPrice = prices[order.symbol]?.close || order.openPrice;
         if (!window.confirm(`Вы уверены, что хотите закрыть ${order.symbol} сделку ID=${id} по цене ${currentPrice}?`)) return;
         try {
             // Передаем и ID, и цену закрытия
@@ -293,7 +303,7 @@ const Trading = () => {
     }
 
     // WebSocket - с минутными данными Backend
-    useEffect(() => {
+    /*useEffect(() => {
         const socket = new WebSocket('ws://localhost:8082/ws/signals');
         socket.onmessage = (event) => {
             const msg = JSON.parse(event.data);
@@ -310,12 +320,12 @@ const Trading = () => {
             };
 
             // Обновляем серию (метод update либо добавит новую свечу, либо обновит текущую)
-            if (chartRef.current) {
-                chartRef.current.update(newCandle);
+            if (seriesRef.current) {
+                seriesRef.current.update(newCandle);
             }
         };
         return () => socket.close();
-    }, []);
+    }, []);*/
 
     useLayoutEffect(() => {
 
@@ -356,8 +366,8 @@ const Trading = () => {
                 top: 0.1,    // небольшой отступ сверху
                 bottom: 0.4, // оставляем 40% места снизу пустым!
             },
-        });
-        chartRef.current = chart;*/
+        });*/
+        chartRef.current = chart;
 
         // RSI
         // RSI серия
@@ -451,7 +461,6 @@ const Trading = () => {
         });
         maSeriesRef.current = maSeries;
 
-        //const maSeriesD1 = chartD1.addSeries(LineSeries, {
         const maSeriesD1 = chartD1.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
@@ -459,7 +468,6 @@ const Trading = () => {
         });
         maSeriesRefD1.current = maSeriesD1;
 
-        //const maSeriesH1 = chartH1.addSeries(LineSeries, {
         const maSeriesH1 = chartH1.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
@@ -468,8 +476,7 @@ const Trading = () => {
         maSeriesRefH1.current = maSeriesH1;
 
         // Добавляем серию свечей
-        //const candleSeries = chart.addSeries(CandlestickSeries, {
-        const candleSeries = chart.addLineSeries({
+        const candleSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -478,8 +485,7 @@ const Trading = () => {
         });
         seriesRef.current = candleSeries;
 
-        //const candleSeriesD1 = chartD1.addSeries(CandlestickSeries, {
-        const candleSeriesD1 = chartD1.addLineSeries({
+        const candleSeriesD1 = chartD1.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -488,8 +494,7 @@ const Trading = () => {
         });
         seriesRefD1.current = candleSeriesD1;
 
-        //const candleSeriesH1 = chartH1.addSeries(CandlestickSeries, {
-        const candleSeriesH1 = chartH1.addLineSeries({
+        const candleSeriesH1 = chartH1.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -500,24 +505,19 @@ const Trading = () => {
 
         // 3. Загружаем историю
         // Исторические данные для M1 (200 последних свечей)
-        alert(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=${timeframe}&limit=200`);
         fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=${timeframe}&limit=200`)
             .then(res => res.json())
             .then(data => {
                 if (!isMounted || !Array.isArray(data)) return;
 
-                const formattedCandles = data.map(c => {
-                        const timeRaw = c?.openTime;
-                        const time = Number(timeRaw);
-                        return {
-                            time: Number.isFinite(time) ? Math.floor(time / 1000) : null,
-                            open: Number(parseFloat(c?.open)),
-                            high: Number(parseFloat(c?.high)),
-                            low: Number(parseFloat(c?.low)),
-                            close: Number(parseFloat(c?.close)),
-                        };
-                    })
-                    .sort((a, b) => a.time - b.time); // Сортируем от старых к новым
+                // 2. Форматируем массив данных под формат библиотеки
+                const formattedCandles = data.map(c => ({
+                    time: c[0] / 1000,          // Binance ms -> Seconds
+                    open: parseFloat(c[1]),
+                    high: parseFloat(c[2]),
+                    low: parseFloat(c[3]),
+                    close: parseFloat(c[4]),
+                })).filter(c => !isNaN(c.close));
 
                 if (formattedCandles.length > 0 && seriesRef.current) {
                      try {
@@ -537,22 +537,32 @@ const Trading = () => {
                 const sellTime = formattedCandles[formattedCandles.length - 5].time;
                 const sellPrice = formattedCandles[formattedCandles.length - 5].close;
 
-                const tradeMarkers = [
-                    {
-                        time: buyTime,
-                        position: 'belowBar',
-                        color: '#2196F3',
-                        shape: 'arrowUp',
-                        text: 'BUY @ ' + buyPrice
-                    },
-                    {
-                        time: sellTime,
-                        position: 'aboveBar',
-                        color: '#e91e63',
-                        shape: 'arrowDown',
-                        text: 'SELL @ ' + sellPrice
-                    }
-                ];
+                if (formattedCandles.length > 20) {
+                    // Устанавливаем базу
+                    candleSeries.setData(formattedCandles);
+
+                    // Формируем маркеры, беря время ПРЯМО из отформатированных данных
+                    const markers = [
+                        {
+                            time: formattedCandles[formattedCandles.length - 20].time,
+                            position: 'belowBar',
+                            color: '#2196F3',
+                            shape: 'arrowUp',
+                            text: 'BUY'
+                        },
+                        {
+                            time: formattedCandles[formattedCandles.length - 5].time,
+                            position: 'aboveBar',
+                            color: '#e91e63',
+                            shape: 'arrowDown',
+                            text: 'SELL'
+                        }
+                    ];
+
+                    console.log('================>', markers);
+                    // Теперь это безопасно
+                    candleSeries.setMarkers(markers);
+                }
 
                 // Создаем серию для линии сделки
                 //const tradeLineSeries = chart.addSeries(LineSeries, {
@@ -570,11 +580,6 @@ const Trading = () => {
                         { time: buyTime, value: buyPrice },
                         { time: sellTime, value: sellPrice }
                     ]);
-                }
-
-                if (candleSeries && formattedCandles.length > 10) {
-                    // Установка маркеров на серию свечей
-                    candleSeries.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
@@ -610,31 +615,18 @@ const Trading = () => {
             .then(data => {
                 if (!isMounted) return;
 
-                const candles = data.map(c => {
-                    const time = Number(c?.[0]);
-                    const open = Number(c?.[1]);
-                    const high = Number(c?.[2]);
-                    const low = Number(c?.[3]);
-                    const close = Number(c?.[4]);
+                // 2. Форматируем массив данных под формат библиотеки
+                const candles = data.map(c => ({
+                    time: c[0] / 1000,          // Binance ms -> Seconds
+                    open: parseFloat(c[1]),
+                    high: parseFloat(c[2]),
+                    low: parseFloat(c[3]),
+                    close: parseFloat(c[4]),
+                })).filter(c => !isNaN(c.close));
 
-                    return {
-                        time: time ? time / 1000 : null,
-                        open,
-                        high,
-                        low,
-                        close,
-                    };
-                })
-                .filter(c =>
-                    Number.isFinite(c.time) &&
-                    Number.isFinite(c.open) &&
-                    Number.isFinite(c.high) &&
-                    Number.isFinite(c.low) &&
-                    Number.isFinite(c.close)
-                );
                 if (candleSeriesD1 && candles.length > 0) {
                     // В версии 4.2.1 setData ОЧЕНЬ чувствительна к NaN
-                    //candleSeriesD1.setData(candles);   // !!!!!!!!!!!
+                    candleSeriesD1.setData(candles);   // !!!!!!!!!!!
                 }
 
                 // Пример данных о сделках
@@ -680,7 +672,7 @@ const Trading = () => {
 
                 if (candleSeriesD1 && candles.length > 10) {
                     // Установка маркеров на серию свечей
-                    //candleSeriesD1.setMarkers(tradeMarkers);
+                    candleSeriesD1.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
@@ -728,7 +720,7 @@ const Trading = () => {
                 );
                 if (candleSeriesH1 && candles) {
                     // В версии 4.2.1 setData ОЧЕНЬ чувствительна к NaN
-                    //candleSeriesH1.setData(candles);  // !!!!!!!!!!
+                    candleSeriesH1.setData(candles);  // !!!!!!!!!!
                 }
 
                 // Пример данных о сделках
@@ -774,7 +766,7 @@ const Trading = () => {
 
                 if (candleSeriesH1 && candles.length > 10) {
                     // Установка маркеров на серию свечей
-                    //candleSeriesH1.setMarkers(tradeMarkers);
+                    candleSeriesH1.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
@@ -793,7 +785,7 @@ const Trading = () => {
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
         // 4. WebSocket
-        const socket = new WebSocket(`wss://stream.binance.com:9443/ws/${pair.toLowerCase()}@kline_${timeframe}`);
+        /*const socket = new WebSocket(`wss://stream.binance.com:9443/ws/${pair.toLowerCase()}@kline_${timeframe}`);
         socketRef.current = socket;
         socket.onopen = () => {
             console.log('WebSocket connected');
@@ -844,7 +836,7 @@ const Trading = () => {
                     isValidNumber(candle.low) &&
                     isValidNumber(candle.close)
                 ) {
-                    //seriesRef.current.update(candle);  // !!!!!!!!!
+                    seriesRef.current.update(candle);  // !!!!!!!!!
                 }
                 if (
                     maSeriesRef.current &&
@@ -866,7 +858,7 @@ const Trading = () => {
         };
         socket.onclose = () => {
             console.log('WebSocket closed');
-        };
+        };*/
 
         // D1
         const socketD1 = new WebSocket(`wss://stream.binance.com:9443/ws/${pair.toLowerCase()}@kline_1d`);
@@ -903,7 +895,7 @@ const Trading = () => {
 
             // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА ПЕРЕД ОБНОВЛЕНИЕМ
             if (chartRefD1.current && candle) {
-                //seriesRefD1.current.update(candle);  // !!!!!!!!
+                seriesRefD1.current.update(candle);  // !!!!!!!!
             }
 
             // Для MA лучше использовать данные из fetch, накопленные в переменной,
@@ -957,7 +949,7 @@ const Trading = () => {
 
             // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА ПЕРЕД ОБНОВЛЕНИЕМ
             if (chartRefH1.current && seriesRefH1.current) {
-                //seriesRefH1.current.update(candle);  // !!!!!!!!
+                seriesRefH1.current.update(candle);  // !!!!!!!!
             }
 
             // Для MA лучше использовать данные из fetch, накопленные в переменной,
@@ -1038,6 +1030,10 @@ const Trading = () => {
 
     return (
         <div>
+            <pre style={{ backgroundColor: '#f4f4f4', padding: '10px', fontSize: '12px' }}>
+                {JSON.stringify(prices, null, 2)} Live {currentSymbol}: {livePrice} USDT
+            </pre>
+
             <div className="row" style={{ marginBottom: '10px' }} >
                 <div className="col-md-6">
                     <h1><FontAwesomeIcon icon={faChartLine} className="me-2" /> {t('trading')}</h1>
@@ -1062,6 +1058,7 @@ const Trading = () => {
                             <button className="btn btn-primary" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('short')} >
                                 <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" /> Новый ордер
                             </button>
+
                             {/*
                             <button className="btn btn-red" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('short')} >Short</button>
                             <button className="btn btn-green" style={{ marginRight: '10px', width: '200px' }} onClick={() => openOrder('long')} >Long</button>
@@ -1117,10 +1114,10 @@ const Trading = () => {
                                             {coin.ticker}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'red' }}>
-                                            {prices[coin.ticker] || '0.00'}
+                                            {prices[coin.ticker]?.close || '0.00'}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'green' }}>
-                                            {prices[coin.ticker] || '0.00'}
+                                            {prices[coin.ticker]?.close || '0.00'}
                                         </td>
                                     </tr>
                                 )) : (
@@ -1269,7 +1266,7 @@ const Trading = () => {
                                                     {activeOrders.map((order, index) => {
                                                         // 1. Защита от пустых данных (fallback)
                                                         const orderType = order.side || 'buy';
-                                                        const currentPrice = prices[order.symbol] || order.openPrice || 0;
+                                                        const currentPrice = prices[order.symbol]?.close || order.openPrice || 0;
                                                         const entryPrice = order.openPrice || 0;
                                                         const volume = order.quantity || 0;
 

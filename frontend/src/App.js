@@ -4,6 +4,7 @@ import MainLayout from './components/MainLayout';
 
 // context для глобального состояния
 import { AppProvider } from './context/AppContext';
+import { PricesProvider } from './context/PricesContext';
 
 import myLogo from './assets/fl-logo1.png';
 import { toast, ToastContainer } from 'react-toastify';
@@ -66,10 +67,11 @@ function App() {
         <>
             <ToastContainer theme="dark" position="top-right" autoClose={3000} />
             <AppProvider>
-                <Router>
-                    <MainLayout/>
-                </Router>
-
+                <PricesProvider>
+                    <Router>
+                        <MainLayout/>
+                    </Router>
+                </PricesProvider>
             </AppProvider>
         </>
     );

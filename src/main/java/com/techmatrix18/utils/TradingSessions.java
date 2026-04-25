@@ -171,7 +171,7 @@ public class TradingSessions {
                     .append(seconds).append(bundle.getString("label.seconds"))
                     .append(" (").append(next.start).append(" UTC)");
         } else {
-            sb.append(bundle.getString("label.will_tomorrow")).append(" (UTC)");
+            sb.append(bundle.getString("label.Next")).append(" ").append(bundle.getString("label.will_tomorrow")).append(" (UTC)");
         }
 
         return sb.toString();

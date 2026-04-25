@@ -73,7 +73,7 @@ public class BinanceKlineWebSocket {
                     Candle candle = parseMessage(message);
 
                     // 2. Если свеча закрыта (isFinal), отправляем её в менеджер
-                    if (candle != null && candle.isClosed()) {
+                    if (candle != null ) {  // && candle.isClosed() - если нужно только закрытые свечи
                         // Sending an event to RabbitMQ
                         candlePublisher.publishCandle(candle);
 

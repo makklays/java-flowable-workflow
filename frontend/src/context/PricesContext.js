@@ -14,27 +14,39 @@ export const PricesProvider = ({ children }) => {
             try {
                 const msg = JSON.parse(event.data);
 
-                console.log("WS Incoming:", msg);
-
+                // 1. Обработка КАНДЛОВ (раз в минуту или чаще)
                 if (msg.type === "CANDLE" && msg.symbol) {
-                    setPrices(prev => {
-                        const newState = {
-                            ...prev,
-                            [msg.symbol]: {
-                                close: parseFloat(msg.close),
-                                open: parseFloat(msg.open),
-                                high: parseFloat(msg.high),
-                                low: parseFloat(msg.low),
-                                time: msg.openTime
-                            }
-                        };
-                        return newState;
-                    });
+                    setPrices(prev => ({
+                        ...prev,
+                        [msg.symbol]: {
+                            ...prev[msg.symbol], // СОХРАНЯЕМ bid/ask, если они уже там были!
+                            close: parseFloat(msg.close),
+                            open: parseFloat(msg.open),
+                            high: parseFloat(msg.high),
+                            low: parseFloat(msg.low),
+                            time: msg.openTime
+                        }
+                    }));
+                }
 
-                    console.log("Updated Prices State:", prices);
+                // 2. Обработка BID_ASK (поток bookTicker)
+                if (msg.type === "BID_ASK") {
+                    const data = msg.data || msg;
+                    const symbol = data.s;
+
+                    setPrices(prev => ({
+                        ...prev,
+                        [symbol]: {
+                            ...prev[symbol], // СОХРАНЯЕМ данные свечи, если они уже были!
+                            bid: parseFloat(data.b),
+                            ask: parseFloat(data.a),
+                            bidQty: parseFloat(data.B),
+                            askQty: parseFloat(data.A)
+                        }
+                    }));
                 }
             } catch (e) {
-                console.error("Ошибка парсинга в контексте:", e);
+                console.error("Ошибка парсинга:", e);
             }
         };
 

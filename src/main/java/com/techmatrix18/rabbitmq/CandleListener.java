@@ -45,26 +45,28 @@ public class CandleListener {
         // используем цену закрытия свечи (closePrice) как текущую рыночную цену
         priceStorage.updatePrice(symbolId, candle.getClose());
 
-        // Теперь создаем LiveCandleSeries и задаем maxSize (например, 200)
-        LiveCandleSeries series = seriesMap.computeIfAbsent(symbolId, k -> new LiveCandleSeries(200));
-
-        // Добавляем свечу (метод addCandle сам удалит старую, если превышен лимит)
-        series.addCandle(candle);
-
         // ОТПРАВЛЯЕМ ЦЕНУ НА ФРОНТЕНД
         // Можно отправить всю свечу целиком
         webSocketServer.broadcast(candle);
         // Или отправить специально созданный DTO, если фронт ждет другой формат
         // webSocketServer.broadcast(new PriceUpdateDto(symbolId, candle.getClose()));
 
-        // Запускаем поиск сигналов
-        System.out.println("Analyzing signals for: " + symbolName + " | Candles in series: " + series.size());
-
-        // Вызываем ваш метод анализа из SignalService
-        //signalService.analyzeMarket(symbolId, series);
-
         // Можно также вызвать комплексные правила
-        signalService.processSignals(symbolName, series);
+        // А логику сигналов запускаем ТОЛЬКО при закрытии свечи (раз в минуту)
+        if (candle.isClosed()) {
+            // Теперь создаем LiveCandleSeries и задаем maxSize (например, 200)
+            LiveCandleSeries series = seriesMap.computeIfAbsent(symbolId, k -> new LiveCandleSeries(200));
+
+            // Добавляем свечу (метод addCandle сам удалит старую, если превышен лимит)
+            series.addCandle(candle);
+
+            // Запускаем поиск сигналов
+            System.out.println("Analyzing signals for: " + symbolName + " | Candles in series: " + series.size());
+
+            signalService.processSignals(symbolName, series);
+            // Вызываем ваш метод анализа из SignalService
+            //signalService.analyzeMarket(symbolId, series);
+        }
     }
 }
 

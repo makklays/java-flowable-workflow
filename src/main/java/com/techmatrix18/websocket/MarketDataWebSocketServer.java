@@ -54,5 +54,20 @@ public class MarketDataWebSocketServer extends TextWebSocketHandler {
             System.err.println("Ошибка отправки сообщения: " + e.getMessage());
         }
     }
+
+    // Универсальный метод для отправки любого объекта
+    public void broadcast(Object data) {
+        try {
+            String json = objectMapper.writeValueAsString(data);
+            TextMessage message = new TextMessage(json);
+            for (WebSocketSession session : sessions) {
+                if (session.isOpen()) {
+                    session.sendMessage(message);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Ошибка трансляции: " + e.getMessage());
+        }
+    }
 }
 

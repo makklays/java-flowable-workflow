@@ -64,6 +64,12 @@ public class Candle {
     @JsonProperty("x") // Сопоставляет поле "x" из JSON с переменной isClosed
     private boolean isClosed;
 
+    @Transient
+    private String type; // CANDLE - для Вебсокета в React
+
+    @Transient
+    private String symbol;
+
     // constructs
 
     public Candle() { }
@@ -73,6 +79,22 @@ public class Candle {
                   BigDecimal volume) {
         this.exchangeId = exchangeId;
         this.symbolId = symbolId;
+        this.timeframe = timeframe;
+        this.openTime = openTime;
+        this.open = open;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.volume = volume;
+    }
+
+    public Candle(String type, Integer exchangeId, Long symbolId, String symbol, String timeframe, Long openTime,
+                  BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close,
+                  BigDecimal volume) {
+        this.type = type;
+        this.exchangeId = exchangeId;
+        this.symbolId = symbolId;
+        this.symbol = symbol;
         this.timeframe = timeframe;
         this.openTime = openTime;
         this.open = open;
@@ -92,6 +114,12 @@ public class Candle {
 
     public Long getSymbolId() { return symbolId; }
     public void setSymbolId(Long symbolId) { this.symbolId = symbolId; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getSymbol() { return symbol; }
+    public void setSymbol(String symbol) { this.symbol = symbol; }
 
     public String getTimeframe() { return timeframe; }
     public void setTimeframe(String timeframe) { this.timeframe = timeframe; }

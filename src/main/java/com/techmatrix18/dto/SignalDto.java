@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  */
 public class SignalDto {
     private Long time;          // Timestamp в миллисекундах (open_time свечи)
-    private String type;        // "BUY" или "SELL"
+    private String type;        // "BUY" или "SELL", "SIGNAL"
     private BigDecimal price;   // Цена, на которой сработал сигнал
     private String label;       // Текст над/под стрелкой (например, "MACD Cross")
 

@@ -116,7 +116,7 @@ public class SignalService {
     }
 
     // Этот метод демонстрирует, как можно объединить разные правила для генерации комплексных сигналов
-    public void processSignals(String symbol, CandleSeries series) {
+    public void processSignals(String symbolName, CandleSeries series) {
         int lastIndex = series.size() - 1;
         // Для CrossedUpRule нужны минимум 2 свечи (текущая и предыдущая)
         if (lastIndex < 1) return;
@@ -134,7 +134,7 @@ public class SignalService {
 
         // 4. Проверка условий
         if (rsiOversold.isSatisfied(lastIndex)) {
-            String text = "📉 " + symbol + ": RSI ниже 30. Зона перепроданности.";
+            String text = "📉 " + symbolName + ": RSI ниже 30. Зона перепроданности.";
             telegramService.sendMessage(text);
 
             // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)

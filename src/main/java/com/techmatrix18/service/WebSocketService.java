@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 /**
  * Web Socket Service - Wrapping the WebSocket handler in a service for ease of use
  *
+ * Используется один ВебСокет и разные типы сообщений.
+ * Сообщения в WebSocketService делятся по полю type: SIGNAL, CANDLE, etc.
+ *
  * @author Alexander Kuziv
  * @since 18.04.2026
  * @company TechMatrix18

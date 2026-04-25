@@ -121,6 +121,8 @@ public class BinanceKlineWebSocket {
             // Заполняем метаданные из полей класса
             candle.setExchangeId(1); // ID = 1 - Binance
             candle.setSymbolId(Long.valueOf(this.symbolId));
+            candle.setSymbol(this.symbol);
+            candle.setType("CANDLE"); // для отправки в Вебсокет на React
             candle.setTimeframe(this.timeframe);
             // Значения symbolId и timeframe можно установить здесь, если они переданы в сокет
             candle.setOpenTime(k.getLong("t"));

@@ -1,5 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
-import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
+//import { createChart, CandlestickSeries, LineSeries, createSeriesMarkers } from 'lightweight-charts';
+import { createChart } from 'lightweight-charts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartArea, faChartLine, faArrowUp, faArrowDown, faCog, faPencilAlt, faEdit, faPenToSquare, faEye, faFileInvoiceDollar } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
@@ -13,6 +14,32 @@ import { useApp } from '../../context/AppContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+
+function calculateRSI(data, period = 14) {
+    const rsiData = [];
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = 1; i < data.length; i++) {
+        const diff = data[i].close - data[i - 1].close;
+        if (diff >= 0) gains += diff;
+        else losses -= diff;
+
+        if (i >= period) {
+            if (i > period) {
+                const prevDiff = data[i - 1].close - data[i - 2].close;
+                // Упрощенное скользящее среднее для RSI
+                // (Это базовая логика, для идеала лучше использовать EMA-сглаживание)
+            }
+            const rs = gains / (losses || 1);
+            rsiData.push({ time: data[i].time, value: 100 - (100 / (1 + rs)) });
+
+            // Сбрасываем для следующего шага (упрощенно)
+            gains = 0; losses = 0;
+        }
+    }
+    return rsiData;
+}
 
 const Trading = () => {
     const chartContainerRef = useRef(null);
@@ -288,16 +315,66 @@ const Trading = () => {
                 vertLines: { color: '#f0f0f0' },
                 horzLines: { color: '#f0f0f0' },
             },
-            timeScale: {
-                timeVisible: true,
-                secondsVisible: false,
+            // ВКЛЮЧАЕМ ЛЕВУЮ ШКАЛУ ТУТ
+            /*leftPriceScale: {
+                visible: true,
                 borderVisible: true,
-            },
+            },*/
             rightPriceScale: {
+                visible: true,
+                autoScale: true,
+            },
+            /*timeScale: {
+                timeVisible: true,
                 borderVisible: true,
+            },*/
+        });
+        /*chart.priceScale('right').applyOptions({
+            scaleMargins: {
+                top: 0.1,    // небольшой отступ сверху
+                bottom: 0.4, // оставляем 40% места снизу пустым!
             },
         });
-        chartRef.current = chart;
+        chartRef.current = chart;*/
+
+        // RSI
+        // RSI серия
+        //const rsiSeries = chart.addSeries(LineSeries, {
+        /*const rsiSeries = chart.addLineSeries({
+            color: 'purple',
+            lineWidth: 2,
+            priceScaleId: 'left',
+        });
+
+        // данные RSI
+        rsiSeries.setData([
+            { time: '2024-01-01', value: 30 },
+            { time: '2024-01-02', value: 50 },
+            { time: '2024-01-03', value: 70 },
+        ]);
+
+        // границы 0–100
+        rsiSeries.createPriceLine({ price: 0, color: 'transparent' });
+        rsiSeries.createPriceLine({ price: 100, color: 'transparent' });
+
+        // уровни
+        [20, 80].forEach((val) => {
+            rsiSeries.createPriceLine({
+                price: val,
+                color: 'red',
+                lineStyle: 2,
+                axisLabelVisible: true,
+            });
+        });
+
+        // настройки шкалы
+        chart.priceScale('left').applyOptions({
+            autoScale: true,
+            scaleMargins: {
+                top: 0.7,
+                bottom: 0.05,
+            },
+        });*/
 
         const chartD1 = createChart(chartContainerRefD1.current, {
             width: chartContainerRefD1.current.clientWidth,
@@ -344,21 +421,24 @@ const Trading = () => {
         chartRefH1.current = chartH1;
 
         // 2. Добавляем серии MA
-        const maSeries = chart.addSeries(LineSeries, {
+        //const maSeries = chart.addSeries(LineSeries, {
+        const maSeries = chart.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
             priceLineVisible: false,
         });
         maSeriesRef.current = maSeries;
 
-        const maSeriesD1 = chartD1.addSeries(LineSeries, {
+        //const maSeriesD1 = chartD1.addSeries(LineSeries, {
+        const maSeriesD1 = chartD1.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
             priceLineVisible: false,
         });
         maSeriesRefD1.current = maSeriesD1;
 
-        const maSeriesH1 = chartH1.addSeries(LineSeries, {
+        //const maSeriesH1 = chartH1.addSeries(LineSeries, {
+        const maSeriesH1 = chartH1.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
             priceLineVisible: false,
@@ -366,7 +446,8 @@ const Trading = () => {
         maSeriesRefH1.current = maSeriesH1;
 
         // Добавляем серию свечей
-        const candleSeries = chart.addSeries(CandlestickSeries, {
+        //const candleSeries = chart.addSeries(CandlestickSeries, {
+        const candleSeries = chart.addLineSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -375,7 +456,8 @@ const Trading = () => {
         });
         seriesRef.current = candleSeries;
 
-        const candleSeriesD1 = chartD1.addSeries(CandlestickSeries, {
+        //const candleSeriesD1 = chartD1.addSeries(CandlestickSeries, {
+        const candleSeriesD1 = chartD1.addLineSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -384,7 +466,8 @@ const Trading = () => {
         });
         seriesRefD1.current = candleSeriesD1;
 
-        const candleSeriesH1 = chartH1.addSeries(CandlestickSeries, {
+        //const candleSeriesH1 = chartH1.addSeries(CandlestickSeries, {
+        const candleSeriesH1 = chartH1.addLineSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
             borderVisible: false,
@@ -397,22 +480,39 @@ const Trading = () => {
         fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.toUpperCase()}&interval=${timeframe}&limit=200`)
             .then(res => res.json())
             .then(data => {
-                if (!isMounted) return;
+                if (!isMounted || !Array.isArray(data)) return;
 
-                const candles = data.map(c => ({
-                    time: c[0] / 1000,
-                    open: parseFloat(c[1]),
-                    high: parseFloat(c[2]),
-                    low: parseFloat(c[3]),
-                    close: parseFloat(c[4]),
-                }));
-                candleSeries.setData(candles);
+                const formattedCandles = data
+                    .map(c => {
+                        const timeRaw = c?.openTime;
+                        const time = Number(timeRaw);
+                        return {
+                            time: Number.isFinite(time) ? Math.floor(time / 1000) : null,
+                            open: Number(parseFloat(c?.open)),
+                            high: Number(parseFloat(c?.high)),
+                            low: Number(parseFloat(c?.low)),
+                            close: Number(parseFloat(c?.close)),
+                        };
+                    })
+                    .sort((a, b) => a.time - b.time); // Сортируем от старых к новым
+
+                if (formattedCandles.length > 0 && seriesRef.current) {
+                     try {
+                         // В версии 4.2.1 setData ОЧЕНЬ чувствительна к NaN
+                         console.log("------------->", formattedCandles);
+                         seriesRef.current.setData(formattedCandles); // !!!!!!!!!!!!
+                     } catch (err) {
+                         console.error("Критическая ошибка отрисовки:", err.message);
+                     }
+                } else {
+                    console.log("!!!!!!!!!!!!!");
+                }
 
                 // Пример данных о сделках
-                const buyTime = candles[candles.length - 20].time;
-                const buyPrice = candles[candles.length - 20].close;
-                const sellTime = candles[candles.length - 5].time;
-                const sellPrice = candles[candles.length - 5].close;
+                const buyTime = formattedCandles[formattedCandles.length - 20].time;
+                const buyPrice = formattedCandles[formattedCandles.length - 20].close;
+                const sellTime = formattedCandles[formattedCandles.length - 5].time;
+                const sellPrice = formattedCandles[formattedCandles.length - 5].close;
 
                 const tradeMarkers = [
                     {
@@ -432,7 +532,8 @@ const Trading = () => {
                 ];
 
                 // Создаем серию для линии сделки
-                const tradeLineSeries = chart.addSeries(LineSeries, {
+                //const tradeLineSeries = chart.addSeries(LineSeries, {
+                const tradeLineSeries = chart.addLineSeries({
                     color: '#95a5a6',
                     lineWidth: 1,
                     lineStyle: 2, // 2 — это штриховая линия (Dashed)
@@ -441,18 +542,20 @@ const Trading = () => {
                     crosshairMarkerVisible: false, // Скрываем точку при наведении
                 });
                 // Передаем только две точки: вход и выход
-                tradeLineSeries.setData([
-                    { time: buyTime, value: buyPrice },
-                    { time: sellTime, value: sellPrice }
-                ]);
+                if (buyTime && sellTime) {
+                    tradeLineSeries.setData([
+                        { time: buyTime, value: buyPrice },
+                        { time: sellTime, value: sellPrice }
+                    ]);
+                }
 
-                if (candles.length > 10) {
+                if (candleSeries && formattedCandles.length > 10) {
                     // Установка маркеров на серию свечей
-                    createSeriesMarkers(candleSeries, tradeMarkers);
+                    candleSeries.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
-                const maData = candles.map((val, index, arr) => {
+                const maData = formattedCandles.map((val, index, arr) => {
                     const period = 7; // Период скользящей средней
                     if (index < period) return null;
                     const slice = arr.slice(index - period, index);
@@ -460,7 +563,21 @@ const Trading = () => {
                     return { time: val.time, value: sum / period };
                 }).filter(v => v !== null);
 
-                maSeries.setData(maData);
+                if (maSeries && maData.length > 0) {
+                    maSeries.setData(maData);
+                }
+
+                // РАСЧЕТ И ОТРИСОВКА РЕАЛЬНОГО RSI
+                /*const realRSIData = calculateRSI(candles, 14);
+                if (rsiSeries && realRSIData.length > 0) {
+                    rsiSeries.setData(realRSIData);
+                }*/
+
+                // Для теста ставим одну точку (или рассчитайте полноценный массив RSI)
+                /*const lastCandle = candles[candles.length - 1];
+                rsiSeries.setData([
+                    { time: lastCandle.time, value: 50 }
+                ]);*/
             })
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
@@ -469,14 +586,32 @@ const Trading = () => {
             .then(data => {
                 if (!isMounted) return;
 
-                const candles = data.map(c => ({
-                    time: c[0] / 1000,
-                    open: parseFloat(c[1]),
-                    high: parseFloat(c[2]),
-                    low: parseFloat(c[3]),
-                    close: parseFloat(c[4]),
-                }));
-                candleSeriesD1.setData(candles);
+                const candles = data.map(c => {
+                    const time = Number(c?.[0]);
+                    const open = Number(c?.[1]);
+                    const high = Number(c?.[2]);
+                    const low = Number(c?.[3]);
+                    const close = Number(c?.[4]);
+
+                    return {
+                        time: time ? time / 1000 : null,
+                        open,
+                        high,
+                        low,
+                        close,
+                    };
+                })
+                .filter(c =>
+                    Number.isFinite(c.time) &&
+                    Number.isFinite(c.open) &&
+                    Number.isFinite(c.high) &&
+                    Number.isFinite(c.low) &&
+                    Number.isFinite(c.close)
+                );
+                if (candleSeriesD1 && candles.length > 0) {
+                    // В версии 4.2.1 setData ОЧЕНЬ чувствительна к NaN
+                    //candleSeriesD1.setData(candles);   // !!!!!!!!!!!
+                }
 
                 // Пример данных о сделках
                 const buyTime = candles[candles.length - 20].time;
@@ -502,7 +637,8 @@ const Trading = () => {
                 ];
 
                 // Создаем серию для линии сделки
-                const tradeLineSeriesD1 = chartD1.addSeries(LineSeries, {
+                //const tradeLineSeriesD1 = chartD1.addSeries(LineSeries, {
+                const tradeLineSeriesD1 = chartD1.addLineSeries({
                     color: '#95a5a6',
                     lineWidth: 1,
                     lineStyle: 2, // 2 — это штриховая линия (Dashed)
@@ -511,14 +647,16 @@ const Trading = () => {
                     crosshairMarkerVisible: false, // Скрываем точку при наведении
                 });
                 // Передаем только две точки: вход и выход
-                tradeLineSeriesD1.setData([
-                    { time: buyTime, value: buyPrice },
-                    { time: sellTime, value: sellPrice }
-                ]);
+                if (tradeLineSeriesD1 && buyTime && sellTime) {
+                    tradeLineSeriesD1.setData([
+                        { time: buyTime, value: buyPrice },
+                        { time: sellTime, value: sellPrice }
+                    ]);
+                }
 
-                if (candles.length > 10) {
+                if (candleSeriesD1 && candles.length > 10) {
                     // Установка маркеров на серию свечей
-                    createSeriesMarkers(candleSeriesD1, tradeMarkers);
+                    //candleSeriesD1.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
@@ -530,7 +668,9 @@ const Trading = () => {
                     return { time: val.time, value: sum / period };
                 }).filter(v => v !== null);
 
-                maSeriesD1.setData(maDataD1);
+                if (maSeriesD1 && maDataD1.length > 0) {
+                    maSeriesD1.setData(maDataD1);
+                }
             })
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
@@ -539,14 +679,32 @@ const Trading = () => {
             .then(data => {
                 if (!isMounted) return;
 
-                const candles = data.map(c => ({
-                    time: c[0] / 1000,
-                    open: parseFloat(c[1]),
-                    high: parseFloat(c[2]),
-                    low: parseFloat(c[3]),
-                    close: parseFloat(c[4]),
-                }));
-                candleSeriesH1.setData(candles);
+                const candles = data.map(c => {
+                    const time = Number(c?.[0]);
+                    const open = Number(c?.[1]);
+                    const high = Number(c?.[2]);
+                    const low = Number(c?.[3]);
+                    const close = Number(c?.[4]);
+
+                    return {
+                        time: time ? time / 1000 : null,
+                        open,
+                        high,
+                        low,
+                        close,
+                    };
+                })
+                .filter(c =>
+                    Number.isFinite(c.time) &&
+                    Number.isFinite(c.open) &&
+                    Number.isFinite(c.high) &&
+                    Number.isFinite(c.low) &&
+                    Number.isFinite(c.close)
+                );
+                if (candleSeriesH1 && candles) {
+                    // В версии 4.2.1 setData ОЧЕНЬ чувствительна к NaN
+                    //candleSeriesH1.setData(candles);  // !!!!!!!!!!
+                }
 
                 // Пример данных о сделках
                 const buyTime = candles[candles.length - 20].time;
@@ -572,7 +730,8 @@ const Trading = () => {
                 ];
 
                 // Создаем серию для линии сделки
-                const tradeLineSeries = chartH1.addSeries(LineSeries, {
+                //const tradeLineSeries = chartH1.addSeries(LineSeries, {
+                const tradeLineSeriesH1 = chartH1.addLineSeries({
                     color: '#95a5a6',
                     lineWidth: 1,
                     lineStyle: 2, // 2 — это штриховая линия (Dashed)
@@ -581,14 +740,16 @@ const Trading = () => {
                     crosshairMarkerVisible: false, // Скрываем точку при наведении
                 });
                 // Передаем только две точки: вход и выход
-                tradeLineSeries.setData([
-                    { time: buyTime, value: buyPrice },
-                    { time: sellTime, value: sellPrice }
-                ]);
+                if (tradeLineSeriesH1 && buyTime && sellTime) {
+                    tradeLineSeriesH1.setData([
+                        { time: buyTime, value: buyPrice },
+                        { time: sellTime, value: sellPrice }
+                    ]);
+                }
 
-                if (candles.length > 10) {
+                if (candleSeriesH1 && candles.length > 10) {
                     // Установка маркеров на серию свечей
-                    createSeriesMarkers(candleSeriesH1, tradeMarkers);
+                    //candleSeriesH1.setMarkers(tradeMarkers);
                 }
 
                 // РАСЧЕТ MA ДАННЫХ
@@ -600,7 +761,9 @@ const Trading = () => {
                     return { time: val.time, value: sum / period };
                 }).filter(v => v !== null);
 
-                maSeriesH1.setData(maDataH1);
+                if (maSeriesH1 && maDataH1.length > 0) {
+                    maSeriesH1.setData(maDataH1);
+                }
             })
             .catch(err => { if (isMounted) console.error('History load error:', err) });
 
@@ -612,42 +775,64 @@ const Trading = () => {
         };
 
         socket.onmessage = (event) => {
-            if (!isMounted || !chartRef.current || !seriesRef.current) return; // Если компонент удален, ничего не делаем
+            if (!isMounted || !chartRef.current || !seriesRef.current) return;
 
             const parsed = JSON.parse(event.data);
             const k = parsed.k;
-            const symbol = parsed.s;
-            if (!k || !symbol) return; // Если данных нет, выходим
+            if (!k) return;
 
-            const currentPrice = parseFloat(k.c).toFixed(2);
-            // ОБНОВЛЯЕМ СТЕЙТ ЦЕН (для модалки и списка монет)
-            setPrices(prev => ({
-                ...prev,
-                [symbol]: currentPrice
-            }));
-            // Обновляем список сигналов (?)
-            //setSignals(prev => [...prev, data]);
+            // 2. Парсим значения
+            const t = k.t / 1000;
+            const o = parseFloat(k.o);
+            const h = parseFloat(k.h);
+            const l = parseFloat(k.l);
+            const c = parseFloat(k.c);
 
+            // 2. КРИТИЧЕСКАЯ ПРОВЕРКА: Если хоть одно число NaN, выходим
+            if (isNaN(t) || isNaN(o) || isNaN(h) || isNaN(l) || isNaN(c)) {
+                console.warn("WebSocket received invalid data:", k);
+                return;
+            }
             const candle = {
-                time: k.t / 1000,
-                open: parseFloat(k.o),
-                high: parseFloat(k.h),
-                low: parseFloat(k.l),
-                close: parseFloat(k.c),
+                time: t,
+                open: o,
+                high: h,
+                low: l,
+                close: c,
             };
 
-            // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА ПЕРЕД ОБНОВЛЕНИЕМ
-            if (chartRef.current && seriesRef.current) {
-                seriesRef.current.update(candle);
-            }
+            // 3. Обновляем цены в стейте
+            const symbol = parsed.s;
+            setPrices(prev => ({
+                ...prev,
+                [symbol]: c.toFixed(2)
+            }));
 
-            // Для MA лучше использовать данные из fetch, накопленные в переменной,
-            // либо просто обновлять точку MA по новой цене:
-            if (maSeriesRef.current) {
-                maSeriesRef.current.update({
-                    time: candle.time,
-                    value: candle.close
-                });
+            // 4. Обновляем график (через ref)
+            try {
+                const isValidNumber = (v) => Number.isFinite(v);
+                if (
+                    seriesRef.current &&
+                    isValidNumber(candle.time) &&
+                    isValidNumber(candle.open) &&
+                    isValidNumber(candle.high) &&
+                    isValidNumber(candle.low) &&
+                    isValidNumber(candle.close)
+                ) {
+                    //seriesRef.current.update(candle);  // !!!!!!!!!
+                }
+                if (
+                    maSeriesRef.current &&
+                    isValidNumber(t) &&
+                    isValidNumber(c)
+                ) {
+                    maSeriesRef.current.update({
+                        time: t,
+                        value: c
+                    });
+                }
+            } catch (err) {
+                console.error("Error updating chart from socket:", err);
             }
         };
 
@@ -671,25 +856,39 @@ const Trading = () => {
             const k = parsed.k;
             if (!k) return;
 
+            // 2. Парсим значения
+            const t = k.t / 1000;
+            const o = parseFloat(k.o);
+            const h = parseFloat(k.h);
+            const l = parseFloat(k.l);
+            const c = parseFloat(k.c);
+
+            // 2. КРИТИЧЕСКАЯ ПРОВЕРКА: Если хоть одно число NaN, выходим
+            if (isNaN(t) || isNaN(o) || isNaN(h) || isNaN(l) || isNaN(c)) {
+                console.warn("WebSocket received invalid data:", k);
+                return;
+            }
             const candle = {
-                time: k.t / 1000,
-                open: parseFloat(k.o),
-                high: parseFloat(k.h),
-                low: parseFloat(k.l),
-                close: parseFloat(k.c),
+                time: t,
+                open: o,
+                high: h,
+                low: l,
+                close: c,
             };
 
             // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА ПЕРЕД ОБНОВЛЕНИЕМ
-            if (chartRefD1.current && seriesRefD1.current) {
-                seriesRefD1.current.update(candle);
+            if (chartRefD1.current && candle) {
+                //seriesRefD1.current.update(candle);  // !!!!!!!!
             }
 
             // Для MA лучше использовать данные из fetch, накопленные в переменной,
             // либо просто обновлять точку MA по новой цене:
-            maSeriesRefD1.current.update({
-                time: candle.time,
-                value: candle.close // Упрощенно, пока не пересчитали массив
-            });
+            if (maSeriesRefD1.current) {
+                maSeriesRefD1.current.update({
+                    time: candle.time,
+                    value: candle.close // Упрощенно, пока не пересчитали массив
+                });
+            }
         };
         socketD1.onerror = (err) => {
             console.error('WebSocket error:', err);
@@ -711,25 +910,39 @@ const Trading = () => {
             const k = parsed.k;
             if (!k) return;
 
+            // 2. Парсим значения
+            const t = k.t / 1000;
+            const o = parseFloat(k.o);
+            const h = parseFloat(k.h);
+            const l = parseFloat(k.l);
+            const c = parseFloat(k.c);
+
+            // 2. КРИТИЧЕСКАЯ ПРОВЕРКА: Если хоть одно число NaN, выходим
+            if (isNaN(t) || isNaN(o) || isNaN(h) || isNaN(l) || isNaN(c)) {
+                console.warn("WebSocket received invalid data:", k);
+                return;
+            }
             const candle = {
-                time: k.t / 1000,
-                open: parseFloat(k.o),
-                high: parseFloat(k.h),
-                low: parseFloat(k.l),
-                close: parseFloat(k.c),
+                time: t,
+                open: o,
+                high: h,
+                low: l,
+                close: c,
             };
 
             // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА ПЕРЕД ОБНОВЛЕНИЕМ
             if (chartRefH1.current && seriesRefH1.current) {
-                seriesRefH1.current.update(candle);
+                //seriesRefH1.current.update(candle);  // !!!!!!!!
             }
 
             // Для MA лучше использовать данные из fetch, накопленные в переменной,
             // либо просто обновлять точку MA по новой цене:
-            maSeriesRefH1.current.update({
-                time: candle.time,
-                value: candle.close // Упрощенно, пока не пересчитали массив
-            });
+            if (maSeriesRefH1.current) {
+                maSeriesRefH1.current.update({
+                    time: candle.time,
+                    value: candle.close // Упрощенно, пока не пересчитали массив
+                });
+            }
         };
         socketH1.onerror = (err) => {
             console.error('WebSocket error:', err);
@@ -1009,7 +1222,7 @@ const Trading = () => {
                                     <table className="table table-dark-custom table-hover align-middle" style={{ fontSize: '14px', marginBottom: '0', marginTop: '0' }}>
                                         <thead className="text-muted" style={{ borderBottom: '2px solid #dee2e6' }}>
                                             <tr>
-                                                <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
+                                                <th style={{ width: '50px' }}>№</th>
                                                 <th>ID</th>
                                                 <th>Символ</th>
                                                 <th>Время открытия</th>
@@ -1250,7 +1463,7 @@ const Trading = () => {
                                     <table className="table table-hover align-middle" style={{ fontSize: '14px' }}>
                                         <thead className="bg-light text-muted">
                                             <tr>
-                                                <th style={{ width: '50px' }}>№</th> {/* Порядковый номер */}
+                                                <th style={{ width: '50px' }}>№</th>
                                                 <th>ID</th>
                                                 <th>Время открытия</th>
                                                 <th>Символ</th>
@@ -1265,9 +1478,7 @@ const Trading = () => {
                                                 <th>Выход</th>
                                                 <th>Результат (USDT)</th>
                                                 <th>Изменение (%)</th>
-                                                {/*
-                                                <th>Статус</th>
-                                                */}
+
                                                 <th className="text-end">Действие</th>
                                             </tr>
                                         </thead>

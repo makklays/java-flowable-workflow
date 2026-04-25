@@ -1,4 +1,5 @@
-import { createChart, LineSeries, CandlestickSeries, createSeriesMarkers } from 'lightweight-charts';
+//import { createChart, LineSeries, CandlestickSeries, createSeriesMarkers } from 'lightweight-charts';
+import { createChart } from 'lightweight-charts';
 import React, { useState, useLayoutEffect, useEffect, useRef, useMemo } from 'react';
 // Переводы текстов
 import i18n from '../i18n';
@@ -200,36 +201,61 @@ const Backtest = () => {
             );*/
 
             console.log(`Отрисовка бэктеста: ${formattedCandles.length} свечей.`);
-            seriesRef.current.setData(formattedCandles);
+            if (formattedCandles && formattedCandles.length > 0) {
+                seriesRef.current.setData(formattedCandles);
+            }
 
             // 4. Маркеры (сигналы Buy/Sell) и штрихованные линии
             if (data.signals && data.signals.length > 0) {
-                // СТРОГАЯ СОРТИРОВКА: от старых к новым
                 const sortedSignals = [...data.signals].sort((a, b) => a.time - b.time);
 
-                // Теперь используем sortedSignals вместо data.signals
+                // Очищаем старые линии, если это повторная загрузка
+                tradeLinesRef.current.forEach(line => chartApiRef.current.removeSeries(line));
+                tradeLinesRef.current = [];
+
+                // Удаляем старые линии из памяти графического движка
+                tradeLinesRef.current.forEach(line => {
+                    try {
+                        chartApiRef.current.removeSeries(line);
+                    } catch (e) {
+                        console.warn("Ошибка удаления линии:", e);
+                    }
+                });
+                tradeLinesRef.current = []; // Очищаем массив ссылок
+
                 for (let i = 0; i < sortedSignals.length; i += 2) {
                     const entry = sortedSignals[i];
                     const exit = sortedSignals[i + 1];
 
                     if (entry && exit) {
-                        const singleTradeLine = chartApiRef.current.addSeries(LineSeries, {
-                            color: entry.type === 'BUY' ? '#26a69a' : '#ef5350', // Цвет по типу входа
-                            lineWidth: 1,
-                            lineStyle: 2,
-                            priceLineVisible: false,
-                            lastValueVisible: false,
-                        });
-                        tradeLinesRef.current.push(singleTradeLine);
+                        const entryPrice = parseFloat(entry.price);
+                        const exitPrice = parseFloat(exit.price);
 
-                        singleTradeLine.setData([
-                            { time: entry.time / 1000, value: parseFloat(entry.price) },
-                            { time: exit.time / 1000, value: parseFloat(exit.price) }
-                        ]);
+                        // Проверка времени: если > 10^11, значит это миллисекунды
+                        const entryTime = entry.time > 10000000000 ? entry.time / 1000 : entry.time;
+                        const exitTime = exit.time > 10000000000 ? exit.time / 1000 : exit.time;
+
+                        if (!isNaN(entryPrice) && !isNaN(exitPrice)) {
+                            const singleTradeLine = chartApiRef.current.addLineSeries({
+                                color: entry.type === 'BUY' ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)',
+                                lineWidth: 1,
+                                lineStyle: 2, // Штриховка
+                                priceLineVisible: false,
+                                lastValueVisible: false,
+                                crosshairMarkerVisible: false, // Чтобы не прыгала точка при наведении
+                            });
+
+                            tradeLinesRef.current.push(singleTradeLine);
+
+                            singleTradeLine.setData([
+                                { time: entryTime, value: entryPrice },
+                                { time: exitTime, value: exitPrice }
+                            ]);
+                        }
                     }
                 }
 
-                // Маркеры тоже делаем на основе отсортированных данных
+                // 3. Маркеры ставим в последнюю очередь
                 const markers = sortedSignals.map(s => ({
                     time: s.time / 1000,
                     position: s.type === 'BUY' ? 'belowBar' : 'aboveBar',
@@ -238,7 +264,7 @@ const Backtest = () => {
                     text: s.type + ' @ ' + s.price
                 }));
 
-                createSeriesMarkers(seriesRef.current, markers);
+                seriesRef.current?.setMarkers(markers);
             }
 
             // 5. Линии поддержки/сопротивления
@@ -298,7 +324,7 @@ const Backtest = () => {
         chartApiRef.current = chart; // Сохраняем в API реф
 
         // Линия MA
-        const maSeries = chart.addSeries(LineSeries, {
+        const maSeries = chart.addLineSeries({
             color: '#2962FF',
             lineWidth: 2,
             priceLineVisible: false,
@@ -306,7 +332,7 @@ const Backtest = () => {
         maSeriesRef.current = maSeries;
 
         // Свечи
-        const candleSeries = chart.addSeries(CandlestickSeries, {
+        const candleSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
         });
@@ -327,7 +353,9 @@ const Backtest = () => {
                         low: parseFloat(c[3]),
                         close: parseFloat(c[4]),
                     }));
-                    candleSeries.setData(candles);
+                    if (candles && candles.length > 0){
+                        candleSeries.setData(candles);
+                    }
 
                     // Пример данных о сделках
                     const buyTime = candles[candles.length - 20].time;
@@ -344,7 +372,9 @@ const Backtest = () => {
                         return { time: val.time, value: sum / period };
                     }).filter(v => v !== null);
 
-                    maSeries.setData(maData);
+                    if (maData && maData.length > 0){
+                        maSeries.setData(maData);
+                    }
                 })
                 .catch(err => { if (isMounted) console.error('History load error:', err) });
 

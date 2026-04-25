@@ -25,8 +25,17 @@ function App() {
             console.log("📩 Получено сообщение:", event.data);
             const data = JSON.parse(event.data);
             // Проверяем поле 'type', которое мы задали в Java SignalDto
-            //if (data.type === "SIGNAL") {
+            if (data.type === "SIGNAL") {
                 // Используем поле 'label', куда мы в Java пишем текст сообщения
+                /*toast.info("Связь с торговым сервером установлена 11111", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });*/
+                //toast.success("Связь с торговым сервером установлена");
                 toast.info(data.label, {
                     position: "top-right",
                     autoClose: 5000,
@@ -36,7 +45,7 @@ function App() {
                     draggable: true,
                 });
                 playNotificationSound();
-            //}
+            }
         };
         socket.onerror = (error) => {
             console.error("❌ Ошибка WebSocket:", error);

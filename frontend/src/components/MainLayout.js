@@ -80,6 +80,7 @@ import Calendar from '../pages/flowables/Calendar';
 
 import Trading from '../pages/trading/Trading';
 import TradeDetails from '../pages/trading/TradeDetails';
+import Grafics from '../pages/trading/Grafics';
 
 import Backtest from '../pages/Backtest';
 import Settings from '../pages/Settings';
@@ -165,6 +166,9 @@ const MainLayout = () => {
                         </Nav.Link>
                         <Nav.Link as={NavLink} to="/backtest" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                             <FontAwesomeIcon icon={faFlask} className="me-3 text-secondary" /> {t('backtest')}
+                        </Nav.Link>
+                        <Nav.Link as={NavLink} to="/grafics" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
+                            <FontAwesomeIcon icon={faChartLine} className="me-3 text-secondary" /> {t('grafics')}
                         </Nav.Link>
                         <Nav.Link as={NavLink} to="/symbols" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                             <FontAwesomeIcon icon={faCoins} className="me-3 text-secondary" /> {t('symbols')}
@@ -283,6 +287,7 @@ const MainLayout = () => {
                             <Route path="/trading" element={<Trading />} />
                             <Route path="/trade/:id" element={<TradeDetails />} />
                             <Route path="/backtest" element={<Backtest />} />
+                            <Route path="/grafics" element={<Grafics />} />
 
                             <Route path="/settings" element={<Settings />} />
                             <Route path="/about" element={<About />} />

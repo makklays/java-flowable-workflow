@@ -66,16 +66,29 @@ const Trading = () => {
     const [pair, setPair] = useState('solusdt');
     const [timeframe, setTimeframe] = useState('1m');
 
+    const formatter = new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: 2, // Минимум 2 знака (добавит 0 к 86.9)
+        maximumFractionDigits: 4, // Максимум 4 знака (не обрежет 86.9111)
+    });
+
     const prices = usePrices(); // из контекста получаем текущие цены, которые приходят с бекенда через WebSocket
     const currentPriceSOLUSDT = prices['SOLUSDT']?.close || 0;
     const currentSymbol = pair.toUpperCase();
     const livePrice = prices[currentSymbol]?.close || "0.00";
 
-    const signals = useSignals();
+    const { signals, clearSignals } = useSignals();
 
     /*useEffect(() => {
         console.log("Prices updated in Trading component:", prices);
     }, [prices]);*/
+
+    function handleClearLogs() {
+        if (window.confirm("Вы уверены, что хотите очистить логи? Это действие нельзя будет отменить.")) {
+            // Здесь можно добавить вызов API для очистки логов на сервере, если нужно
+            clearSignals(); // Очищаем сигналы в контексте, чтобы сразу отразить изменения в UI
+            console.log("Логи очищены! (здесь должен быть вызов API)");
+        }
+    }
 
     function handlePair(newPair) {
         console.log(newPair);
@@ -111,28 +124,28 @@ const Trading = () => {
     const [isLoadingTradingSessions, setIsLoadingTradingSessions] = useState(true);
     useEffect(() => {
         const fetchSessionInfo = async () => {
-                setIsLoadingTradingSessions(true); // Начало загрузки
-                try {
-                    const response = await fetch('http://localhost:8082/api/v1/trades/info-trading-sessions', {
-                        method: 'GET',
-                        headers: {
-                            'Accept-Language': localStorage.getItem('i18nextLng') || 'en'
-                        }
-                    });
-                    if (response.ok) {
-                        const text = await response.text();
-                        setInfoAboutTradingSessions(text);
-                    } else {
-                        console.error("Сервер вернул ошибку:", response.status);
+            setIsLoadingTradingSessions(true); // Начало загрузки
+            try {
+                const response = await fetch('http://localhost:8082/api/v1/trades/info-trading-sessions', {
+                    method: 'GET',
+                    headers: {
+                        'Accept-Language': localStorage.getItem('i18nextLng') || 'en'
                     }
-                } catch (error) {
-                    console.error("Ошибка сети:", error);
-                } finally {
-                    // 3. Устанавливаем false в любом случае (успех или провал)
-                    setIsLoadingTradingSessions(false);
+                });
+                if (response.ok) {
+                    const text = await response.text();
+                    setInfoAboutTradingSessions(text);
+                } else {
+                    console.error("Сервер вернул ошибку:", response.status);
                 }
-            };
-            fetchSessionInfo();
+            } catch (error) {
+                console.error("Ошибка сети:", error);
+            } finally {
+                // 3. Устанавливаем false в любом случае (успех или провал)
+                setIsLoadingTradingSessions(false);
+            }
+        };
+        fetchSessionInfo();
     }, []); // Пустой массив — запрос выполнится один раз при загрузке
 
     // 1. Список символов (позже будешь загружать через fetch/axios из БД)
@@ -167,12 +180,23 @@ const Trading = () => {
 
     // 4. Состояние модального окна
     const [isOrderOpen, setOrderOpen] = useState(false);
+    const [modeModal, setModeModal] = useState('CREATE');
+    const [orderIdModal, setorderIdModal] = useState(null);
 
     // 5. Тип ордера (long или short)
     const [orderType, setOrderType] = useState('long');
 
     // Функция-хелпер для открытия модалки
     const openOrder = (type) => {
+        setModeModal('CREATE');
+        setOrderType(type);
+        setOrderOpen(true);
+    };
+
+    const editOrder = (type, orderId) => {
+        console.log("----- - - - - - - - - - - ---->", orderId);
+        setModeModal('EDIT');
+        setorderIdModal(orderId);
         setOrderType(type);
         setOrderOpen(true);
     };
@@ -1121,13 +1145,13 @@ const Trading = () => {
                                             {coin.ticker}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'red' }}>
-                                            {prices[coin.ticker.toUpperCase()]?.bid || '0.00'}
+                                            {formatter.format(prices[coin.ticker.toUpperCase()]?.bid) || '0.00'}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'green' }}>
-                                            {prices[coin.ticker.toUpperCase()]?.ask || '0.00'}
+                                            {formatter.format(prices[coin.ticker.toUpperCase()]?.ask) || '0.00'}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: '#000' }}>
-                                            {prices[coin.ticker.toUpperCase()]?.spread || '0.00'}
+                                            {formatter.format(prices[coin.ticker.toUpperCase()]?.spread) || '0.00'}
                                         </td>
                                     </tr>
                                 )) : (
@@ -1218,20 +1242,20 @@ const Trading = () => {
                         </li>
                         <li className="nav-item">
                             <button
-                                className={`nav-link ${activeTab === 'actives' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('actives')}
-                                style={activeTab === 'actives' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
-                            >
-                                Активы
-                            </button>
-                        </li>
-                        <li className="nav-item">
-                            <button
                                 className={`nav-link ${activeTab === 'history' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('history')}
                                 style={activeTab === 'history' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
                             >
                                 История
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'actives' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('actives')}
+                                style={activeTab === 'actives' ? { color: '#03aac7', fontWeight: 'bold' } : { color: '#727b83' }}
+                            >
+                                Активы
                             </button>
                         </li>
                         <li className="nav-item">
@@ -1318,7 +1342,7 @@ const Trading = () => {
                                                                     <button className="btn btn-primary btn-sm" onClick={() => handleView(order.id, 'trading')} title={t('view_details')} style={{ fontSize: '12px', marginRight: '5px' }}>
                                                                         <FontAwesomeIcon icon={faEye} />
                                                                     </button>
-                                                                    <button className="btn btn-primary btn-sm" onClick={() => handleCloseOrder(order.id)} title={t('edit_trade')} style={{ fontSize: '12px', marginRight: '5px' }}>
+                                                                    <button className="btn btn-primary btn-sm" onClick={() => editOrder('short', order.id)} title={t('edit_trade')} style={{ fontSize: '12px', marginRight: '5px' }}>
                                                                         <FontAwesomeIcon icon={faPenToSquare} />
                                                                     </button>
                                                                     {/*
@@ -1370,7 +1394,7 @@ const Trading = () => {
                             <div className="tab-pane fade show active">
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <h4 className="m-0">История сигналов</h4>
-                                    <button className="btn btn-sm btn-outline-danger">Очистить лог</button>
+                                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleClearLogs()} >Очистить лог</button>
                                 </div>
 
                                 <div className="table-responsive">
@@ -1710,7 +1734,9 @@ const Trading = () => {
             {/* Модалка получает данные из стейта selectedCoin */}
             {selectedCoin && (
                 <OrderModal
+                    mode={modeModal}
                     isOpen={isOrderOpen}
+                    orderId={orderIdModal}
                     onClose={() => setOrderOpen(false)}
                     // Список для выпадающего меню
                     symbols={symbolsFromDB}

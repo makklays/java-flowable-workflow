@@ -5,6 +5,8 @@ const SignalsContext = createContext();
 export const SignalsProvider = ({ children }) => {
     const [signals, setSignals] = useState([]);
 
+    const clearSignals = () => setSignals([]);
+
     //console.log("SIGNAL STATE:", signals);
 
     useEffect(() => {
@@ -47,7 +49,7 @@ export const SignalsProvider = ({ children }) => {
     }, []);
 
     return (
-        <SignalsContext.Provider value={signals}>
+        <SignalsContext.Provider value={{ signals, setSignals, clearSignals }}>
             {children}
         </SignalsContext.Provider>
     );

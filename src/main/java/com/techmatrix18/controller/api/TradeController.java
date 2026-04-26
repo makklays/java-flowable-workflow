@@ -100,6 +100,16 @@ public class TradeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(trade);
     }
 
+    @PostMapping("/{id}/edit")
+    @Operation(summary = "Edit trade (edit order)", description = "Edits an active trade by ID")
+    public ResponseEntity<Trade> edit(
+            @PathVariable Long id,
+            @RequestParam BigDecimal stopLoss,
+            @RequestParam BigDecimal takeProfit
+    ) {
+        return ResponseEntity.ok(tradeService.editTrade(id, stopLoss, takeProfit));
+    }
+
     @PostMapping("/{id}/close")
     @Operation(summary = "Close trade (close order)", description = "Closes an active trade by ID and calculates PnL")
     public ResponseEntity<Trade> close(

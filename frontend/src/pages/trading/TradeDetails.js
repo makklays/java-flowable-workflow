@@ -219,12 +219,44 @@ const TradeDetails = () => {
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th className="bg-light w-25 ps-4">Направление</th>
+                                    <td className="ps-4 fw-bold">
+                                        <span className={`badge ${trade.side.toUpperCase() === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
+                                            {trade.side.toUpperCase()}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th className="bg-light ps-4">Цена входа</th>
+                                    <td className="ps-4 text-primary">{trade.openPrice ? trade.openPrice : '—'}</td>
+                                </tr>
+                                <tr>
                                     <th className="bg-light ps-4">Пик цены (High)</th>
-                                    <td className="ps-4 text-success">{trade.highPriceReached || '—'}</td>
+                                    <td className="ps-4 text-success">
+                                        {trade.side.toUpperCase() === 'BUY' ? (
+                                            <>
+                                                {trade.highPriceReached || '—'} | разница: {trade.highPriceReached ? (trade.highPriceReached - trade.openPrice).toFixed(4) : '0.00'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {trade.highPriceReached || '—'} | разница: {trade.highPriceReached ? (trade.openPrice - trade.highPriceReached).toFixed(4) : '0.00'}
+                                            </>
+                                        )}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th className="bg-light ps-4">Дно цены (Low)</th>
-                                    <td className="ps-4 text-danger">{trade.lowPriceReached || '—'}</td>
+                                    <td className="ps-4 text-danger">
+                                        {trade.side.toUpperCase() === 'BUY' ? (
+                                            <>
+                                                {trade.lowPriceReached || '—'} | разница: {trade.lowPriceReached ? (trade.openPrice - trade.lowPriceReached).toFixed(4) : '0.00'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {trade.lowPriceReached || '—'} | разница: {trade.lowPriceReached ? (trade.lowPriceReached - trade.openPrice).toFixed(4) : '0.00'}
+                                            </>
+                                        )}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

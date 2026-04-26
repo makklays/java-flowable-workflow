@@ -101,6 +101,23 @@ public class TradeService {
         return tradeRepository.save(trade);
     }
 
+    @Transactional
+    public Trade editTrade(Long id, BigDecimal stopLoss, BigDecimal takeProfit) {
+        log.info("Editing trade ID: " + id + " - New SL: " + stopLoss + ", New TP: " + takeProfit);
+
+        Trade trade = tradeRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Trade not found with id: " + id));
+
+        if (trade.getStatus() == TradeStatus.CLOSED) {
+            throw new IllegalStateException("Cannot edit a closed trade");
+        }
+
+        trade.setStopLoss(stopLoss);
+        trade.setTakeProfit(takeProfit);
+
+        return tradeRepository.save(trade);
+    }
+
     // Логика расчета прибыли/убытка
     private BigDecimal calculatePnL(Trade trade) {
         BigDecimal priceDiff;

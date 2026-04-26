@@ -143,52 +143,50 @@ public class TradeService {
     @Transactional
     public void updateLiveMetrics(Long tradeId, BigDecimal currentPrice) {
         Trade trade = tradeRepository.findById(tradeId).orElseThrow();
+        boolean isChanged = false;
 
-        // 1. Инициализация и обновление High/Low
-        if (trade.getHighPriceReached() == null) trade.setHighPriceReached(trade.getOpenPrice());
-        if (trade.getLowPriceReached() == null) trade.setLowPriceReached(trade.getOpenPrice());
+        // 1. Обновляем экстремумы
+        if (trade.getHighPriceReached() == null) { trade.setHighPriceReached(trade.getOpenPrice()); isChanged = true; }
+        if (trade.getLowPriceReached() == null) { trade.setLowPriceReached(trade.getOpenPrice()); isChanged = true; }
 
         if (currentPrice.compareTo(trade.getHighPriceReached()) > 0) {
             trade.setHighPriceReached(currentPrice);
+            isChanged = true;
         }
-        if (currentPrice.compareTo(trade.getLowPriceReached()) < 0) {
+        if (currentPrice.compareTo(
+            trade.getLowPriceReached()) < 0) {
             trade.setLowPriceReached(currentPrice);
+            isChanged = true;
         }
 
-        // 2. Расчет MFE и MAE
-        BigDecimal mfeRaw, maeRaw;
-        if (TradeSide.BUY.equals(trade.getSide())) {
-            mfeRaw = trade.getHighPriceReached().subtract(trade.getOpenPrice());
-            maeRaw = trade.getOpenPrice().subtract(trade.getLowPriceReached());
-        } else {
-            mfeRaw = trade.getOpenPrice().subtract(trade.getLowPriceReached());
-            maeRaw = trade.getHighPriceReached().subtract(trade.getOpenPrice());
+        // 2. Если цена новая — пересчитываем метрики
+        if (isChanged) {
+            BigDecimal mfeRaw, maeRaw;
+            if (TradeSide.BUY.equals(trade.getSide())) {
+                mfeRaw = trade.getHighPriceReached().subtract(trade.getOpenPrice());
+                maeRaw = trade.getOpenPrice().subtract(trade.getLowPriceReached());
+            } else {
+                mfeRaw = trade.getOpenPrice().subtract(trade.getLowPriceReached());
+                maeRaw = trade.getHighPriceReached().subtract(trade.getOpenPrice());
+            }
+
+            trade.setMfe(mfeRaw.max(BigDecimal.ZERO));
+            trade.setMae(maeRaw.max(BigDecimal.ZERO));
+
+            BigDecimal drawdown = trade.getMae()
+                .divide(trade.getOpenPrice(), 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(100));
+
+            if (trade.getMaxDrawdown() == null || drawdown.compareTo(trade.getMaxDrawdown()) > 0) {
+                trade.setMaxDrawdown(drawdown.stripTrailingZeros());
+            }
+
+            // Сохраняем только при реальных изменениях экстремумов
+            tradeRepository.save(trade);
+
+            System.out.format("🚀 UPDATED [%d] | MFE: %s | MAE: %s | MaxDD: %s%%%n",
+                tradeId, trade.getMfe().toPlainString(), trade.getMae().toPlainString(), trade.getMaxDrawdown().toPlainString());
         }
-
-        // Защита от отрицательных (берем max между 0 и расчетом)
-        trade.setMfe(mfeRaw.max(BigDecimal.ZERO));
-        trade.setMae(maeRaw.max(BigDecimal.ZERO));
-
-        // 3. Расчет Max Drawdown (%)
-        BigDecimal drawdown = trade.getMae()
-            .divide(trade.getOpenPrice(), 4, RoundingMode.HALF_UP) // 4 знака (например 0.0153)
-            .multiply(new BigDecimal(100)); // превращаем в 1.53%
-
-        // КРИТИЧНО: проверка на null перед compareTo
-        if (trade.getMaxDrawdown() == null || drawdown.compareTo(trade.getMaxDrawdown()) > 0) {
-            trade.setMaxDrawdown(drawdown.stripTrailingZeros());
-        }
-
-        // Дебаг с красивым форматированием
-        System.out.format(
-            "DEBUG [%d] %s | P: %s | MFE: %s | MAE: %s | MaxDD: %s%%%n",
-            tradeId, trade.getSide(), currentPrice,
-            trade.getMfe().stripTrailingZeros().toPlainString(),
-            trade.getMae().stripTrailingZeros().toPlainString(),
-            trade.getMaxDrawdown().toPlainString()
-        );
-
-        tradeRepository.save(trade);
     }
 }
 

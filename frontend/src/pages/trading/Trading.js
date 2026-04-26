@@ -1033,10 +1033,11 @@ const Trading = () => {
 
     return (
         <div>
-
+            {/*
             <pre style={{ backgroundColor: '#f4f4f4', padding: '10px', fontSize: '12px' }}>
                 {JSON.stringify(signals, null, 2)} Live {currentSymbol}: {livePrice} USDT
             </pre>
+            */}
 
             <div className="row" style={{ marginBottom: '10px' }} >
                 <div className="col-md-6">
@@ -1501,16 +1502,13 @@ const Trading = () => {
                                                 <th>Символ</th>
                                                 <th>Тип</th>
                                                 <th>Объем</th>
-
                                                 <th>Вход</th>
                                                 <th>S / L</th>
                                                 <th>T / P</th>
-
                                                 <th>Время закрытия</th>
                                                 <th>Выход</th>
                                                 <th>Результат (USDT)</th>
                                                 <th>Изменение (%)</th>
-
                                                 <th className="text-end">Действие</th>
                                             </tr>
                                         </thead>
@@ -1520,8 +1518,6 @@ const Trading = () => {
                                                 const openPrice = parseFloat(trade.openPrice || trade.entryPrice || 0);
                                                 const closePrice = parseFloat(trade.closePrice || trade.exitPrice || 0);
                                                 const profit = parseFloat(trade.profitLoss || 0);
-
-                                                // Расчет процента
                                                 let pnlPercent = 0;
                                                 if (openPrice > 0) {
                                                     pnlPercent = side === 'BUY' || side === 'LONG'
@@ -1531,40 +1527,29 @@ const Trading = () => {
 
                                                 return (
                                                     <tr key={trade.id}>
-                                                        <td>{index + 1}</td> {/* Порядковый номер */}
+                                                        <td>{index + 1}</td>
                                                         <td className="text-muted">{trade.id}</td>
                                                         <td className="text-muted">{formatDate(trade.openedAt)}</td>
                                                         <td className="fw-bold">{trade.symbol}</td>
                                                         <td>
-                                                            <span className={`badge ${side.toUpperCase() === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
-                                                                {side.toUpperCase()}
+                                                            <span className={`badge ${side === 'BUY' ? 'bg-success' : 'bg-danger'}`}>
+                                                                {side}
                                                             </span>
                                                         </td>
                                                         <td>{trade.quantity}</td>
-
                                                         <td>{trade.openPrice}</td>
-                                                        <td>{trade.stopLoss ? trade.stopLoss : '-'}</td>
-                                                        <td>{trade.takeProfit ? trade.takeProfit : '-'}</td>
-
+                                                        <td>{trade.stopLoss || '-'}</td>
+                                                        <td>{trade.takeProfit || '-'}</td>
                                                         <td className="text-muted">{formatDate(trade.closedAt)}</td>
                                                         <td>{trade.closePrice}</td>
-
-                                                        {/* Результат в USDT */}
                                                         <td className={profit >= 0 ? 'text-success' : 'text-danger'}>
                                                             {profit >= 0 ? '+' : ''}{profit.toFixed(2)}
                                                         </td>
-
-                                                        {/* Изменение в % */}
                                                         <td className={pnlPercent >= 0 ? 'text-success' : 'text-danger'}>
                                                             {pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%
                                                         </td>
-                                                        {/*
-                                                        <td>
-                                                            <span className="badge bg-light text-dark border">Completed</span>
-                                                        </td>
-                                                        */}
-                                                        <td style={{ textAlign: 'right' }}>
-                                                            <button className="btn btn-primary btn-sm" onClick={() => handleView(trade.id, 'history')} title={t('view_details')} style={{ fontSize: '12px', marginRight: '5px' }}>
+                                                        <td className="text-end">
+                                                            <button className="btn btn-primary btn-sm" onClick={() => handleView(trade.id, 'history')} title={t('view_details')} style={{ fontSize: '12px' }}>
                                                                 <FontAwesomeIcon icon={faEye} />
                                                             </button>
                                                         </td>

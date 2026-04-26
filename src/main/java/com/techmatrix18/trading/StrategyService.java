@@ -308,7 +308,7 @@ public class StrategyService {
                 if (checkBuyCondition(series, i)) {
                     currentTrade = new TradeDto(currentCandle.getOpenTime(), closePrice, "BUY");
 
-                    signals.add(new SignalDto(currentCandle.getOpenTime(), "BUY", closePrice, "Entry"));
+                    signals.add(new SignalDto(currentCandle.getOpenTime(), currentCandle.getSymbol(),"BUY", closePrice, "Entry"));
                 }
             }
             // ЕСЛИ СДЕЛКА ОТКРЫТА — ИЩЕМ ВЫХОД
@@ -325,7 +325,7 @@ public class StrategyService {
                         .multiply(new BigDecimal(100));
 
                     trades.add(currentTrade); // Сохраняем завершенную сделку
-                    signals.add(new SignalDto(currentCandle.getOpenTime(), "SELL", closePrice, "Exit"));
+                    signals.add(new SignalDto(currentCandle.getOpenTime(), currentCandle.getSymbol(),"SELL", closePrice, "Exit"));
 
                     currentTrade = null; // Сбрасываем состояние
                 }

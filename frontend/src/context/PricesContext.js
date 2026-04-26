@@ -5,7 +5,7 @@ const PricesContext = createContext();
 export const PricesProvider = ({ children }) => {
     const [prices, setPrices] = useState({});
 
-    console.log("CONTEXT STATE:", prices);
+    //console.log("CONTEXT STATE:", prices);
 
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8082/ws/signals');
@@ -31,19 +31,24 @@ export const PricesProvider = ({ children }) => {
 
                 // 2. Обработка BID_ASK (поток bookTicker)
                 if (msg.type === "BID_ASK") {
-                    const data = msg.data || msg;
-                    const symbol = data.s;
-
-                    setPrices(prev => ({
-                        ...prev,
-                        [symbol]: {
-                            ...prev[symbol], // СОХРАНЯЕМ данные свечи, если они уже были!
-                            bid: parseFloat(data.b),
-                            ask: parseFloat(data.a),
-                            bidQty: parseFloat(data.B),
-                            askQty: parseFloat(data.A)
-                        }
-                    }));
+                    // В Java вы отправляете объект напрямую, без обертки "data"
+                    const data = msg;
+                    // ИСПРАВЛЕНИЕ: берем ключ "symbol", который мы прописали в Java
+                    const symbol = data.symbol;
+                    if (symbol) {
+                        const upperSymbol = symbol.toUpperCase();
+                        setPrices(prev => ({
+                            ...prev,
+                            [upperSymbol]: {
+                                ...prev[upperSymbol],
+                                bid: data.bid,
+                                ask: data.ask,
+                                spread: data.spread
+                            }
+                        }));
+                    } else {
+                        console.error("Symbol is missing in message:", msg);
+                    }
                 }
             } catch (e) {
                 console.error("Ошибка парсинга:", e);

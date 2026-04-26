@@ -5,6 +5,7 @@ import MainLayout from './components/MainLayout';
 // context для глобального состояния
 import { AppProvider } from './context/AppContext';
 import { PricesProvider } from './context/PricesContext';
+import { SignalsProvider } from './context/SignalsContext';
 
 import myLogo from './assets/fl-logo1.png';
 import { toast, ToastContainer } from 'react-toastify';
@@ -23,7 +24,7 @@ function App() {
         };
 
         socket.onmessage = (event) => {
-            console.log("📩 Получено сообщение:", event.data);
+            //console.log("📩 Получено сообщение:", event.data);
             const data = JSON.parse(event.data);
             // Проверяем поле 'type', которое мы задали в Java SignalDto
             if (data.type === "SIGNAL") {
@@ -68,9 +69,11 @@ function App() {
             <ToastContainer theme="dark" position="top-right" autoClose={3000} />
             <AppProvider>
                 <PricesProvider>
-                    <Router>
-                        <MainLayout/>
-                    </Router>
+                    <SignalsProvider>
+                        <Router>
+                            <MainLayout/>
+                        </Router>
+                    </SignalsProvider>
                 </PricesProvider>
             </AppProvider>
         </>

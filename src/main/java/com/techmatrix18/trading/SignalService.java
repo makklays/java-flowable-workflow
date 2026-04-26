@@ -141,7 +141,7 @@ public class SignalService {
             Candle lastCandle = series.getCandle(lastIndex);
             BigDecimal currentPrice = lastCandle.getClose();
             // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
-            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), "SIGNAL", currentPrice, text));
+            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), symbolName,"SIGNAL", currentPrice, text));
             System.out.println("----- web socket RSI: send to websocket signal: " + text);
         }
 
@@ -153,7 +153,7 @@ public class SignalService {
             Candle lastCandle = series.getCandle(lastIndex);
             BigDecimal currentPrice = lastCandle.getClose();
             // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
-            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), "SIGNAL", currentPrice, text));
+            webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), symbolName, "SIGNAL", currentPrice, text));
             System.out.println("----- web socket FIBO: send to websocket signal: " + text);
         }*/
     }

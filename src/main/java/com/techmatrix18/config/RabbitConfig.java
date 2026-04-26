@@ -19,17 +19,29 @@ import org.springframework.amqp.core.Queue;
 @Configuration
 public class RabbitConfig {
 
-    public static final String EXCHANGE = "price.exchange";
+    public static final String EXCHANGE_PRICES = "price.exchange";
+    public static final String EXCHANGE_BID_ASK = "tick.exchange";
+
+    public static final String QUEUE_PRICES = "binance.prices";
+    public static final String QUEUE_TICKS = "binance.ticks";
 
     @Bean
     public TopicExchange priceExchange() {
-        return new TopicExchange(EXCHANGE);
+        return new TopicExchange(EXCHANGE_PRICES);
+    }
+    @Bean
+    public TopicExchange bidAskExchange() {
+        return new TopicExchange(EXCHANGE_BID_ASK);
     }
 
     @Bean
-    public Queue binanceQueue() {
-        // Теперь это класс Spring, и он создастся без ошибок
-        return new Queue("binance.prices", true);
+    public Queue binanceQueuePrices() {
+        return new Queue(QUEUE_PRICES, true);
+    }
+
+    @Bean
+    public Queue binanceQueueBidAsk() {
+        return new Queue(QUEUE_TICKS, true);
     }
 
     @Bean
@@ -38,13 +50,23 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding binding(Queue binanceQueue, TopicExchange priceExchange) {
+    public Binding bindingPrices(Queue binanceQueuePrices, TopicExchange priceExchange) {
         // Используем "price.#", где # означает "любые слова после точки"
         // Таким образом, сообщения price.1, price.BTCUSDT и т.д. попадут в эту очередь
         return BindingBuilder
-                .bind(binanceQueue)
-                .to(priceExchange)
-                .with("price.#");
+            .bind(binanceQueuePrices)
+            .to(priceExchange)
+            .with("price.#");
+    }
+
+    @Bean
+    public Binding bindingBidAsk(Queue binanceQueueBidAsk, TopicExchange bidAskExchange) {
+        // Используем "tick.#", где # означает "любые слова после точки"
+        // Таким образом, сообщения price.1, price.BTCUSDT и т.д. попадут в эту очередь
+        return BindingBuilder
+            .bind(binanceQueueBidAsk)
+            .to(bidAskExchange)
+            .with("tick.#");
     }
 }
 

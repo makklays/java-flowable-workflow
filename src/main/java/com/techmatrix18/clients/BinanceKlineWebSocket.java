@@ -11,6 +11,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Binance Kline Web Socket - Socket для получения данных свечей в он-лайне
@@ -81,9 +85,9 @@ public class BinanceKlineWebSocket {
                         String openTimeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(candle.getOpenTime()), ZoneId.systemDefault()).format(formatter);
                         String closeTimeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(candle.getCloseTime()), ZoneId.systemDefault()).format(formatter);
 
-                        System.out.println(String.format("Свеча: %s – %s | O:%.2f H:%.2f L:%.2f C:%.2f V:%.2f Final:%s",
+                        /*System.out.println(String.format("Свеча: %s – %s | O:%.2f H:%.2f L:%.2f C:%.2f V:%.2f Final:%s",
                                 openTimeStr, closeTimeStr, candle.getOpen(), candle.getHigh(),
-                                candle.getLow(), candle.getClose(), candle.getVolume(), candle.isClosed()));
+                                candle.getLow(), candle.getClose(), candle.getVolume(), candle.isClosed()));*/
                     }
                 }
                 @Override
@@ -192,6 +196,104 @@ public class BinanceKlineWebSocket {
                 public void onError(Exception ex) {
                     System.err.println("Ошибка WebSocket для символа " + cleanSymbol + ": " + ex.getMessage());
                     ex.printStackTrace();
+                }
+            };
+            webSocketClient.connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Получаю BID и ASK в реальном времени (для спреда) для списка символов
+    public void connectCombined(Map<String, Integer> symbols) {
+
+        String streams = symbols.keySet().stream()
+                .map(sym -> {
+                    // Теперь компилятор знает, что sym — это String
+                    String s = sym.toLowerCase().trim();
+                    return String.format("%s@kline_%s/%s@bookTicker", s, this.timeframe.toLowerCase(), s);
+                })
+                .collect(Collectors.joining("/"));
+
+        String url = "wss://stream.binance.com:9443/stream?streams=" + streams;
+
+        try {
+            System.out.println("Подключение к Combined Stream: " + url);
+            webSocketClient = new WebSocketClient(new URI(url)) {
+                @Override
+                public void onOpen(ServerHandshake handshake) {
+                    System.out.println("WebSocket открыт. Подписки: " + symbols);
+                }
+                @Override
+                public void onMessage(String message) {
+                    try {
+                        JSONObject json = new JSONObject(message);
+                        if (!json.has("stream") || !json.has("data")) return;
+
+                        String streamName = json.getString("stream");
+                        JSONObject data = json.getJSONObject("data");
+                        String currentSymbol = data.getString("s"); // Например: "BTCUSDT"
+
+                        // Достаем ID один раз для обоих условий
+                        Integer id = symbols.get(currentSymbol.toUpperCase());
+                        long symbolId = (id != null) ? id.longValue() : 0L;
+
+                        // Так как подключаюсь к Combined Stream где есть и свечи и тикеры, то нужно их обрабатывать отдельно
+                        // --- БЛОК СВЕЧЕЙ ---
+                        if (streamName.contains("@kline")) {
+                            if (data.has("k")) {
+                                JSONObject k = data.getJSONObject("k");
+                                Candle candle = new Candle();
+
+                                candle.setExchangeId(1);
+                                candle.setSymbolId(symbolId);
+                                candle.setSymbol(currentSymbol);
+                                candle.setType("CANDLE"); // тип для свечи должен быть CANDLE
+                                candle.setTimeframe(timeframe);
+
+                                candle.setOpenTime(k.getLong("t"));
+                                candle.setCloseTime(k.getLong("T"));
+                                candle.setOpen(k.getBigDecimal("o"));
+                                candle.setHigh(k.getBigDecimal("h"));
+                                candle.setLow(k.getBigDecimal("l"));
+                                candle.setClose(k.getBigDecimal("c"));
+                                candle.setVolume(k.getBigDecimal("v"));
+                                candle.setIsClosed(k.getBoolean("x"));
+
+                                // Для kline вызываем метод отправки свечи
+                                candlePublisher.publishCandle(candle);
+                            }
+                        }
+                        // --- БЛОК ТИКОВ (BID/ASK) ---
+                        else if (streamName.contains("@bookTicker")) {
+                            double bidPrice = data.getDouble("b");
+                            double askPrice = data.getDouble("a");
+
+                            // Вызываем publishTick только здесь, используя полученные данные
+                            candlePublisher.publishTick(currentSymbol, symbolId, bidPrice, askPrice);
+
+                            // Лог (можно убрать, если слишком много сообщений)
+                            //System.out.println(String.format("[%s] TICK -> Bid: %.4f | Ask: %.4f", currentSymbol, bidPrice, askPrice));
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Ошибка обработки сообщения: " + e.getMessage());
+                    }
+                }
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    System.out.println("Соединение закрыто: " + reason + ". Попытка переподключения через 5 сек...");
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(5000);
+                            connectCombined(symbols); // Рекурсивный вызов для переподключения
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+                @Override
+                public void onError(Exception ex) {
+                    System.err.println("Ошибка WebSocket: " + ex.getMessage());
                 }
             };
             webSocketClient.connect();

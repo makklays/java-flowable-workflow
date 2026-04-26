@@ -12,6 +12,7 @@ import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { usePrices } from '../../context/PricesContext';
+import { useSignals } from '../../context/SignalsContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -69,6 +70,8 @@ const Trading = () => {
     const currentPriceSOLUSDT = prices['SOLUSDT']?.close || 0;
     const currentSymbol = pair.toUpperCase();
     const livePrice = prices[currentSymbol]?.close || "0.00";
+
+    const signals = useSignals();
 
     /*useEffect(() => {
         console.log("Prices updated in Trading component:", prices);
@@ -273,7 +276,7 @@ const Trading = () => {
         }
     }, [userId, activeTab]);
 
-    const [signals, setSignals] = useState([]);
+    //const [signals, setSignals] = useState([]);
 
     // Функции для управления состоянием
     const handleClose = () => setShow(false);
@@ -1030,8 +1033,9 @@ const Trading = () => {
 
     return (
         <div>
+
             <pre style={{ backgroundColor: '#f4f4f4', padding: '10px', fontSize: '12px' }}>
-                {JSON.stringify(prices, null, 2)} Live {currentSymbol}: {livePrice} USDT
+                {JSON.stringify(signals, null, 2)} Live {currentSymbol}: {livePrice} USDT
             </pre>
 
             <div className="row" style={{ marginBottom: '10px' }} >
@@ -1088,6 +1092,7 @@ const Trading = () => {
                         backgroundColor: '#fff'
                     }}>
                         <table style={{
+                                fontSize: '12px',
                                 width: '100%',
                                 marginBottom: 0, // Убираем лишний отступ снизу
                                 opacity: isUploading ? 0.5 : 1,
@@ -1100,6 +1105,7 @@ const Trading = () => {
                                     <th style={{ textAlign: 'left', verticalAlign: 'middle' }} >Symbol</th>
                                     <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >bid</th>
                                     <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >ask</th>
+                                    <th style={{ textAlign: 'center', verticalAlign: 'middle' }} >spread</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1114,10 +1120,13 @@ const Trading = () => {
                                             {coin.ticker}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'red' }}>
-                                            {prices[coin.ticker]?.close || '0.00'}
+                                            {prices[coin.ticker.toUpperCase()]?.bid || '0.00'}
                                         </td>
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle', color: 'green' }}>
-                                            {prices[coin.ticker]?.close || '0.00'}
+                                            {prices[coin.ticker.toUpperCase()]?.ask || '0.00'}
+                                        </td>
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle', color: '#000' }}>
+                                            {prices[coin.ticker.toUpperCase()]?.spread || '0.00'}
                                         </td>
                                     </tr>
                                 )) : (
@@ -1266,7 +1275,16 @@ const Trading = () => {
                                                     {activeOrders.map((order, index) => {
                                                         // 1. Защита от пустых данных (fallback)
                                                         const orderType = order.side || 'buy';
-                                                        const currentPrice = prices[order.symbol]?.close || order.openPrice || 0;
+                                                        let currentPrice = 0;
+                                                        if (orderType === 'buy') {
+                                                            // Если у вас открыта покупка (Long), вы будете ЗАКРЫВАТЬ её продажей.
+                                                            // Продать можно по цене покупки других участников — BID.
+                                                            currentPrice = prices[order.symbol]?.bid || 0;
+                                                        } else {
+                                                            // Если у вас открыта продажа (Short), вы будете ЗАКРЫВАТЬ её покупкой.
+                                                            // Купить можно по цене продажи других участников — ASK.
+                                                            currentPrice = prices[order.symbol]?.ask || 0;
+                                                        }
                                                         const entryPrice = order.openPrice || 0;
                                                         const volume = order.quantity || 0;
 
@@ -1351,12 +1369,7 @@ const Trading = () => {
                             <div className="tab-pane fade show active">
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <h4 className="m-0">История сигналов</h4>
-                                    <button
-                                        className="btn btn-sm btn-outline-danger"
-                                        onClick={() => setSignals([])} // Очистка списка
-                                    >
-                                        Очистить лог
-                                    </button>
+                                    <button className="btn btn-sm btn-outline-danger">Очистить лог</button>
                                 </div>
 
                                 <div className="table-responsive">
@@ -1373,23 +1386,20 @@ const Trading = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {signals.length > 0 ? signals.slice().reverse().map((sig, index) => (
-                                                <tr key={index} style={{ borderLeft: sig.type.includes('BUY') || sig.label.includes('ниже 30') ? '3px solid #198754' : '3px solid #dc3545' }}>
-                                                    <td className="text-muted">{signals.length - index}</td>
+                                            {signals.length > 0 ? signals.map((sig, index) => (
+                                                <tr key={sig.id || index} style={{ borderLeft: (sig.signal === 'BUY' || sig.type === 'BUY') ? '3px solid #198754' : '3px solid #dc3545' }}>
+                                                    <td className="text-muted">{index + 1}</td>
                                                     <td className="text-muted">{new Date(sig.time).toLocaleTimeString()}</td>
-                                                    <td className="fw-bold">{sig.symbol || sig.ticker}</td>
+                                                    <td className="fw-bold">{sig.symbol}</td>
                                                     <td>
-                                                        <span className={`badge ${sig.label.includes('ниже 30') || sig.label.includes('BUY') ? 'bg-success' : 'bg-warning text-dark'}`}>
-                                                            {sig.type}
+                                                        <span className={`badge ${(sig.signal === 'BUY' || sig.type === 'BUY') ? 'bg-success' : 'bg-warning text-dark'}`}>
+                                                            {sig.signal || sig.type}
                                                         </span>
                                                     </td>
                                                     <td className="fw-bold">{sig.price}</td>
                                                     <td>{sig.label}</td>
                                                     <td className="text-end">
-                                                        <button
-                                                            className="btn btn-sm btn-light border"
-                                                            onClick={() => handlePair(sig.symbol || sig.ticker)}
-                                                        >
+                                                        <button className="btn btn-sm btn-light border" onClick={() => handlePair(sig.symbol)}>
                                                             Посмотреть
                                                         </button>
                                                     </td>

@@ -13,12 +13,14 @@ import java.math.BigDecimal;
 public class SignalDto {
     private Long time;          // Timestamp в миллисекундах (open_time свечи)
     private String type;        // "BUY" или "SELL", "SIGNAL"
+    private String symbol;      // Символ, для которого сработал сигнал (например, "BTCUSDT")
     private BigDecimal price;   // Цена, на которой сработал сигнал
     private String label;       // Текст над/под стрелкой (например, "MACD Cross")
 
     // Добавьте этот конструктор
-    public SignalDto(Long time, String type, BigDecimal price, String label) {
+    public SignalDto(Long time, String symbol, String type, BigDecimal price, String label) {
         this.time = time;
+        this.symbol = symbol;
         this.type = type;
         this.price = price;
         this.label = label;
@@ -34,6 +36,9 @@ public class SignalDto {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public String getSymbol() { return symbol; }
+    public void setSymbol(String symbol) { this.symbol = symbol; }
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }

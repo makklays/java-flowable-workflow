@@ -13,6 +13,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Market Data Web Socket Server - ВебСокет Сервер для отправки цен и данных по символам в браузер (на фронт-енд)
  *
+ * Использую один ВебСокет в который отправляются все ссобщения из backend в frontend
+ * На frontend данные различаются по type в каждом отправленном сообщении
+ *
  * @author Alexander Kuziv
  * @since 18.04.2026
  * @company TechMatrix18

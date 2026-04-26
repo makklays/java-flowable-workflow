@@ -29,21 +29,21 @@ class MyScheduledTask {
     // Запуск задачи каждые 5 секунд, независимо от того, завершилась ли предыдущая
     @Scheduled(fixedRate = 5000)
     public void runTask() {
-        System.out.println("Задача выполнена в потоке " + Thread.currentThread().getName()
-                + " в " + java.time.LocalTime.now());
+        /*System.out.println("Задача выполнена в потоке " + Thread.currentThread().getName()
+                + " в " + java.time.LocalTime.now());*/
     }
 
     // Запуск задачи через 10 секунд после завершения предыдущей
     @Scheduled(fixedDelay = 10000)
     public void runTaskWithDelay() {
-        System.out.println("Задача с задержкой выполнена в потоке " + Thread.currentThread().getName()
-                + " в " + java.time.LocalTime.now());
+        /*System.out.println("Задача с задержкой выполнена в потоке " + Thread.currentThread().getName()
+                + " в " + java.time.LocalTime.now());*/
     }
 
     // Запуск по расписанию с помощью cron-выражения
     @Scheduled(cron = "0 * * * * *")
     public void runCronTask() {
-        System.out.println("Cron-задача выполнена в " + java.time.LocalTime.now());
+        //System.out.println("Cron-задача выполнена в " + java.time.LocalTime.now());
     }
 }
 

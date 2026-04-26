@@ -16,6 +16,8 @@ const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, ty
 
     // Достаем актуальную цену для ВЫБРАННОГО в данный момент тикера
     const currentPrice = allPrices[selectedCoin.ticker]?.close || '0.00';
+    const priceBid = allPrices[selectedCoin.ticker]?.bid || '0.00';
+    const priceAsk = allPrices[selectedCoin.ticker]?.ask || '0.00';
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -167,9 +169,9 @@ const OrderModal = ({ isOpen, onClose, symbols, selectedCoin, onSymbolChange, ty
                                 {/* ЦЕНЫ ИЗ PROPS */}
                                 <div className="col-12 text-center my-4">
                                     <h2 className="fw-light">
-                                        <span className="text-danger">{currentPrice}</span>
+                                        <span className="text-danger">{priceBid}</span>
                                         <span className="mx-2">/</span>
-                                        <span className="text-primary">{currentPrice}</span>
+                                        <span className="text-primary">{priceAsk}</span>
                                     </h2>
                                     <small className="text-muted text-uppercase">Текущая котировка (ID: {selectedCoin.id})</small>
                                 </div>

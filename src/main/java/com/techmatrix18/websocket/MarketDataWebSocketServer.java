@@ -49,7 +49,10 @@ public class MarketDataWebSocketServer extends TextWebSocketHandler {
             for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
                     // 3. Теперь sendMessage примет этот объект
-                    session.sendMessage(message);
+                    // Синхронизируемся на объекте сессии, чтобы избежать TEXT_PARTIAL_WRITING
+                    synchronized (session) {
+                        session.sendMessage(message);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -65,11 +68,14 @@ public class MarketDataWebSocketServer extends TextWebSocketHandler {
             TextMessage message = new TextMessage(json);
             for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
-                    session.sendMessage(message);
+                    // Синхронизируемся на объекте сессии, чтобы избежать TEXT_PARTIAL_WRITING
+                    synchronized (session) {
+                        session.sendMessage(message);
+                    }
                 }
             }
         } catch (Exception e) {
-            System.err.println("Ошибка трансляции: " + e.getMessage());
+            System.err.println("Ошибка трансляции: " + e.getMessage() + " Data: " + data.toString());
         }
     }
 }

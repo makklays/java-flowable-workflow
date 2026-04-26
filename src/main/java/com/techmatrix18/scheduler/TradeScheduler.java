@@ -31,12 +31,20 @@ public class TradeScheduler {
 
     @Scheduled(fixedDelay = 5000) // Каждые 5 секунд
     public void refreshOpenTrades() {
+        // Выводим все ключи, которые сейчас есть в памяти
+        System.out.println("DEBUG: All keys in storage: " + priceStorage.getAllPrices().keySet());
+
         List<Trade> openTrades = tradeService.getByStatus(TradeStatus.OPEN);
 
-        for (Trade trade : openTrades) {
-            BigDecimal currentPrice = priceStorage.getPrice(trade.getSymbol());
+        System.out.println("DEBUG PriceStorage keys: " + priceStorage.getAllPrices().keySet());
 
-            if (currentPrice != null) {
+        for (Trade trade : openTrades) {
+            String symbol = trade.getSymbol(); // Получаем символ из БД (например, "SOLUSDT")
+            BigDecimal currentPrice = priceStorage.getPrice(symbol);
+
+            if (currentPrice == null) {
+                System.out.println("WARN: Price not found for [" + symbol + "]. Check if key matches!");
+            } else {
                 tradeService.updateLiveMetrics(trade.getId(), currentPrice);
             }
         }

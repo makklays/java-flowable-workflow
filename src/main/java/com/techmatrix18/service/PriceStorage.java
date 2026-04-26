@@ -20,11 +20,18 @@ public class PriceStorage {
     private final Map<String, BigDecimal> currentPrices = new ConcurrentHashMap<>();
 
     public void updatePrice(String symbol, BigDecimal price) {
-        currentPrices.put(symbol, price);
+        if (symbol != null) {
+            currentPrices.put(symbol.toUpperCase(), price);
+        }
     }
 
     public BigDecimal getPrice(String symbol) {
-        return currentPrices.get(symbol);
+        if (symbol == null) return null;
+        return currentPrices.get(symbol.toUpperCase());
+    }
+
+    public Map<String, BigDecimal> getAllPrices() {
+        return currentPrices;
     }
 }
 

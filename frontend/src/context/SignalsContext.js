@@ -5,7 +5,7 @@ const SignalsContext = createContext();
 export const SignalsProvider = ({ children }) => {
     const [signals, setSignals] = useState([]);
 
-    console.log("SIGNAL STATE:", signals);
+    //console.log("SIGNAL STATE:", signals);
 
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8082/ws/signals');
@@ -17,7 +17,7 @@ export const SignalsProvider = ({ children }) => {
                 // Получаю сигналы с backend
                 if (msg.type === "SIGNAL") {
 
-                    console.log("RAW SIGNAL:", msg);
+                    //console.log("RAW SIGNAL:", msg);
 
                     setSignals(prev => {
                         // Проверка: если prev не массив, делаем его пустым массивом

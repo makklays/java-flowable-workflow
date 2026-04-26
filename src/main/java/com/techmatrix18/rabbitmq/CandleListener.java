@@ -46,7 +46,7 @@ public class CandleListener {
 
         // Обновляем цену для аналитики сделок в PriceStorage,
         // используем цену закрытия свечи (closePrice) как текущую рыночную цену
-        priceStorage.updatePrice(symbolId, candle.getClose());
+        priceStorage.updatePrice(symbolName, candle.getClose());
 
         // ОТПРАВЛЯЕМ ЦЕНУ НА ФРОНТЕНД
         // Можно отправить всю свечу целиком
@@ -83,7 +83,7 @@ public class CandleListener {
 
         // Обновляю PriceStorage более точной ценой (например, средней между bid и ask)
         double midPrice = (bid + ask) / 2.0;
-        priceStorage.updatePrice(symbolId, BigDecimal.valueOf(midPrice));
+        priceStorage.updatePrice(symbol, BigDecimal.valueOf(midPrice));
 
         // Отправляю быстрые данные на frontend через WebSocket
         // создал на frontend отдельный обработчик для "BID_ASK" сообщений

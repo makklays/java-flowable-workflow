@@ -75,6 +75,7 @@ import Candles from '../pages/candles/Candles';
 import CandleView from '../pages/candles/CandleView';
 
 import Tasks from '../pages/flowables/Tasks';
+import TaskFormPage from '../pages/flowables/TaskFormPage';
 import History from '../pages/flowables/History';
 import Calendar from '../pages/flowables/Calendar';
 
@@ -255,6 +256,7 @@ const MainLayout = () => {
                             <Route path="/deals/:id" element={<DealView />} />
 
                             <Route path="/tasks" element={<Tasks />} />
+                            <Route path="/tasks/:taskId/form" element={<TaskFormPage />} />
                             <Route path="/history" element={<History />} />
                             <Route path="/calendar" element={<Calendar />} />
 

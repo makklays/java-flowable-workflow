@@ -9,6 +9,7 @@ import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import authHeader from '../../services/authHeader';
+import { useNavigate } from 'react-router-dom';
 
 // Короткая запись компонента - стрелочная функция
 const Tasks = () => {
@@ -18,6 +19,7 @@ const Tasks = () => {
     const [tasks, setTasks] = useState([]);
     const [availableProcesses, setAvailableProcesses] = useState([]);
 
+    const navigate = useNavigate();
 
     const fetchTasks = async () => {
         if (!userId) return;
@@ -81,31 +83,42 @@ const Tasks = () => {
         }
     };
 
+    // Упрощенный обработчик без лишнего async
+    const handleOpenTask = (task) => {
+        const id = task.id; // Пробуем оба варианта
+        if (!id) {
+            console.error("ID задачи не найден в объекте:", task);
+            return;
+        }
+        navigate(`/tasks/${id}/form`, { state: { task } });
+    };
+
     return (
         <div>
             <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
             <p>Tasks from Flowable assigned to me. {role === 'ADMIN' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 
-            <div className="row mb-5">
-                <h3 className="mb-3 text-muted">Доступные действия</h3>
-                {availableProcesses.map(proc => (
-                    <div className="col-md-4 mb-3" key={proc.id}>
-                        <div className="card h-100 bg-dark border-primary text-white">
-                            <div className="card-body d-flex flex-column justify-content-between">
-                                <div>
-                                    <h5 className="card-title text-primary">{proc.name || proc.key}</h5>
-                                    <p className="card-text small text-muted">Версия: {proc.version}</p>
+            <div className="row" style={{ marginBottom: '40px' }}>
+                <div className="col-md-8">
+                    <div className="row">
+                        <h3 className="mb-3 text-muted">Доступные процессы</h3>
+                        {availableProcesses.map(proc => (
+                            <div className="col-md-4 mb-3" key={proc.id}>
+                                <div className="card h-100 border-primary text-white">
+                                    <div className="card-body d-flex flex-column justify-content-between">
+                                        <div>
+                                            <h5 className="card-title text-primary">{proc.name || proc.key}</h5>
+                                            <p className="card-text small text-muted">Версия: {proc.version}</p>
+                                        </div>
+                                        <button className="btn btn-primary mt-3" onClick={() => handleStartProcess(proc.key)}>
+                                            Запустить процесс
+                                        </button>
+                                    </div>
                                 </div>
-                                <button
-                                    className="btn btn-primary mt-3"
-                                    onClick={() => handleStartProcess(proc.key)}
-                                >
-                                    Запустить процесс
-                                </button>
                             </div>
-                        </div>
+                        ))}
                     </div>
-                ))}
+                </div>
             </div>
 
             <div className="row" style={{ marginBottom: '40px' }}>
@@ -133,7 +146,7 @@ const Tasks = () => {
                                             <td className="text-info">{task.assignee || 'Не назначена'}</td>
                                         )}
                                         <td className="text-end">
-                                            <button className="btn btn-sm btn-outline-success">
+                                            <button className="btn btn-sm btn-outline-success" onClick={() => handleOpenTask(task)} >
                                                 <FontAwesomeIcon icon={faEye} className="me-1" /> Открыть
                                             </button>
                                         </td>

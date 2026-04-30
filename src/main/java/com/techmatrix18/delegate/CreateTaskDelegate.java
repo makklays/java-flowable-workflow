@@ -38,7 +38,7 @@ public class CreateTaskDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         // Получаем переменные из процесса
         String priority = (String) execution.getVariable("priority"); // it is not used anywhere
-        String createDate = (String) execution.getVariable("createDate"); // it is not used anywhere
+        Object createDate = execution.getVariable("createDate"); // it is not used anywhere
 
         // Получаем бизнес-ключ
         String bKey = execution.getProcessInstanceBusinessKey();

@@ -11,7 +11,7 @@
         <scriptTask id="initScript" name="Initialize Variables" scriptFormat="javascript">
             <script>
                 execution.setVariable("priority", "medium");
-                execution.setVariable("createDate", new java.util.Date());
+                execution.setVariable("createDate", new java.util.Date().toString());
             </script>
         </scriptTask>
         <sequenceFlow id="flow2" sourceRef="initScript" targetRef="createTask"/>

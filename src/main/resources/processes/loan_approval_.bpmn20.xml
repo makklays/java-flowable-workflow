@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             targetNamespace="Examples">
+
+    <process id="loanApprovalNew" name="Loan Approval 10" isExecutable="true">
+        <startEvent id="start" name="Start"/>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="initScript"/>
+
+        <scriptTask id="initScript" name="Initialize Variables" scriptFormat="javascript">
+            <script>
+                execution.setVariable("priority", "medium");
+                execution.setVariable("createDate", new java.util.Date());
+            </script>
+        </scriptTask>
+        <sequenceFlow id="flow2" sourceRef="initScript" targetRef="createTask"/>
+
+        <serviceTask id="createTask"
+             name="Create Task"
+             flowable:delegateExpression="${createTaskDelegate}" />
+        <sequenceFlow id="flow3" sourceRef="createTask" targetRef="reviewByManager"/>
+
+        <userTask id="reviewByManager" name="Review by Manager (Manager)" flowable:formKey="review-form" >
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>manager</formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        <sequenceFlow id="flow4" sourceRef="reviewByManager" targetRef="riskAssessment"/>
+
+        <userTask id="riskAssessment" name="Risk Assessment (Risk)" flowable:candidateGroups="risk" />
+        <sequenceFlow id="flow5" sourceRef="riskAssessment" targetRef="end"/>
+
+        <endEvent id="end"/>
+    </process>
+</definitions>

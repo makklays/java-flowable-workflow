@@ -32,6 +32,7 @@ const TaskFormPage = () => {
                     `http://localhost:8082/api/v1/workflow/tasks/${taskId}`,
                     { headers: authHeader() }
                 );
+                console.log("ПОЛНЫЙ ОТВЕТ ОТ API:", res.data);
                 console.log("Полученная задача из БД:", res.data);
                 setTask(res.data); // Используем setTask
             } catch (err) {
@@ -40,7 +41,6 @@ const TaskFormPage = () => {
                 setLoading(false);
             }
         };
-
         fetchCurrentTask();
     }, [taskId, location.state]);
 

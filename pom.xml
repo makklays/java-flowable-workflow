@@ -313,6 +313,13 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
+        <!-- For BPMN variables javascript -->
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.4</version>
+        </dependency>
+
         <!-- Специфично для устранения ошибки javax.xml.bind в Java 11+ -->
         <dependency>
             <groupId>javax.xml.bind</groupId>

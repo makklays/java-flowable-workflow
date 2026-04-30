@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              targetNamespace="Examples">
 
-    <process id="loanApproval" name="Loan Approval" isExecutable="true">
+    <process id="loanApproval" name="Loan Approval 20" isExecutable="true">
         <startEvent id="start" name="Start"/>
         <userTask id="checkApplication" name="Check Application"/>
         <exclusiveGateway id="decision" name="Approved?"/>

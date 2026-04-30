@@ -17,12 +17,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * Send Messages Delegate - делегат для отправки сообщений и уведомлений при регистрации нового сотрудника в процессе "Job Application".
+ *
  * @author Alexander Kuziv
  * @since 10.10.2025
  * @company TechMatrix18
  * @version 0.0.3
  */
-
 @Service("sendMessagesDelegate")
 public class SendMessagesDelegate implements JavaDelegate {
 

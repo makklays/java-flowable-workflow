@@ -21,7 +21,7 @@
              flowable:delegateExpression="${createTaskDelegate}" />
         <sequenceFlow id="flow3" sourceRef="createTask" targetRef="reviewByManager"/>
 
-        <userTask id="reviewByManager" name="Review by Manager (Manager)" flowable:formKey="review-form" >
+        <userTask id="reviewByManager" name="Review by Manager (Manager)" flowable:formKey="review-form">
             <potentialOwner>
                 <resourceAssignmentExpression>
                     <formalExpression>manager</formalExpression>

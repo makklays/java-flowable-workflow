@@ -20,11 +20,13 @@ const TaskFormPage = () => {
     useEffect(() => {
         const fetchCurrentTask = async () => {
             // Если задача уже пришла из location.state, не делаем запрос
-            if (location.state?.task) {
+            /*if (location.state?.task) {
                 setTask(location.state.task);
                 setLoading(false);
                 return;
-            }
+            }*/
+
+            console.log("🚀 Запрос начался для ID:", taskId);
 
             try {
                 // 2. Исправленный URL: запрашиваем конкретную задачу по ID
@@ -34,19 +36,29 @@ const TaskFormPage = () => {
                 );
                 console.log("ПОЛНЫЙ ОТВЕТ ОТ API:", res.data);
                 console.log("Полученная задача из БД:", res.data);
-                setTask(res.data); // Используем setTask
+                setTask(res.data);
             } catch (err) {
                 console.error("Ошибка загрузки задачи:", err);
             } finally {
                 setLoading(false);
             }
+
+            console.log("ПОЛНЫЙ ОТВЕТ ОТ API1111111111");
         };
         fetchCurrentTask();
     }, [taskId, location.state]);
 
     if (loading) return <div className="container mt-5">Загрузка задачи...</div>;
 
-    const SelectedForm = FORM_COMPONENTS[task?.formKey];
+    //const SelectedForm = FORM_COMPONENTS[task?.formKey];
+    const key = task?.formKey || task?.formDefinitionKey;
+    const SelectedForm = FORM_COMPONENTS[key];
+
+    console.log("DEBUG: Весь объект task:", task);
+    console.log("DEBUG: Ключ из задачи:", task?.formKey);
+    console.log("DEBUG: Доступные ключи в FORM_COMPONENTS:", Object.keys(FORM_COMPONENTS));
+
+    console.log("--------> " + SelectedForm);
 
     return (
         <div className="row">

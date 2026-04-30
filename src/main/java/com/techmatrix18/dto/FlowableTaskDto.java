@@ -1,5 +1,7 @@
 package com.techmatrix18.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Flowable Task Dto - DTO для передачи информации о задаче Flowable на фронтенд.
  *
@@ -11,6 +13,8 @@ package com.techmatrix18.dto;
 public class FlowableTaskDto {
     private String id;
     private String name;
+
+    @JsonProperty("formKey")
     private String formKey;
     private String processInstanceId;
 

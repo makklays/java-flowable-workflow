@@ -63,7 +63,7 @@ public class FlowableController {
     }
 
     // 2. Получить список активных задач для текущего пользователя
-    @GetMapping("/tasks/{userId}")
+    @GetMapping("/tasks/{userId}/by-user")
     public ResponseEntity<?> getTasks(@PathVariable String userId) {
         return ResponseEntity.ok(
             taskService.createTaskQuery()
@@ -204,6 +204,8 @@ public class FlowableController {
         Task task = taskService.createTaskQuery()
             .taskId(taskId)
             .singleResult();
+
+        System.out.println("Получаем задачу по ID --------->: " + task.toString());
 
         if (task == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача не найдена");

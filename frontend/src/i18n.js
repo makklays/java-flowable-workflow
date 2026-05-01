@@ -59,6 +59,7 @@ i18n
                     advisor: "Фин. советник",
                     forex: "Валютный рынок",
                     private_cabinet: "Личный кабинет",
+                    my_accounts: "Мои счета",
                 }
             },
             en: {
@@ -112,6 +113,7 @@ i18n
                     advisor: "Financial Advisor",
                     forex: "Forex", // Или "Foreign Exchange"
                     private_cabinet: "Private Cabinet",
+                    my_accounts: "My Accounts",
                 }
             },
             es: {
@@ -165,6 +167,7 @@ i18n
                     advisor: "Asesor financiero",
                     forex: "Forex",
                     private_cabinet: "Gabinete privado",
+                    my_accounts: "Mis cuentas",
                 }
             }
         }, // Закрываем resources здесь

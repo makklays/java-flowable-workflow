@@ -166,7 +166,7 @@ const MainLayout = () => {
             <Nav className="flex-column p-3 gap-1 bank">
                 <div className="small text-uppercase text-primary fw-bold mt-2 mb-3 px-3"> {t('private_cabinet')}</div>
                 <Nav.Link as={NavLink} to="/bank/accounts" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
-                    <FontAwesomeIcon icon={faWallet} className="me-3 text-primary" /> {t('My Accounts')}
+                    <FontAwesomeIcon icon={faWallet} className="me-3 text-primary" /> {t('my_accounts')}
                 </Nav.Link>
                 <Nav.Link as={NavLink} to="/bank/applications" style={activeLinkStyle} className="rounded px-3 py-2 text-dark">
                     <FontAwesomeIcon icon={faFileInvoice} className="me-3 text-primary" /> {t('applications')}

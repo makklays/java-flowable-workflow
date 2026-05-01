@@ -19,6 +19,7 @@ const Header = () => {
 
     return (
         <Navbar bg="white" expand="lg" className="border-bottom px-3 shadow-sm">
+            <div className="container">
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
                 <img src={myLogo} width="30" height="30" className="me-2" alt="Logo" />
                 <span className="fw-bold text-primary">CRM Flowable Ocean</span>
@@ -28,29 +29,29 @@ const Header = () => {
                 <Nav className="ms-auto align-items-center">
                     {/* Переключатель языков остался тут */}
                     <NavDropdown
-                       title={
-                          <span>
-                            <span className={`${getFlagClass(i18n.language)} me-1`}></span>
-                            {i18n.language?.toUpperCase().substring(0, 2)}
-                          </span>
-                       }
-                       id="lang-drop"
-                       align="end"
-                       /* Прокидываем стиль напрямую в выпадающий список */
-                       style={{ '--bs-dropdown-min-width': '100px' }}
+                        title={
+                            <span>
+                                <span className={`${getFlagClass(i18n.language)} me-1`}></span>
+                                {i18n.language?.toUpperCase().substring(0, 2)}
+                            </span>
+                        }
+                        id="lang-drop"
+                        align="end"
+                        /* Прокидываем стиль напрямую в выпадающий список */
+                        style={{ '--bs-dropdown-min-width': '100px' }}
                     >
-                          {/* Эта обертка заставит пункты быть узкими */}
-                          <div style={{ width: '100px', minWidth: '70px' }}>
+                        {/* Эта обертка заставит пункты быть узкими */}
+                        <div style={{ width: '100px', minWidth: '70px' }}>
                             <NavDropdown.Item onClick={() => changeLanguage('ru')} className="d-flex justify-content-center py-1 px-0 border-0">
-                              <span className="fi fi-ru me-1"></span> RU
+                                <span className="fi fi-ru me-1"></span> RU
                             </NavDropdown.Item>
                             <NavDropdown.Item onClick={() => changeLanguage('en')} className="d-flex justify-content-center py-1 px-0 border-0">
-                              <span className="fi fi-us me-1"></span> EN
+                                <span className="fi fi-us me-1"></span> EN
                             </NavDropdown.Item>
                             <NavDropdown.Item onClick={() => changeLanguage('es')} className="d-flex justify-content-center py-1 px-0 border-0">
-                              <span className="fi fi-es me-1"></span> ES
+                                <span className="fi fi-es me-1"></span> ES
                             </NavDropdown.Item>
-                          </div>
+                        </div>
                     </NavDropdown>
 
                     {currentUser ? (
@@ -69,6 +70,7 @@ const Header = () => {
                     )}
                 </Nav>
             </Navbar.Collapse>
+            </div>
         </Navbar>
     );
 };

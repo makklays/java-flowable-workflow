@@ -62,7 +62,7 @@ const TaskFormPage = () => {
 
     return (
         <div className="row">
-            <div className="col-md-8">
+            <div className="col-md-12">
                 <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
                 <p>Tasks from Flowable assigned to me. {role === 'admin' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 

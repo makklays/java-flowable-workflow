@@ -99,7 +99,7 @@ const Tasks = () => {
             <p>Tasks from Flowable assigned to me. {role === 'ADMIN' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 
             <div className="row" style={{ marginBottom: '40px' }}>
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <div className="row">
                         <h3 className="mb-3 text-muted">Доступные процессы</h3>
                         {availableProcesses.map(proc => (
@@ -122,7 +122,7 @@ const Tasks = () => {
             </div>
 
             <div className="row" style={{ marginBottom: '40px' }}>
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <h3>Входящие задачи (inbox)</h3>
 
                     <div className="table-responsive">
@@ -161,7 +161,7 @@ const Tasks = () => {
                 </div>
             </div>
             <div className="row" style={{ marginBottom: '40px' }}>
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <h3>Задачи в работе</h3>
 
                     <div className="table-responsive">
@@ -202,7 +202,7 @@ const Tasks = () => {
                 </div>
             </div>
             <div className="row" style={{ marginBottom: '40px' }}>
-                <div className="col-md-8">
+                <div className="col-md-12">
                     <h3>Активные задачи</h3>
 
                     <div className="table-responsive">
@@ -242,12 +242,6 @@ const Tasks = () => {
 
                 </div>
             </div>
-
-            {/*
-            if (task.key === "review-form") {
-               return <ReviewForm task={task} />
-            }
-            */}
 
         </div>
     );

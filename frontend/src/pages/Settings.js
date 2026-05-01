@@ -33,6 +33,8 @@ const Settings = () => {
                         allowFullScreen
                     ></iframe>
                 </div>
+            </div>
+            <div className="row">
                 <div className="col-md-4">
                     <iframe
                         width="600"
@@ -43,6 +45,8 @@ const Settings = () => {
                         allowFullScreen
                     ></iframe>
                 </div>
+            </div>
+            <div className="row">
                 <div className="col-md-4">
                     <iframe
                         width="600"
@@ -54,29 +58,7 @@ const Settings = () => {
                     ></iframe>
                 </div>
             </div>
-
-            {/* webcams */}
             <div className="row">
-                <div className="col-md-4">
-                    <iframe
-                        width="600"
-                        height="400"
-                        src="https://www.youtube.com/embed/l8El-eM_sTk"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
-                </div>
-                <div className="col-md-4">
-                    <iframe
-                        width="600"
-                        height="400"
-                        src="https://www.youtube.com/embed/jUcPfplhqek"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
-                </div>
                 <div className="col-md-4">
                     <iframe
                         width="600"

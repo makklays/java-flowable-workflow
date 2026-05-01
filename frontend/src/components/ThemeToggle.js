@@ -21,8 +21,8 @@ const ThemeToggle = () => {
                 cursor: 'pointer',
                 border: 'none',
                 background: 'none',
-                fontSize: '24px',
-                padding: '10px'
+                /*fontSize: '24px',*/
+                padding: '0px'
             }}
         >
             {/* Используем встроенный SVG вместо lucide-react */}

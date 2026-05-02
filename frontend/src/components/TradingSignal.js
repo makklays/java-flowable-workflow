@@ -1,19 +1,21 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 
-const TradingSignal = ({ probability }) => {
+const TradingSignal = ({ probability, id = "trading-gauge" }) => {
     // probability — число от 0 до 1 (например, 0.75 для 75%)
 
     return (
         <div style={{ width: '100%', textAlign: 'center', fontFamily: 'Arial' }}>
             {/*<h3>Вероятность успеха сделки</h3>*/}
             <GaugeChart
-                id="trading-gauge"
-                nrOfLevels={3} // Делим на 3 зоны: Продавать, Ждать, Покупать
-                arcsLength={[0.2, 0.6, 0.2]} // 20% для "Продавать", 60% для "Ждать", 20% для "Покупать"
-                colors={["#dc3545", "#ffc107", "#198754"]} // Красный, Желтый, Синий/Зеленый
+                id={id} // Используем уникальный ID
+                nrOfLevels={3}
+                arcsLength={[0.2, 0.6, 0.2]}
+                colors={["#dc3545", "#ffc107", "#198754"]}
                 arcWidth={0.3}
                 percent={probability}
+                animDelay={0}      // Убирает задержку перед анимацией
+                animate={true}     // Включает анимацию перехода
                 formatTextValue={val => val + '%'}
                 textColor="#333"
             />

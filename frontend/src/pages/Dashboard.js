@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import TradingSignal from '../components/TradingSignal';
 
@@ -21,6 +21,35 @@ const Dashboard = () => {
     // 0.85 означает 85% вероятности "Покупать"
     const [chance, setChance] = useState(0.85);
 
+    const [rsi1m, setRsi1m] = useState(0.5);
+    const [rsi15m, setRsi15m] = useState(0.5);
+    const [rsi1h, setRsi1h] = useState(0.5);
+
+    useEffect(() => {
+        // Подключаемся к твоему MarketDataWebSocketServer на бэкенде
+        const socket = new WebSocket('ws://localhost:8082/ws/signals');
+
+        socket.onmessage = (event) => {
+            const candle = JSON.parse(event.data);
+            // 1. Фильтруем только нужную монету
+            if (candle.symbol === 'SOLUSDT') {
+                // Достаем значение RSI из нашей Map indicators
+                const rsiValue = candle.indicators?.rsi;
+                if (rsiValue !== undefined) {
+                    // 2. Распределяем данные по таймфреймам
+                    if (candle.timeframe === '1m') {
+                        setRsi1m(rsiValue);
+                    } if (candle.timeframe === '15m') {
+                        setRsi15m(rsiValue);
+                    } else if (candle.timeframe === '1h') {
+                        setRsi1h(rsiValue);
+                    }
+                }
+            }
+        };
+        return () => socket.close();
+    }, []);
+
     return (
         <div className="row">
             <div className="col-md-12">
@@ -32,20 +61,24 @@ const Dashboard = () => {
                 </div>
                 <div className="row">
                     <div className="col-md-6 mb-4">
-                        <h4>D1</h4>
-                        <TradingSignal probability={chance} />
-                        <p className="mt-2">Вероятность успеха: {(chance * 100).toFixed(2)}%</p>
+                        <h4>H1</h4>
+                        <TradingSignal id="gauge-h1" probability={rsi1h} />
+                        <p className="mt-2">RSI H1: {(rsi1h * 100).toFixed(2)}%</p>
+                        {/*
                         <button className="btn btn-primary" onClick={() => setChance(Math.random())}>
                             Обновить данные
                         </button>
+                        */}
                     </div>
                     <div className="col-md-6 mb-4">
-                        <h4>M15</h4>
-                        <TradingSignal probability={chance} />
-                        <p className="mt-2">Вероятность успеха: {(chance * 100).toFixed(2)}%</p>
+                        <h4>M1</h4>
+                        <TradingSignal id="gauge-m1" probability={rsi1m} />
+                        <p className="mt-2">RSI M15: {(rsi1m * 100).toFixed(2)}%</p>
+                        {/*
                         <button className="btn btn-primary" onClick={() => setChance(Math.random())}>
                             Обновить данные
                         </button>
+                        */}
                     </div>
                 </div>
 

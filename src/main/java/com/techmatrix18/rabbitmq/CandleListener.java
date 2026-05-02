@@ -4,12 +4,14 @@ import com.techmatrix18.config.RabbitConfig;
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.service.PriceStorage;
 import com.techmatrix18.trading.SignalService;
+import com.techmatrix18.trading.indicators.RsiIndicator;
 import com.techmatrix18.trading.series.LiveCandleSeries;
 import com.techmatrix18.websocket.MarketDataWebSocketServer;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +32,7 @@ public class CandleListener {
 
     // Используем LiveCandleSeries в качестве значения
     private final Map<String, LiveCandleSeries> seriesMap = new ConcurrentHashMap<>();
+    private final Map<String, RsiIndicator> rsiMap = new ConcurrentHashMap<>();
 
     public CandleListener(SignalService signalService, PriceStorage priceStorage, MarketDataWebSocketServer webSocketServer) {
         this.signalService = signalService;
@@ -43,32 +46,62 @@ public class CandleListener {
         // Получаем или создаем серию для конкретного символа
         String symbolId = candle.getSymbolId().toString();
         String symbolName = candle.getSymbol();
+        String timeframe = candle.getTimeframe();
+        String type = candle.getType();
 
-        // Обновляем цену для аналитики сделок в PriceStorage,
-        // используем цену закрытия свечи (closePrice) как текущую рыночную цену
-        priceStorage.updatePrice(symbolName, candle.getClose());
+        // 1. Теперь создаем LiveCandleSeries и задаем maxSize (например, 200)
+        String key = symbolName + "_" + timeframe;
+        LiveCandleSeries series = seriesMap.computeIfAbsent(key, k -> new LiveCandleSeries(200));
 
-        // ОТПРАВЛЯЕМ ЦЕНУ НА ФРОНТЕНД
-        // Можно отправить всю свечу целиком
-        webSocketServer.broadcast(candle);
-        // Или отправить специально созданный DTO, если фронт ждет другой формат
-        // webSocketServer.broadcast(new PriceUpdateDto(symbolId, candle.getClose()));
+        // debug
+        if ("HISTORY".equals(type)) {
+            System.out.println(">>> RECEIVED HISTORY: " + key + " | Current size: " + series.size());
+        } else {
+            System.out.println(">>> RECEIVED : " + key + " | Current size: " + series.size());
+        }
 
-        // Можно также вызвать комплексные правила
-        // А логику сигналов запускаем ТОЛЬКО при закрытии свечи (раз в минуту)
-        if (candle.isClosed()) {
-            // Теперь создаем LiveCandleSeries и задаем maxSize (например, 200)
-            LiveCandleSeries series = seriesMap.computeIfAbsent(symbolId, k -> new LiveCandleSeries(200));
-
-            // Добавляем свечу (метод addCandle сам удалит старую, если превышен лимит)
+        // 2. Наполнение серии (только финализированные данные)
+        if (candle.isClosed() || "HISTORY".equals(type)) {
             series.addCandle(candle);
+        }
 
-            // Запускаем поиск сигналов
-            System.out.println("Analyzing signals for: " + symbolName + " | Candles in series: " + series.size());
+        // 2. Берем индикатор (или создаем и прогреваем, если новый)
+        RsiIndicator rsiIndicator = rsiMap.computeIfAbsent(key, k -> {
+            RsiIndicator newRsi = new RsiIndicator();
+            // Пробуем прогреть, если в серии уже что-то есть
+            if (series.size() >= 14) {
+                newRsi.prepare(series);
+            }
+            return newRsi;
+        });
 
-            signalService.processSignals(symbolName, series);
-            // Вызываю метод анализа из SignalService - если хочу анализировать на основании цен раз в минуту (но по тикам актуальнее)
-            //signalService.analyzeMarket(symbolId, series);
+        // 3. Работа с живым потоком (не история)
+        if (!"HISTORY".equals(type)) {
+            double currentRsi = 50.0;
+
+            // Если свеча закрылась — запускаем тяжелую аналитику
+            // Добавляем проверку на размер серии ПЕРЕД расчетом
+            if (series.size() > 14) {
+                if (candle.isClosed()) {
+                    // Фиксируем значение в истории индикатора
+                    currentRsi = rsiIndicator.calculateIncremental(series);
+
+                    System.out.println("Analyzing signals [" + timeframe + "] for: " + symbolName + " | Size: " + series.size());
+                    signalService.processSignals(symbolName, series);
+                } else {
+                    // Просто считаем для плавной стрелки
+                    currentRsi = rsiIndicator.calculateTemporary(series, candle.getClose().doubleValue());
+                }
+            }
+
+            // Добавляем значение в объект перед отправкой (убедись, что поле есть в классе Candle)
+            candle.getIndicators().put("rsi", currentRsi / 100.0);
+
+            // Шлем в React для обновления графиков и спидометров
+            webSocketServer.broadcast(candle);
+
+            // Обновляем текущую цену в хранилище (только актуальные данные)
+            priceStorage.updatePrice(symbolName, candle.getClose());
         }
     }
 

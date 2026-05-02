@@ -111,7 +111,7 @@ public class RsiIndicator extends AbstractOscillator {
     // Метод для расчета RSI на основе текущей цены без изменения состояния (для оценки потенциального значения)
     // Используется для оценки RSI в реальном времени, когда новая свеча еще не добавлена в серию
     // для frontend отображения спидометра
-    public Double calculateTemporary(CandleSeries series, double currentClose) {
+    /*public Double calculateTemporary(CandleSeries series, double currentClose) {
         if (history.isEmpty()) return 50.0;
 
         double diff = currentClose - series.getClose(series.size() - 1);
@@ -123,6 +123,27 @@ public class RsiIndicator extends AbstractOscillator {
         double tempAvgLoss = (this.lastAvgLoss * (period - 1) + loss) / period;
 
         if (tempAvgLoss == 0) return 100.0;
+        double rs = tempAvgGain / tempAvgLoss;
+        return 100 - (100 / (1 + rs));
+    }*/
+
+    public Double calculateTemporary(CandleSeries series, double currentClose) {
+        // Если история пуста (не было прогрева), возвращаем нейтральное значение
+        if (series.size() < period) {
+            return 50.0;
+        }
+
+        // Вычисляем разницу между текущей ценой (тиком) и последней ЗАКРЫТОЙ свечой
+        double diff = currentClose - series.getClose(series.size() - 1);
+        double gain = Math.max(0, diff);
+        double loss = Math.max(0, -diff);
+
+        // Сглаживание Уайлдера на основе ПОСЛЕДНИХ СОХРАНЕННЫХ средних (из prepare/calculateIncremental)
+        double tempAvgGain = (this.lastAvgGain * (period - 1) + gain) / period;
+        double tempAvgLoss = (this.lastAvgLoss * (period - 1) + loss) / period;
+
+        if (tempAvgLoss == 0) return 100.0;
+
         double rs = tempAvgGain / tempAvgLoss;
         return 100 - (100 / (1 + rs));
     }

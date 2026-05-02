@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.techmatrix18.enums.Timeframe;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -69,6 +71,9 @@ public class Candle {
 
     @Transient
     private String symbol;
+
+    @Transient
+    private Map<String, Double> indicators = new HashMap<>();
 
     // constructs
 
@@ -172,6 +177,9 @@ public class Candle {
 
     public BigDecimal getFundingRate() { return fundingRate; }
     public void setFundingRate(BigDecimal fundingRate) { this.fundingRate = fundingRate; }
+
+    public Map<String, Double> getIndicators() { return indicators; }
+    public void setIndicators(Map<String, Double> indicators) { this.indicators = indicators; }
 
     @Override
     public boolean equals(Object o) {

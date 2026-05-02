@@ -83,26 +83,6 @@ public class WebSocketLauncher {
         };
     }
 
-    // ПРОГРЕВ ИСТОРИИ ДЛЯ ВСЕХ МОНЕТ ПЕРЕД ЗАПУСКОМ WEBSOCKET
-    // важно для корректной работы индикаторов с самого начала
-    /*@Bean
-    public CommandLineRunner startupWarmUpSymbols(CandlePublisher candlePublisher) {
-        return args -> {
-            // 1. Берем первый символ для инициализации (как у вас и было)
-            String firstSymbol = symbols.keySet().iterator().next();
-            // 2. Создаем ОДИН клиент для всех монет
-            BinanceKlineWebSocket client = new BinanceKlineWebSocket(firstSymbol, 1, "1m", candlePublisher);
-            // --- ДОБАВЛЯЕМ ЭТОТ БЛОК ---
-            System.out.println(">>> Инициализация индикаторов: загрузка истории для " + symbols.size() + " монет...");
-            // Прогреваем историю через REST API для всех 16 монет
-            client.warmUpAll(symbols.keySet());
-            System.out.println(">>> Индикаторы прогреты. Запуск WebSocket...");
-            // ---------------------------
-            // 3. Запускаем ОДНО комбинированное соединение
-            client.connectCombined(symbols);
-        };
-    }*/
-
     // ПРОГРЕВ ИСТОРИИ ДЛЯ ВСЕХ МОНЕТ ПЕРЕД ЗАПУСКОМ WEBSOCKET - 15m
     // важно для корректной работы индикаторов с самого начала
     @Bean
@@ -110,9 +90,9 @@ public class WebSocketLauncher {
         return args -> {
             BinanceKlineWebSocket clientM15 = new BinanceKlineWebSocket("BTC", 1, "15m", publisher);
             System.out.println(">>> Инициализация индикаторов 15m: загрузка истории для " + symbols.size() + " символа...");
-            clientM15.warmUpAll(symbols.keySet()); // Прогреет M15
+            clientM15.warmUpAll(symbols); // Прогреет M15 и публикация исторические данные в RabbitMQ для всех монет
             System.out.println(">>> Индикаторы прогреты 15m. Запуск WebSocket...");
-            clientM15.connectCombined(symbols);    // Слушает M15
+            clientM15.connectCombined(symbols); // Слушает M15 и публикует онлайн в RabbitMQ для всех монет
         };
     }
 
@@ -123,9 +103,9 @@ public class WebSocketLauncher {
         return args -> {
             BinanceKlineWebSocket clientH1 = new BinanceKlineWebSocket("BTC", 1, "1h", publisher);
             System.out.println(">>> Инициализация индикаторов 1h: загрузка истории для " + symbols.size() + " символа...");
-            clientH1.warmUpAll(symbols.keySet());  // Прогреет H1
+            clientH1.warmUpAll(symbols); // Прогреет H1 и публикация исторические данные в RabbitMQ для всех монет
             System.out.println(">>> Индикаторы прогреты 1h. Запуск WebSocket...");
-            clientH1.connectCombined(symbols);     // Слушает H1
+            clientH1.connectCombined(symbols); // Слушает H1 и публикует онлайн в RabbitMQ для всех монет
         };
     }
 
@@ -136,9 +116,9 @@ public class WebSocketLauncher {
         return args -> {
             BinanceKlineWebSocket clientD1 = new BinanceKlineWebSocket("BTC", 1, "1d", publisher);
             System.out.println(">>> Инициализация индикаторов 1d: загрузка истории для " + symbols.size() + " символа...");
-            clientD1.warmUpAll(symbols.keySet());  // Прогреет D1
+            clientD1.warmUpAll(symbols); // Прогреет D1 и публикация исторические данные в RabbitMQ для всех монет
             System.out.println(">>> Индикаторы прогреты 1d. Запуск WebSocket...");
-            clientD1.connectCombined(symbols);     // Слушает D1
+            clientD1.connectCombined(symbols); // Слушает D1 и публикует онлайн в RabbitMQ для всех монет
         };
     }
 

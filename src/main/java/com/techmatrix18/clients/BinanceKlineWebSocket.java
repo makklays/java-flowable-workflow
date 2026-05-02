@@ -1,6 +1,7 @@
 package com.techmatrix18.clients;
 
 import com.techmatrix18.model.Candle;
+import com.techmatrix18.rabbitmq.CandleListener;
 import com.techmatrix18.rabbitmq.CandlePublisher;
 import com.techmatrix18.trading.indicators.RsiIndicator;
 import com.techmatrix18.trading.series.LiveCandleSeries;
@@ -55,11 +56,6 @@ public class BinanceKlineWebSocket {
     private final Integer symbolId;
     private final String timeframe;
 
-    // Хранилище серий свечей для каждой монеты
-    private final Map<String, LiveCandleSeries> historyMap = new ConcurrentHashMap<>();
-    // Хранилище индикаторов RSI для каждой монеты
-    private final Map<String, RsiIndicator> rsiMap = new ConcurrentHashMap<>();
-
     private final CandlePublisher candlePublisher;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -100,25 +96,6 @@ public class BinanceKlineWebSocket {
                     }*/
 
                     if (candle != null) {
-                        // --- ЛОГИКА ИНДИКАТОРОВ ---
-                        String sym = candle.getSymbol().toUpperCase();
-                        RsiIndicator rsi = rsiMap.get(sym);
-                        LiveCandleSeries series = historyMap.get(sym);
-
-                        if (rsi != null && series != null) {
-                            double prob;
-                            if (candle.isClosed()) {
-                                // Свеча закрылась: сохраняем в историю и считаем финальный RSI
-                                series.addCandle(candle);
-                                prob = rsi.calculateIncremental(series) / 100.0;
-                            } else {
-                                // Свеча в процессе: считаем временный RSI для движения стрелки
-                                prob = rsi.calculateTemporary(series, candle.getClose().doubleValue()) / 100.0;
-                            }
-                            // Устанавливаем вероятность в объект Candle
-                            //candle.setProbability(prob); // нет такого свойства в классе
-                        }
-                        // --------------------------
                         candlePublisher.publishCandle(candle);
                     }
                 }
@@ -240,12 +217,12 @@ public class BinanceKlineWebSocket {
     public void connectCombined(Map<String, Integer> symbols) {
 
         String streams = symbols.keySet().stream()
-                .map(sym -> {
-                    // Теперь компилятор знает, что sym — это String
-                    String s = sym.toLowerCase().trim();
-                    return String.format("%s@kline_%s/%s@bookTicker", s, this.timeframe.toLowerCase(), s);
-                })
-                .collect(Collectors.joining("/"));
+            .map(sym -> {
+                // Теперь компилятор знает, что sym — это String
+                String s = sym.toLowerCase().trim();
+                return String.format("%s@kline_%s/%s@bookTicker", s, this.timeframe.toLowerCase(), s);
+            })
+            .collect(Collectors.joining("/"));
 
         String url = "wss://stream.binance.com:9443/stream?streams=" + streams;
 
@@ -292,23 +269,6 @@ public class BinanceKlineWebSocket {
                                 candle.setVolume(k.getBigDecimal("v"));
                                 candle.setIsClosed(k.getBoolean("x"));
 
-                                // >>> ЛОГИКА ИНДИКАТОРОВ <<<
-                                RsiIndicator rsi = rsiMap.get(currentSymbol);
-                                LiveCandleSeries series = historyMap.get(currentSymbol);
-
-                                if (rsi != null && series != null) {
-                                    double prob;
-                                    if (candle.isClosed()) {
-                                        // Финализируем свечу в истории и считаем инкрементально
-                                        series.addCandle(candle);
-                                        prob = rsi.calculateIncremental(series) / 100.0;
-                                    } else {
-                                        // Считаем временное значение для плавной анимации стрелки
-                                        prob = rsi.calculateTemporary(series, candle.getClose().doubleValue()) / 100.0;
-                                    }
-                                    //candle.setProbability(prob); // нет такого свойства в классе Candle
-                                }
-
                                 // Для kline вызываем метод отправки свечи
                                 candlePublisher.publishCandle(candle);
                             }
@@ -353,35 +313,27 @@ public class BinanceKlineWebSocket {
 
     // Метод для прогрева индикаторов при запуске приложения.
     // Принимает множество символов, для которых нужно загрузить историю и прогреть индикаторы
-    public void warmUpAll(Set<String> symbols) {
-        for (String symbol : symbols) {
-            String symKey = symbol.toUpperCase().trim();
+    public void warmUpAll(Map<String, Integer> symbols) {
+        for (Map.Entry<String, Integer> entry : symbols.entrySet()) {
+            String sym = entry.getKey();
+            Integer id = entry.getValue();
 
             // 1. Загружаем историю свечей через ваш метод REST API
             // Предполагаем, что fetchHistoryFromRest возвращает List<Candle>
-            List<Candle> historicalCandles = fetchHistoryFromRest(symKey, this.timeframe, 100);
+            List<Candle> historicalCandles = fetchHistoryFromRest(sym, this.timeframe, 100);
 
-            // 2. Инициализируем вашу серию свечей (LiveCandleSeries)
-            // maxSize = 200, как мы и планировали для буфера
-            LiveCandleSeries series = new LiveCandleSeries(200);
-
+            // 6. ПЕРЕДАЕМ ту же историю в слушатель (для сигналов)
             for (Candle c : historicalCandles) {
-                series.addCandle(c);
+                c.setSymbolId(id.longValue());
+                c.setSymbol(sym);
+                c.setTimeframe(this.timeframe); // ОБЯЗАТЕЛЬНО установите таймфрейм
+                c.setType("HISTORY");
+
+                System.out.println("Отправка истории: " + c.getSymbol() + " timeframe: " + this.timeframe + " Price: " + c.getClose());
+                candlePublisher.publishCandle(c);
             }
 
-            // 3. Создаем ваш экземпляр RsiIndicator
-            RsiIndicator rsi = new RsiIndicator();
-
-            // 4. Прогреваем индикатор историческими данными
-            // Метод prepare внутри заполнит history и установит lastAvgGain/Loss
-            rsi.prepare(series);
-
-            // 5. Сохраняем в ваши Map (в полях класса)
-            // historyMap хранит серии, rsiMap хранит индикаторы
-            this.historyMap.put(symKey, series);
-            this.rsiMap.put(symKey, rsi);
-
-            System.out.println("Прогрев завершен для: " + symKey + " [" + timeframe + "]");
+            System.out.println("Прогрев завершен для: " + sym + " [" + timeframe + "]");
         }
     }
 

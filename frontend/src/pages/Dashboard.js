@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import TradingSignal from '../components/TradingSignal';
 
 const Dashboard = () => {
 
@@ -16,6 +17,10 @@ const Dashboard = () => {
         toast.success("Библиотека работает!");
     };
 
+    // Вероятность может приходить из Java бэкенда.
+    // 0.85 означает 85% вероятности "Покупать"
+    const [chance, setChance] = useState(0.85);
+
     return (
         <div className="row">
             <div className="col-md-12">
@@ -23,7 +28,35 @@ const Dashboard = () => {
                 <p>Здесь будут графики продаж...</p>
 
                 <div className="row">
-                    <div className="col-md-4 mb-4">
+                    <div className="col-md-6"><h3 style={{ color: '#03aac7' }}>SOLUSDT</h3></div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6 mb-4">
+                        <h4>D1</h4>
+                        <TradingSignal probability={chance} />
+                        <p className="mt-2">Вероятность успеха: {(chance * 100).toFixed(2)}%</p>
+                        <button className="btn btn-primary" onClick={() => setChance(Math.random())}>
+                            Обновить данные
+                        </button>
+                    </div>
+                    <div className="col-md-6 mb-4">
+                        <h4>M15</h4>
+                        <TradingSignal probability={chance} />
+                        <p className="mt-2">Вероятность успеха: {(chance * 100).toFixed(2)}%</p>
+                        <button className="btn btn-primary" onClick={() => setChance(Math.random())}>
+                            Обновить данные
+                        </button>
+                    </div>
+                </div>
+
+                <hr className="my-4" />
+
+                <div className="row">
+                    <div className="col-md-6"><h3 style={{ color: '#03aac7' }}>TRXUSDT</h3></div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6 mb-4">
+                        <h4>D1</h4>
                         <div className="card shadow-sm text-white border-primary">
                             <div className="card-body text-center">
                                 <h6 className="card-title text-info mb-3">Рыночный сантимент</h6>
@@ -42,12 +75,21 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
+                        <div className="mt-4">
+                            <button className="btn btn-primary" onClick={notifySuccess}>Проверить тост</button>
+                        </div>
+                    </div>
+
+                    <div className="col-md-6 mb-4">
+                        <h4>M15</h4>
+                        <TradingSignal probability={chance} />
+                        <p className="mt-2">Вероятность успеха: {chance * 100}%</p>
+                        <button className="btn btn-primary" onClick={() => setChance(Math.random())}>
+                            Обновить данные
+                        </button>
                     </div>
                 </div>
 
-                <div>
-                    <button className="btn btn-primary" onClick={notifySuccess}>Проверить тост</button>
-                </div>
             </div>
         </div>
     );

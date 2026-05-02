@@ -38,6 +38,8 @@ npm install recharts --legacy-peer-deps
 npm install @uiw/react-heat-map --legacy-peer-deps
 // установить плеер для видео
 npm install react-player --legacy-peer-deps
+// установить график как спидометр
+npm install react-gauge-chart --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

@@ -2,18 +2,22 @@ package com.techmatrix18.clients;
 
 import com.techmatrix18.model.Candle;
 import com.techmatrix18.rabbitmq.CandlePublisher;
+import com.techmatrix18.trading.indicators.RsiIndicator;
+import com.techmatrix18.trading.series.LiveCandleSeries;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +55,11 @@ public class BinanceKlineWebSocket {
     private final Integer symbolId;
     private final String timeframe;
 
+    // Хранилище серий свечей для каждой монеты
+    private final Map<String, LiveCandleSeries> historyMap = new ConcurrentHashMap<>();
+    // Хранилище индикаторов RSI для каждой монеты
+    private final Map<String, RsiIndicator> rsiMap = new ConcurrentHashMap<>();
+
     private final CandlePublisher candlePublisher;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -77,7 +86,7 @@ public class BinanceKlineWebSocket {
                     Candle candle = parseMessage(message);
 
                     // 2. Если свеча закрыта (isFinal), отправляем её в менеджер
-                    if (candle != null ) {  // && candle.isClosed() - если нужно только закрытые свечи
+                    /*if (candle != null ) {  // && candle.isClosed() - если нужно только закрытые свечи
                         // Sending an event to RabbitMQ
                         candlePublisher.publishCandle(candle);
 
@@ -85,9 +94,32 @@ public class BinanceKlineWebSocket {
                         String openTimeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(candle.getOpenTime()), ZoneId.systemDefault()).format(formatter);
                         String closeTimeStr = LocalDateTime.ofInstant(Instant.ofEpochMilli(candle.getCloseTime()), ZoneId.systemDefault()).format(formatter);
 
-                        /*System.out.println(String.format("Свеча: %s – %s | O:%.2f H:%.2f L:%.2f C:%.2f V:%.2f Final:%s",
-                                openTimeStr, closeTimeStr, candle.getOpen(), candle.getHigh(),
-                                candle.getLow(), candle.getClose(), candle.getVolume(), candle.isClosed()));*/
+                        //System.out.println(String.format("Свеча: %s – %s | O:%.2f H:%.2f L:%.2f C:%.2f V:%.2f Final:%s",
+                        //        openTimeStr, closeTimeStr, candle.getOpen(), candle.getHigh(),
+                        //        candle.getLow(), candle.getClose(), candle.getVolume(), candle.isClosed()));
+                    }*/
+
+                    if (candle != null) {
+                        // --- ЛОГИКА ИНДИКАТОРОВ ---
+                        String sym = candle.getSymbol().toUpperCase();
+                        RsiIndicator rsi = rsiMap.get(sym);
+                        LiveCandleSeries series = historyMap.get(sym);
+
+                        if (rsi != null && series != null) {
+                            double prob;
+                            if (candle.isClosed()) {
+                                // Свеча закрылась: сохраняем в историю и считаем финальный RSI
+                                series.addCandle(candle);
+                                prob = rsi.calculateIncremental(series) / 100.0;
+                            } else {
+                                // Свеча в процессе: считаем временный RSI для движения стрелки
+                                prob = rsi.calculateTemporary(series, candle.getClose().doubleValue()) / 100.0;
+                            }
+                            // Устанавливаем вероятность в объект Candle
+                            //candle.setProbability(prob); // нет такого свойства в классе
+                        }
+                        // --------------------------
+                        candlePublisher.publishCandle(candle);
                     }
                 }
                 @Override
@@ -260,6 +292,23 @@ public class BinanceKlineWebSocket {
                                 candle.setVolume(k.getBigDecimal("v"));
                                 candle.setIsClosed(k.getBoolean("x"));
 
+                                // >>> ЛОГИКА ИНДИКАТОРОВ <<<
+                                RsiIndicator rsi = rsiMap.get(currentSymbol);
+                                LiveCandleSeries series = historyMap.get(currentSymbol);
+
+                                if (rsi != null && series != null) {
+                                    double prob;
+                                    if (candle.isClosed()) {
+                                        // Финализируем свечу в истории и считаем инкрементально
+                                        series.addCandle(candle);
+                                        prob = rsi.calculateIncremental(series) / 100.0;
+                                    } else {
+                                        // Считаем временное значение для плавной анимации стрелки
+                                        prob = rsi.calculateTemporary(series, candle.getClose().doubleValue()) / 100.0;
+                                    }
+                                    //candle.setProbability(prob); // нет такого свойства в классе Candle
+                                }
+
                                 // Для kline вызываем метод отправки свечи
                                 candlePublisher.publishCandle(candle);
                             }
@@ -300,6 +349,81 @@ public class BinanceKlineWebSocket {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Метод для прогрева индикаторов при запуске приложения.
+    // Принимает множество символов, для которых нужно загрузить историю и прогреть индикаторы
+    public void warmUpAll(Set<String> symbols) {
+        for (String symbol : symbols) {
+            String symKey = symbol.toUpperCase().trim();
+
+            // 1. Загружаем историю свечей через ваш метод REST API
+            // Предполагаем, что fetchHistoryFromRest возвращает List<Candle>
+            List<Candle> historicalCandles = fetchHistoryFromRest(symKey, this.timeframe, 100);
+
+            // 2. Инициализируем вашу серию свечей (LiveCandleSeries)
+            // maxSize = 200, как мы и планировали для буфера
+            LiveCandleSeries series = new LiveCandleSeries(200);
+
+            for (Candle c : historicalCandles) {
+                series.addCandle(c);
+            }
+
+            // 3. Создаем ваш экземпляр RsiIndicator
+            RsiIndicator rsi = new RsiIndicator();
+
+            // 4. Прогреваем индикатор историческими данными
+            // Метод prepare внутри заполнит history и установит lastAvgGain/Loss
+            rsi.prepare(series);
+
+            // 5. Сохраняем в ваши Map (в полях класса)
+            // historyMap хранит серии, rsiMap хранит индикаторы
+            this.historyMap.put(symKey, series);
+            this.rsiMap.put(symKey, rsi);
+
+            System.out.println("Прогрев завершен для: " + symKey + " [" + timeframe + "]");
+        }
+    }
+
+    // Метод для получения исторических данных через REST API Binance
+    // Параметры: symbol (например, "BTCUSDT"), interval (например, "1m"), limit (кол-во свечей)
+    // Используется для начального прогрева индикаторов при запуске приложения
+    private List<Candle> fetchHistoryFromRest(String symbol, String interval, int limit) {
+        List<Candle> candles = new ArrayList<>();
+        // Binance REST API URL
+        String url = String.format("https://api.binance.com/api/v3/klines?symbol=%s&interval=%s&limit=%d",
+            symbol.toUpperCase(), interval, limit
+        );
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.getForObject(url, String.class);
+
+            if (response == null) return candles;
+
+            JSONArray jsonArray = new JSONArray(response);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONArray k = jsonArray.getJSONArray(i);
+                Candle candle = new Candle();
+
+                candle.setSymbol(symbol);
+                candle.setOpenTime(k.getLong(0));
+                candle.setOpen(new BigDecimal(k.getString(1)));
+                candle.setHigh(new BigDecimal(k.getString(2)));
+                candle.setLow(new BigDecimal(k.getString(3)));
+                candle.setClose(new BigDecimal(k.getString(4)));
+                candle.setVolume(new BigDecimal(k.getString(5)));
+                candle.setCloseTime(k.getLong(6));
+                candle.setIsClosed(true);
+
+                candles.add(candle);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Ошибка REST-запроса к Binance (" + symbol + "): " + e.getMessage());
+        }
+        return candles;
     }
 }
 

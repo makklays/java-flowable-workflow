@@ -25,6 +25,7 @@ import "flag-icons/css/flag-icons.min.css";
 
 // Флаги для языков
 import Header from './Header';
+import MySiteHeader from './MySiteHeader';
 import { Outlet } from 'react-router-dom';
 
 const MainLayout = () => {
@@ -207,12 +208,17 @@ const MainLayout = () => {
         </aside>
     );
 
+    const MySiteSidebar = () => (
+        <aside></aside>
+    );
+
     // Реестр всех доступных сайдбаров
     const sidebarRegistry = {
         'admin': <AdminSidebar />,
         'user_bank': <BankSidebar />,
         //'manager': <ManagerSidebar />,
         //'trader': <TraderSidebar />,
+        default: <MySiteSidebar />
     };
 
     // Реестр тем оформления (классов для тега main)
@@ -224,7 +230,7 @@ const MainLayout = () => {
     };
 
     // Выбираем нужный сайдбар или ставим дефолтный (например, админский)
-    const CurrentSidebar = sidebarRegistry[role] || <AdminSidebar />;
+    const CurrentSidebar = sidebarRegistry[role] || <MySiteSidebar />;
     const currentTheme = themeRegistry[role] || 'bg-white';
 
     if (role == 'user_bank') {
@@ -267,7 +273,7 @@ const MainLayout = () => {
                 </footer>
             </div>
         );
-    } else {
+    } else if (role == 'admin') {
         return (
             <div className="d-flex flex-column vh-100">
                 <Header />
@@ -282,6 +288,16 @@ const MainLayout = () => {
                         </Container>
                     </main>
                 </div>
+            </div>
+        );
+    } else {
+        return (
+            <div className="d-flex flex-column vh-100">
+                <MySiteHeader />
+                {/* Просто вставляем переменную */}
+                {CurrentSidebar}
+
+                <Outlet />
             </div>
         );
     }

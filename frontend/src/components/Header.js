@@ -3,7 +3,7 @@ import { Navbar, Container, NavDropdown, Button, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext'; // Подключаем контекст
-import myLogo from '../assets/fl-logo1.png';
+import myLogo from '../assets/img/fl-logo1.png';
 
 const Header = () => {
     const { t, i18n } = useTranslation();

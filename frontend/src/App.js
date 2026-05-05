@@ -7,11 +7,25 @@ import { AppProvider } from './context/AppContext';
 import { PricesProvider } from './context/PricesContext';
 import { SignalsProvider } from './context/SignalsContext';
 
-import myLogo from './assets/fl-logo1.png';
+import myLogo from './assets/img/fl-logo1.png';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Импорты ваших страниц (убедитесь, что пути верны)
+import First from './pages/my-site/First';
+import AboutUs from './pages/my-site/AboutUs';
+import WeMaking from './pages/my-site/WeMaking';
+import HowWork from './pages/my-site/HowWork';
+import Articles from './pages/my-site/Articles';
+import ArticleView from './pages/my-site/ArticleView';
+import OurContacts from './pages/my-site/OurContacts';
+import LandingPage from './pages/my-site/services/LandingPage';
+import CorporateSite from './pages/my-site/services/CorporateSite';
+import OnlineStore from './pages/my-site/services/OnlineStore';
+import ApiService from './pages/my-site/services/ApiService';
+import SiteSystem from './pages/my-site/services/SiteSystem';
+import WebPortal from './pages/my-site/services/WebPortal';
+
 import Dashboard from './pages/Dashboard';
 
 import Contacts from './pages/contacts/Contacts';
@@ -151,7 +165,23 @@ function App() {
                             <Routes>
                                 {/* Главная обертка — MainLayout управляет дизайном на основе роли */}
                                 <Route element={<MainLayout />}>
-                                    <Route path="/" element={<Dashboard />} />
+                                    {/* My Site */}
+                                    <Route path="/" element={<First />} />
+                                    <Route path="/about-us" element={<AboutUs />} />
+                                    <Route path="/we-making" element={<WeMaking />} />
+                                    <Route path="/development-site-store" element={<HowWork />} />
+                                    <Route path="/articles" element={<Articles />} />
+                                    <Route path="/articles/:slug" element={<ArticleView />} />
+                                    <Route path="/our-contacts" element={<OurContacts />} />
+
+                                    <Route path="/landing-page" element={<LandingPage />} />
+                                    <Route path="/corporate-site" element={<CorporateSite />} />
+                                    <Route path="/online-store" element={<OnlineStore />} />
+                                    <Route path="/api-service" element={<ApiService />} />
+                                    <Route path="/site-system" element={<SiteSystem />} />
+                                    <Route path="/web-portal" element={<WebPortal />} />
+
+                                    <Route path="/dashboard" element={<Dashboard />} />
 
                                     <Route path="/contacts" element={<Contacts />} />
                                     <Route path="/contacts/add" element={<ContactAdd />} />

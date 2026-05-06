@@ -19,20 +19,22 @@ body {
     height: 56px;
     padding: 12px 0;
 }
-.navbar-brand.active {
+.dev-navbar-link.active {
     background-color: #808080;
+    color: #FFF !important;
 }
-.nav-item.active {
-    background-color: #808080;
-}
+
 .dropdown-menu {
     background-color: #333333;
     color: #FFF;
     font-size: 19px;
     border: 0;
     border-radius: unset;
-    margin: 0;
+    margin: 0 !important;
     padding: 0;
+}
+.navbar-expand .navbar-nav .dropdown-menu {
+    min-width: 63px;
 }
 .mlimg {
     height: 21px;
@@ -279,11 +281,11 @@ a::-moz-selection, li::-moz-selection, div::-moz-selection, b::-moz-selection, i
 }
 .nav-link {
     display: block;
-    padding: 12px 1rem;
+    padding: 12px 1rem !important;
 }
 .navbar-light .navbar-nav .active > .nav-link {
     /*color: #46bf00;*/
-    text-decoration: underline;
+    /*text-decoration: underline;*/
 }
 .dev-navbar a.nav-link.dev-navbar-link:hover {
     box-shadow: 0px 2px 0px #46bf00 inset;
@@ -715,6 +717,10 @@ div.bg-green > h1 {
     color: #FFF;
     background-color: #46bf00;
 }
+.green-bk.active {
+  color: #FFF;
+  background-color: #808080;
+}
 
 img.kromka {
     /*border: 1px solid #cfcfcf;
@@ -725,9 +731,9 @@ img.kromka {
     color: #FFF;
     background-color: #808080;
 }
-.nav-link.active {
-    color: #FFF;
-    background-color: #46bf00;
+.navbar-nav .nav-link.active {
+    color: #FFF !important;
+    background-color: #808080 !important;
 }
 /*.display-3 {
     background-color: ;
@@ -834,3 +840,12 @@ img.kromka {
     overflow: hidden;
     float: left;
 }
+
+.navbar {
+    margin-bottom: -1.5px !important;
+}
+.navbar-collapse {
+    margin-top: -1px !important;
+    margin-bottom: -1px !important;
+}
+

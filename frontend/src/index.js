@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import './i18n';
 import { Provider } from 'react-redux'; // 1. Импортируем Provider
 import { store } from './store';  // 2. Импортируем ваше созданное хранилище
+import './styles/main10.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
 
 // context для глобального состояния
@@ -164,102 +164,102 @@ function App() {
                         <Router>
                             <Routes>
                                 {/* Главная обертка — MainLayout управляет дизайном на основе роли */}
-                                <Route element={<MainLayout />}>
+                                <Route path="/:lng/" element={<MainLayout />}>
                                     {/* My Site */}
-                                    <Route path="/" element={<First />} />
-                                    <Route path="/about-us" element={<AboutUs />} />
-                                    <Route path="/we-making" element={<WeMaking />} />
-                                    <Route path="/development-site-store" element={<HowWork />} />
-                                    <Route path="/articles" element={<Articles />} />
-                                    <Route path="/articles/:slug" element={<ArticleView />} />
-                                    <Route path="/our-contacts" element={<OurContacts />} />
+                                    <Route index element={<First />} />
+                                    <Route path="about-us" element={<AboutUs />} />
+                                    <Route path="we-making" element={<WeMaking />} />
+                                    <Route path="development-site-store" element={<HowWork />} />
+                                    <Route path="articles" element={<Articles />} />
+                                    <Route path="articles/:slug" element={<ArticleView />} />
+                                    <Route path="our-contacts" element={<OurContacts />} />
 
-                                    <Route path="/landing-page" element={<LandingPage />} />
-                                    <Route path="/corporate-site" element={<CorporateSite />} />
-                                    <Route path="/online-store" element={<OnlineStore />} />
-                                    <Route path="/api-service" element={<ApiService />} />
-                                    <Route path="/site-system" element={<SiteSystem />} />
-                                    <Route path="/web-portal" element={<WebPortal />} />
+                                    <Route path="landing-page" element={<LandingPage />} />
+                                    <Route path="corporate-site" element={<CorporateSite />} />
+                                    <Route path="online-store" element={<OnlineStore />} />
+                                    <Route path="api-service" element={<ApiService />} />
+                                    <Route path="site-system" element={<SiteSystem />} />
+                                    <Route path="web-portal" element={<WebPortal />} />
 
-                                    <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="dashboard" element={<Dashboard />} />
 
-                                    <Route path="/contacts" element={<Contacts />} />
-                                    <Route path="/contacts/add" element={<ContactAdd />} />
-                                    <Route path="/contacts/:id/edit" element={<ContactEdit />} />
-                                    <Route path="/contacts/:id" element={<ContactView />} />
+                                    <Route path="contacts" element={<Contacts />} />
+                                    <Route path="contacts/add" element={<ContactAdd />} />
+                                    <Route path="contacts/:id/edit" element={<ContactEdit />} />
+                                    <Route path="contacts/:id" element={<ContactView />} />
 
-                                    <Route path="/activities" element={<Activities />} />
-                                    <Route path="/activities/add" element={<ActivityAdd />} />
-                                    <Route path="/activities/:id/edit" element={<ActivityEdit />} />
-                                    <Route path="/activities/:id" element={<ActivityView />} />
+                                    <Route path="activities" element={<Activities />} />
+                                    <Route path="activities/add" element={<ActivityAdd />} />
+                                    <Route path="activities/:id/edit" element={<ActivityEdit />} />
+                                    <Route path="activities/:id" element={<ActivityView />} />
 
-                                    <Route path="/clients" element={<Clients />} />
-                                    <Route path="/clients/add" element={<ClientAdd />} />
-                                    <Route path="/clients/:id/edit" element={<ClientEdit />} />
-                                    <Route path="/clients/:id" element={<ClientView />} />
+                                    <Route path="clients" element={<Clients />} />
+                                    <Route path="clients/add" element={<ClientAdd />} />
+                                    <Route path="clients/:id/edit" element={<ClientEdit />} />
+                                    <Route path="clients/:id" element={<ClientView />} />
 
-                                    <Route path="/deals" element={<Deals />} />
-                                    <Route path="/deals/add" element={<DealAdd />} />
-                                    <Route path="/deals/:id/edit" element={<DealEdit />} />
-                                    <Route path="/deals/:id" element={<DealView />} />
+                                    <Route path="deals" element={<Deals />} />
+                                    <Route path="deals/add" element={<DealAdd />} />
+                                    <Route path="deals/:id/edit" element={<DealEdit />} />
+                                    <Route path="deals/:id" element={<DealView />} />
 
-                                    <Route path="/tasks" element={<Tasks />} />
-                                    <Route path="/tasks/:taskId/form" element={<TaskFormPage />} />
-                                    <Route path="/history" element={<History />} />
-                                    <Route path="/calendar" element={<Calendar />} />
+                                    <Route path="tasks" element={<Tasks />} />
+                                    <Route path="tasks/:taskId/form" element={<TaskFormPage />} />
+                                    <Route path="history" element={<History />} />
+                                    <Route path="calendar" element={<Calendar />} />
 
-                                    <Route path="/symbols" element={<Symbols />} />
-                                    <Route path="/symbols/:id" element={<SymbolView />} />
+                                    <Route path="symbols" element={<Symbols />} />
+                                    <Route path="symbols/:id" element={<SymbolView />} />
 
-                                    <Route path="/candles" element={<Candles />} />
-                                    <Route path="/candles/:id" element={<CandleView />} />
+                                    <Route path="candles" element={<Candles />} />
+                                    <Route path="candles/:id" element={<CandleView />} />
 
-                                    <Route path="/departments" element={<Departments />} />
-                                    <Route path="/departments/add" element={<DepartmentAdd />} />
-                                    <Route path="/departments/:id/edit" element={<DepartmentEdit />} />
-                                    <Route path="/departments/:id" element={<DepartmentView />} />
+                                    <Route path="departments" element={<Departments />} />
+                                    <Route path="departments/add" element={<DepartmentAdd />} />
+                                    <Route path="departments/:id/edit" element={<DepartmentEdit />} />
+                                    <Route path="departments/:id" element={<DepartmentView />} />
 
-                                    <Route path="/positions" element={<Positions />} />
-                                    <Route path="/positions/add" element={<PositionAdd />} />
-                                    <Route path="/positions/:id" element={<PositionView />} />
-                                    <Route path="/positions/:id/edit" element={<PositionEdit />} />
+                                    <Route path="positions" element={<Positions />} />
+                                    <Route path="positions/add" element={<PositionAdd />} />
+                                    <Route path="positions/:id" element={<PositionView />} />
+                                    <Route path="positions/:id/edit" element={<PositionEdit />} />
 
-                                    <Route path="/roles" element={<Roles />} />
-                                    <Route path="/roles/add" element={<RoleAdd />} />
-                                    <Route path="/roles/:id/edit" element={<RoleEdit />} />
-                                    <Route path="/roles/:id" element={<RoleView />} />
+                                    <Route path="roles" element={<Roles />} />
+                                    <Route path="roles/add" element={<RoleAdd />} />
+                                    <Route path="roles/:id/edit" element={<RoleEdit />} />
+                                    <Route path="roles/:id" element={<RoleView />} />
 
-                                    <Route path="/users" element={<Users />} />
-                                    <Route path="/users/add" element={<UserAdd />} />
-                                    <Route path="/users/:id/edit" element={<UserEdit />} />
-                                    <Route path="/users/:id" element={<UserView />} />
+                                    <Route path="users" element={<Users />} />
+                                    <Route path="users/add" element={<UserAdd />} />
+                                    <Route path="users/:id/edit" element={<UserEdit />} />
+                                    <Route path="users/:id" element={<UserView />} />
 
-                                    <Route path="/trading" element={<Trading />} />
-                                    <Route path="/trade/:id" element={<TradeDetails />} />
-                                    <Route path="/backtest" element={<Backtest />} />
-                                    <Route path="/grafics" element={<Grafics />} />
+                                    <Route path="trading" element={<Trading />} />
+                                    <Route path="trade/:id" element={<TradeDetails />} />
+                                    <Route path="backtest" element={<Backtest />} />
+                                    <Route path="grafics" element={<Grafics />} />
 
-                                    <Route path="/settings" element={<Settings />} />
-                                    <Route path="/about" element={<About />} />
-                                    <Route path="/login" element={<Login />} />
-                                    <Route path="/learn" element={<Learn />} />
-                                    <Route path="/learn2" element={<Learn2 />} />
+                                    <Route path="settings" element={<Settings />} />
+                                    <Route path="about" element={<About />} />
+                                    <Route path="login" element={<Login />} />
+                                    <Route path="learn" element={<Learn />} />
+                                    <Route path="learn2" element={<Learn2 />} />
 
                                     {/* Pages for role: user_bank */}
-                                    <Route path="/bank/accounts" element={<Accounts />} />
-                                    <Route path="/bank/transfers" element={<Transfers />} />
-                                    <Route path="/bank/payments" element={<Payments />} />
-                                    <Route path="/bank/credits" element={<Credits />} />
-                                    <Route path="/bank/applications" element={<Applications />} />
-                                    <Route path="/bank/investments" element={<Investments />} />
-                                    <Route path="/bank/forex" element={<Forex />} />
-                                    <Route path="/bank/stock-market" element={<StockMarket />} />
-                                    <Route path="/bank/advisor" element={<Advisor />} />
+                                    <Route path="bank/accounts" element={<Accounts />} />
+                                    <Route path="bank/transfers" element={<Transfers />} />
+                                    <Route path="bank/payments" element={<Payments />} />
+                                    <Route path="bank/credits" element={<Credits />} />
+                                    <Route path="bank/applications" element={<Applications />} />
+                                    <Route path="bank/investments" element={<Investments />} />
+                                    <Route path="bank/forex" element={<Forex />} />
+                                    <Route path="bank/stock-market" element={<StockMarket />} />
+                                    <Route path="bank/advisor" element={<Advisor />} />
 
                                     <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
                                 </Route>
 
-                                <Route path="*" element={<div className="text-center mt-5"><h3>404: Page Not Found</h3></div>} />
+                                <Route path="*" element={<Navigate to="/es" replace />} />
                             </Routes>
                         </Router>
                     </SignalsProvider>

@@ -22,10 +22,10 @@ const Jumbotron = () => {
     const navigate = useNavigate();
 
     return (
-        <div class="jumbotron jumbotron-fluid img-container">
-            <div class="container">
-                <h1 class="font-development">Desarrollo de sitio web</h1>
-                <div class="lead bg-green"><span>Nosotros TechMatrix18. Ayudamos a realizar la idea.</span></div>
+        <div className="jumbotron jumbotron-fluid img-container">
+            <div className="container">
+                <h1 className="font-development">Desarrollo de sitio web</h1>
+                <div className="lead bg-green"><span>Nosotros TechMatrix18. Ayudamos a realizar la idea.</span></div>
             </div>
         </div>
     );

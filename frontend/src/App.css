@@ -53,7 +53,7 @@ ul.dropdown-menu[aria-labelledby="lang-drop"] {
 
 /* - - - - - - */
 a {
-    color: #03aac7 !important;
+    color: #03aac7 ;
 }
 .btn-success, .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success:link {
     background-color: #28a473 !important;
@@ -146,9 +146,9 @@ body[data-theme='dark'] .text-dark.active {
     color: #000 !important;
 }
 
-a.dropdown-toggle.nav-link {
-    color: #03aac7 !important;
-}
+/*a.dropdown-toggle.nav-link {
+    color: #03aac7 ;
+}*/
 .text-primary {
     color: #03aac7 !important;
 }

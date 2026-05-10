@@ -53,12 +53,12 @@ const Footer = () => {
             <div className="container">
                 <div className="row" style={{ padding: '40px 0 0 0' }} >
                     <div className="col-md-4 col-sm-6 col-12">
-                        <h4>El equipo</h4>
-                        <div><Link to={`/${lng}/about-us`} className="a-green-xl">Nosotros</Link></div>
-                        <div><Link to={`/${lng}/we-making`} className="a-green-xl">¿Como trabajamos?</Link></div>
-                        <div><Link to={`/${lng}/development-site-store`} className="a-green-xl">¿Que estamos haciendo?</Link></div>
-                        <div><Link to={`/${lng}/articles`} className="a-green-xl">Artículos</Link></div>
-                        <div><Link to={`/${lng}/our-contacts`} className="a-green-xl">Contactos</Link></div>
+                        <h4>{t('team')}</h4>
+                        <div><Link to={`/${lng}/about-us`} className="a-green-xl">{t('about_us')}</Link></div>
+                        <div><Link to={`/${lng}/we-making`} className="a-green-xl">{t('how_work')}</Link></div>
+                        <div><Link to={`/${lng}/development-site-store`} className="a-green-xl">{t('what_doing')}</Link></div>
+                        <div><Link to={`/${lng}/articles`} className="a-green-xl">{t('articles')}</Link></div>
+                        <div><Link to={`/${lng}/our-contacts`} className="a-green-xl">{t('contacts')}</Link></div>
                         <div style={{ padding: '20px 0 0 0' }}>
                             <h4>Idioma</h4>
                             <span onClick={() => changeLanguageAndRedirect('es')} style={{ cursor: 'pointer' }}>
@@ -80,13 +80,13 @@ const Footer = () => {
                         <br />
                     </div>
                     <div className="col-md-4 col-sm-6 col-12">
-                        <h4>Desarrollo</h4>
-                        <div><Link to={`/${lng}/landing-page`} className="a-green-xl">Página de aterrizaje</Link></div>
-                        <div><Link to={`/${lng}/online-store`} className="a-green-xl">Tienda en línea</Link></div>
-                        <div><Link to={`/${lng}/corporate-site`} className="a-green-xl">Sitio web corporativo</Link></div>
-                        <div><Link to={`/${lng}/api-service`} className="a-green-xl">Servicio web y API para aplicación móvil</Link></div>
-                        <div><Link to={`/${lng}/web-portal`} className="a-green-xl">Portal web</Link></div>
-                        <div><Link to={`/${lng}/site-system`} className="a-green-xl">Sistema de sitio web</Link></div>
+                        <h4>{t('development')}</h4>
+                        <div><Link to={`/${lng}/landing-page`} className="a-green-xl">{t('landing_page')}</Link></div>
+                        <div><Link to={`/${lng}/online-store`} className="a-green-xl">{t('online_store')}</Link></div>
+                        <div><Link to={`/${lng}/corporate-site`} className="a-green-xl">{t('corporate_website')}</Link></div>
+                        <div><Link to={`/${lng}/api-service`} className="a-green-xl">{t('service_api')}</Link></div>
+                        <div><Link to={`/${lng}/web-portal`} className="a-green-xl">{t('web_portal')}</Link></div>
+                        <div><Link to={`/${lng}/site-system`} className="a-green-xl">{t('site_system')}</Link></div>
                         <div style={{ padding:'20px 0 0 0' }} >
                             <a href="https://www.facebook.com/techmatrix18/" style={{ color:'#FFFFFF', textDecoration:'none' }} target="_blank">
                                 <img src="/img/fb-icon.png" style={{ width:'25px' }} alt="Facebook" />
@@ -98,16 +98,18 @@ const Footer = () => {
                         <br />
                     </div>
                     <div className="col-md-4">
-                        <h4>Precio</h4>
-                        <div><Link to={`/${lng}/download-price`} className="a-green-xl">Precio de descarga</Link></div>
-                        <div><Link to={`/${lng}/online-brief`} className="a-green-xl">Complete un breve en línea</Link></div>
-                        <div><Link to={`/${lng}/brief`} className="a-green-xl">Descargar resumen de development</Link></div>
+                        <h4>{t('price')}</h4>
+                        <div><Link to={`/${lng}/download-price`} className="a-green-xl">{t('download_price')}</Link></div>
+                        <div><Link to={`/${lng}/online-brief`} className="a-green-xl">{t('brief_online')}</Link></div>
+                        <div><Link to={`/${lng}/brief`} className="a-green-xl">{t('brief')}</Link></div>
                         <br />
+                        {/*
                         <div><Link to={`/${lng}/test-php`} className="a-green-xl">Prueba PHP</Link></div>
                         <div><Link to={`/${lng}/cat-o-dog`} className="a-green-xl">Gattos o perros</Link></div>
                         <div><Link to={`/${lng}/wait`} className="a-green-xl">Te espero</Link></div>
                         <div><Link to={`/${lng}/wait2`} className="a-green-xl">Esperando una cita</Link></div>
-                        <div><Link to={`/${lng}/seo-words`} className="a-green-xl">Word Count (SEO)</Link></div>
+                        */}
+                        <div><Link to={`/${lng}/seo-words`} className="a-green-xl">{t('seo_words')}</Link></div>
                         {/* Sitemap оставляем обычным тегом <a>, чтобы браузер открывал сам файл */}
                         <div><a href="/sitemap.xml" className="a-green-xl" target="_blank" rel="noopener noreferrer">Sitemap</a></div>
                         <br />

@@ -4,7 +4,6 @@ import { useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext'; // Подключаем контекст
 import myLogo from '../assets/img/fl-logo1.png';
-import '../styles/main10.css';
 
 const MySiteHeader = () => {
     const { t, i18n } = useTranslation();
@@ -98,7 +97,7 @@ const MySiteHeader = () => {
                         onClick={closeMenu}
                         className={`nav-link dev-navbar-link px-3 ${isRouteActive('/about-us') ? 'active' : ''}`}
                     >
-                        Nosotros
+                        {t('about_us')}
                     </Nav.Link>
                     <Nav.Link
                         as={Link}
@@ -106,7 +105,7 @@ const MySiteHeader = () => {
                         onClick={closeMenu}
                         className={`nav-link dev-navbar-link px-3 ${isRouteActive('/we-making') ? 'active' : ''}`}
                     >
-                        ¿Como trabajamos?
+                        {t('how_work')}
                     </Nav.Link>
                     <Nav.Link
                         as={Link}
@@ -114,12 +113,12 @@ const MySiteHeader = () => {
                         onClick={closeMenu}
                         className={`nav-link dev-navbar-link px-3 ${isRouteActive('/development-site-store') ? 'active' : ''}`}
                     >
-                        ¿Que estamos haciendo?
+                        {t('what_doing')}
                     </Nav.Link>
 
                     {/* Выпадающее меню "Desarrollo" */}
                     <NavDropdown
-                        title="Desarrollo"
+                        title={t('development')}
                         id="desarrollo-dropdown"
                         className={`nav-item dropdown dev-navbar-link ${
                             ['/landing-page', '/corporate-site', '/online-store', '/api-service', '/site-system', '/web-portal']
@@ -130,42 +129,42 @@ const MySiteHeader = () => {
                             onClick={() => handleNavClick('/landing-page')}
                             className={`dropdown-item green-bk ${isRouteActive('/landing-page') ? 'active' : ''}`}
                         >
-                            Página de aterrizaje
+                            {t('landing_page')}
                         </NavDropdown.Item>
 
                         <NavDropdown.Item
                             onClick={() => handleNavClick('/corporate-site')}
                             className={`dropdown-item green-bk ${isRouteActive('/corporate-site') ? 'active' : ''}`}
                         >
-                            Sitio web corporativo
+                            {t('corporate_website')}
                         </NavDropdown.Item>
 
                         <NavDropdown.Item
                             onClick={() => handleNavClick('/online-store')}
                             className={`dropdown-item green-bk ${isRouteActive('/online-store') ? 'active' : ''}`}
                         >
-                            Tienda en línea
+                            {t('online_store')}
                         </NavDropdown.Item>
 
                         <NavDropdown.Item
                             onClick={() => handleNavClick('/api-service')}
                             className={`dropdown-item green-bk ${isRouteActive('/api-service') ? 'active' : ''}`}
                         >
-                            Servicio web y API para aplicación móvil
+                            {t('service_api')}
                         </NavDropdown.Item>
 
                         <NavDropdown.Item
                             onClick={() => handleNavClick('/site-system')}
                             className={`dropdown-item green-bk ${isRouteActive('/site-system') ? 'active' : ''}`}
                         >
-                            Sistema de sitio web
+                            {t('site_system')}
                         </NavDropdown.Item>
 
                         <NavDropdown.Item
                             onClick={() => handleNavClick('/web-portal')}
                             className={`dropdown-item green-bk ${isRouteActive('/web-portal') ? 'active' : ''}`}
                         >
-                            Portal web
+                            {t('web_portal')}
                         </NavDropdown.Item>
                     </NavDropdown>
 
@@ -175,7 +174,7 @@ const MySiteHeader = () => {
                         onClick={closeMenu}
                         className={`nav-link dev-navbar-link px-3 ${isRouteActive('/articles') ? 'active' : ''}`}
                     >
-                        Artículos
+                        {t('articles')}
                     </Nav.Link>
                     <Nav.Link
                         as={Link}
@@ -183,7 +182,7 @@ const MySiteHeader = () => {
                         onClick={closeMenu}
                         className={`nav-link dev-navbar-link px-3 ${isRouteActive('/our-contacts') ? 'active' : ''}`}
                     >
-                        Contactos
+                        {t('contacts')}
                     </Nav.Link>
                 </Nav>
 

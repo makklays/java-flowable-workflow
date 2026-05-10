@@ -24,8 +24,8 @@ const Jumbotron = () => {
     return (
         <div className="jumbotron jumbotron-fluid img-container">
             <div className="container">
-                <h1 className="font-development">Desarrollo de sitio web</h1>
-                <div className="lead bg-green"><span>Nosotros TechMatrix18. Ayudamos a realizar la idea.</span></div>
+                <h1 className="font-development">{t('development_site')}</h1>
+                <div className="lead bg-green"><span>{t('slogan')}</span></div>
             </div>
         </div>
     );

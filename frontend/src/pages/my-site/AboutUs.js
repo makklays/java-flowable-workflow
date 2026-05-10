@@ -28,7 +28,7 @@ const AboutUs = () => {
             <Jumbotron />
 
             <div className="container">
-                <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> About Us</h1>
+                <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> {t('about_us')}</h1>
                 <p>Tasks from Flowable assigned to me. {role === 'ADMIN' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 
                 <div className="row" style={{ marginBottom: '40px' }}>

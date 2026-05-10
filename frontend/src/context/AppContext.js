@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AppContext = createContext();
 
@@ -9,6 +9,33 @@ export const AppProvider = ({ children }) => {
     const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
     const [user, setUser] = useState(localStorage.getItem('username') || null);
     const [role, setRole] = useState(localStorage.getItem('role') || null);
+
+    // --- ЛОГИКА ПОДКЛЮЧЕНИЯ CSS ПО РОЛИ ---
+    useEffect(() => {
+        const CSS_ID = 'admin-style';
+
+        if (role !== 'user_bank' && role !== 'admin') {
+            // Если стиля еще нет в head, добавляем его
+            if (!document.getElementById(CSS_ID)) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '/css/main10.css'; // Путь должен вести в папку public/styles/
+                link.id = CSS_ID;
+                document.head.appendChild(link);
+            }
+        } else {
+            // Если роль сменилась (выход) или не админ — удаляем стиль
+            const el = document.getElementById(CSS_ID);
+            if (el) el.remove();
+        }
+
+        // Опционально: очистка при размонтировании провайдера
+        return () => {
+            const el = document.getElementById(CSS_ID);
+            if (el) el.remove();
+        };
+    }, [role]); // Следим за изменением стейта role
+    // --------------------------------------
 
     const increaseFont = () => setFontSize(prev => Math.min(prev + 2, 24));
     const decreaseFont = () => setFontSize(prev => Math.max(prev - 2, 12));

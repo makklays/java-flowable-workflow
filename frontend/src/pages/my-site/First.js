@@ -347,7 +347,8 @@ const First = () => {
                                     <li data-slide-to="2" data-target="#successStories"></li>
                                 </ol>
                                 <div class="carousel-inner pb-4">
-                                    <span class="x-link-without-decoration carousel-item" href="/blog/posts/moy-put-i-rol-hexlet-v-moyom-razvitii"><div class="row slide justify-content-center">
+                                    <span class="x-link-without-decoration carousel-item" href="/blog/posts/moy-put-i-rol-hexlet-v-moyom-razvitii">
+                                        <div class="row slide justify-content-center">
                                             <div class="col-12 col-md-10 col-lg-2 d-flex align-items-center d-lg-block mb-5">
                                                 <div class="mb-lg-4">
                                                     <img class="img-fluid rounded-circle kromka" width="105" height="105" alt="Аватар пользователя" src="http://techmatrix18/img/foto3.jpg" />
@@ -362,7 +363,8 @@ const First = () => {
                                             </div>
                                         </div>
                                     </span>
-                                    <span class="x-link-without-decoration carousel-item " href="/blog/posts/kak-ya-stal-programmistom-v-33-goda"><div class="row slide justify-content-center">
+                                    <span class="x-link-without-decoration carousel-item " href="/blog/posts/kak-ya-stal-programmistom-v-33-goda">
+                                        <div class="row slide justify-content-center">
                                             <div class="col-12 col-md-10 col-lg-2 d-flex align-items-center d-lg-block mb-5">
                                                 <div class="mb-lg-4">
                                                     <img class="img-fluid rounded-circle kromka" width="105" height="105" alt="Аватар пользователя" src="http://techmatrix18/img/foto.jpg" />
@@ -377,7 +379,8 @@ const First = () => {
                                             </div>
                                         </div>
                                     </span>
-                                    <span class="x-link-without-decoration carousel-item active" href="/blog/posts/feycot-success-story"><div class="row slide justify-content-center">
+                                    <span class="x-link-without-decoration carousel-item active" href="/blog/posts/feycot-success-story">
+                                        <div class="row slide justify-content-center">
                                             <div class="col-12 col-md-10 col-lg-2 d-flex align-items-center d-lg-block mb-5">
                                                 <div class="mb-lg-4">
                                                     <img class="img-fluid rounded-circle kromka" width="105" height="105" alt="Аватар пользователя" src="http://techmatrix18/img/foto2.jpg" />

@@ -298,7 +298,9 @@ const MainLayout = () => {
                 {/* Просто вставляем переменную */}
                 {CurrentSidebar}
 
-                <Outlet />
+                <Container fluid>
+                    <Outlet />
+                </Container>
             </div>
         );
     }

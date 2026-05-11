@@ -10,12 +10,13 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import authHeader from '../../services/authHeader';
 import Jumbotron from '../../components/Jumbotron';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Footer from '../../components/Footer';
 
 // Короткая запись компонента - стрелочная функция
 const First = () => {
     const { t, i18n } = useTranslation();
+    const { lng } = useParams();
 
     const { userId, role } = useApp(); // Достаем данные из вашего контекста
     const [tasks, setTasks] = useState([]);
@@ -59,11 +60,7 @@ const First = () => {
                                 </div>
                                 <div class="col-md-12">
                                     <p class="text-left">
-                                        <b>Наша география</b> — это весь мир. Мы разговариваем на нескольких языках и разрабатываем сайты, интернет магазины и сложные системы для бизнеса на современных технологиях. <br /><br />
-                                        Возвраст наших клиентов от 28 до 53 лет. Это собственник бизнеса, бизнесмен, бизнес леди, маркетолог и бренд менеджер, владелец производства, предприниматель из сегмента B2B и B2C, публичная личность. <br/><br/>
-                                        Сайты заказывают для развития собственного бизнеса, для популяризации компании через интернет, сайт-система для автоматизация процесов на производстве или заводе с привлечением IT, сайт-система или сервис для ведения клинтов и их данных, сайт-система для логистики на предприятии, запуск и вывод нового бренда, для увеличение продаж, поиск новых клиентов, социальный развлекательный или новостной портал, популяризация бренда или захват нового сегмента рынка, веб-сервис и API для мобильных приложений, сайт-система для ведения данных в лаборатории, для увеличение прибыли из интернета. <br/><br/>
-                                        Наши сайты: в интернете, на предприятии, на заводе, в банке, в холдинге, в лаборатории, в компании, в корпорации. <br /><br />
-                                        Преимущество сайтов в том, что сайты доступны для ваших клиентов как в рабочие дни, так и в любое другое время, представляя ваши услуги на корпоративном сайте или продавая ваши товары 24/7 в интернете тогда, когда офисы закрыты. <br/>
+                                        <span dangerouslySetInnerHTML={{ __html: t('first_4') }} />
                                     </p>
                                 </div>
                             </div>
@@ -72,14 +69,14 @@ const First = () => {
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="text-center text-design2">Почему мы?</h1>
+                                    <h1 class="text-center text-design2">{t('why_us')}</h1>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-center">
                                         <img class="img-development" src="http://techmatrix18/img/icons/years2.png" alt="TechMatrix18 - МНОГО ЛЕТ ОПЫТА image 1" title="МНОГО ЛЕТ ОПЫТА" />
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        МНОГО ЛЕТ ОПЫТА <br /><br />
+                                        {t('title_1')} <br /><br />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -87,7 +84,7 @@ const First = () => {
                                         <img class="img-development" src="http://techmatrix18/img/icons/teams3.png" alt="TechMatrix18 - СЛАЖЕННАЯ КОМАНДА image 2" title="СЛАЖЕННАЯ КОМАНДА" />
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        СЛАЖЕННАЯ КОМАНДА <br /><br />
+                                        {t('title_2')} <br /><br />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -95,14 +92,16 @@ const First = () => {
                                         <img class="img-development" src="http://techmatrix18/img/icons/newtecho.png" alt="TechMatrix18 - ВНЕДРЯЕМ НОВЫЕ ТЕХНОЛОГИИ image 3" title="ВНЕДРЯЕМ НОВЫЕ ТЕХНОЛОГИИ" />
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        ВНЕДРЯЕМ НОВЫЕ ТЕХНОЛОГИИ <br /><br />
+                                        {t('title_3')} <br /><br />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-center">
                                         <img class="img-development" src="http://techmatrix18/img/icons/my_clients2.png" alt="TechMatrix18 - НАРАБОТАННЫЕ КЛИЕНТЫ image 4" title="НАРАБОТАННЫЕ КЛИЕНТЫ" />
                                     </div>
-                                    <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >НАРАБОТАННЫЕ КЛИЕНТЫ</div>
+                                    <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
+                                        {t('title_4')}
+                                    </div>
                                 </div>
                             </div>
 
@@ -110,7 +109,7 @@ const First = () => {
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="text-center text-design2">А ещё</h1>
+                                    <h1 class="text-center text-design2">{t('a_ewe')}</h1>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-center">
@@ -120,7 +119,7 @@ const First = () => {
                                         13
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        ЛЕТ <br/>ОПЫТА <br/><br />
+                                        {t('title_5')} <br/><br />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -131,7 +130,7 @@ const First = () => {
                                         7
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        ВАГОНОВ <br/>ВОДЫ ВЫПИТО <br/><br/>
+                                        {t('title_6')} <br/><br/>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -142,7 +141,7 @@ const First = () => {
                                         &gt;4680
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }}>
-                                        ДНЕЙ <br/>ПРОГРАММИРОВАНИЯ <br/><br/>
+                                        {t('title_7')} <br/><br/>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -153,7 +152,8 @@ const First = () => {
                                         93%
                                     </div>
                                     <div class="text-center" style={{ color:'#46bf00', fontSize:'20px' }} >
-                                        ДОВОЛЬНЫХ <br/>КЛИЕНТОВ                </div>
+                                        {t('title_8')}
+                                    </div>
                                 </div>
                             </div>
 
@@ -161,116 +161,124 @@ const First = () => {
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="text-center text-design2">Разработка</h1> <br/>
+                                    <h1 class="text-center text-design2">{t('development')}</h1> <br/>
                                     <p class="text-left">
-                                        Да, мы разрабатываем и делаем сайты. Мы пишем код. Делаем большие и не очень сайты. Сайты, которые нам легко поддерживать, ибо мы знаем свой код и знаем, что делаем. Мы не используем бесплатные CMS, которые не предназначены для модицикации и маштабирования в последующем, потому они и бесплатны, а разработка на них стоит дешевле и быстрее. Вам нужно разработать сайт под ключ и запустить его в интернете? Это к нам! Мы готовы разработать сайт для Вас и запустить его в интернете. Наш вектор направления — это корпоративный сайт, интернет магазин и сайт-система. Мы гордимся тем, что мы делаем и разрабатываем сайты. Мы гордимся результатами своей роботы и нашими клиентами. Мы хотим, чтобы и Вы смогли получить желаемый результат, поработав с нами.
+                                        <span dangerouslySetInnerHTML={{ __html: t('first_5') }} />
                                     </p>
                                     <br/><br/>
                                 </div>
                             </div>
 
-                            <div class="card-deck mb-3">
-                                <div class="col-md-4 text-center card mb-4 shadow-sm effect-shadow-fade-in">
-                                    <a href="http://techmatrix18/ru/landing-page" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/lpage_.png" alt="TechMatrix18 - Лендинг пейдж image 9" title="Лендинг пейдж" class="img-development" />
+                            <div class="row">
+                                <div class="card-deck mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="text-center card mb-4 shadow-sm effect-shadow-fade-in">
+                                                <Link to={`/${lng}/landing-page`} className="text-corporate">
+                                                    <div>
+                                                        <img src="http://techmatrix18/img/icons/lpage_.png" alt="TechMatrix18 - Лендинг пейдж image 9" title="Лендинг пейдж" class="img-development" />
+                                                    </div>
+                                                    <h2 class="site-sitio">{t('service_1')}</h2>
+                                                </Link>
+                                            </div>
                                         </div>
-                                        <h2 class="site-sitio">Лендинг пейдж</h2>
-                                    </a>
-                                </div>
 
-                                <div class="col-md-4 text-center card mb-4 shadow-sm effect-shadow-fade-in">
-                                    <a href="http://techmatrix18/ru/corporate-site" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/corporate_.png" alt="TechMatrix18 - Корпоративный сайт image 10" title="Корпоративный сайт" class="img-development" />
+                                        <div class="col-md-4">
+                                            <div class="text-center card mb-4 shadow-sm effect-shadow-fade-in">
+                                                <Link to={`/${lng}/corporate-site`} className="text-corporate">
+                                                    <div>
+                                                        <img src="http://techmatrix18/img/icons/corporate_.png" alt="TechMatrix18 - Корпоративный сайт image 10" title="Корпоративный сайт" class="img-development" />
+                                                    </div>
+                                                    <h2 class="site-sitio">{t('service_2')}</h2>
+                                                </Link>
+                                            </div>
                                         </div>
-                                        <h2 class="site-sitio">Корпоративный сайт</h2>
-                                    </a>
-                                </div>
 
-                                <div class="col-md-4 text-center card mb-4 shadow-sm effect-shadow-fade-in">
-                                    <a href="http://techmatrix18/ru/api-service" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/api_.png" alt="TechMatrix18 - Веб сервис и API для моб. image 11" title="Веб сервис и API для моб." class="img-development" />
+                                        <div class="col-md-4">
+                                            <div class="text-center card mb-4 shadow-sm effect-shadow-fade-in">
+                                                <Link to={`/${lng}/api-service`} className="text-corporate">
+                                                    <div>
+                                                        <img src="http://techmatrix18/img/icons/api_.png" alt="TechMatrix18 - Веб сервис и API для моб. image 11" title="Веб сервис и API для моб." class="img-development" />
+                                                    </div>
+                                                    <h2 class="site-sitio">{t('service_3')}</h2>
+                                                </Link>
+                                            </div>
                                         </div>
-                                        <h2 class="site-sitio">Веб сервис и API для моб.</h2>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-deck mb-3">
-                                <div class="col-md-4 text-center card mb-4 shadow-sm effect-shadow-fade-in">
-                                    <a href="http://techmatrix18/ru/web-portal" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/web_portal2.png" alt="TechMatrix18 - Web-портал image 12" title="Web-портал" class="img-development" />
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center card mb-4 shadow-sm effect-shadow-fade-in">
+                                            <Link to={`/${lng}/web-portal`} className="text-corporate">
+                                                <div>
+                                                    <img src="http://techmatrix18/img/icons/web_portal2.png" alt="TechMatrix18 - Web-портал image 12" title="Web-портал" class="img-development" />
+                                                </div>
+                                                <h2 class="site-sitio">{t('service_4')}</h2>
+                                            </Link>
                                         </div>
-                                        <h2 class="site-sitio">Web-портал</h2>
-                                    </a>
-                                </div>
+                                    </div>
 
-                                <div class="col-md-4 text-center card mb-4 shadow-sm">
-                                    <a href="http://techmatrix18/ru/site-system" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/sysite.png" alt="TechMatrix18 - Сайт-система image 13" title="Сайт-система" class="img-development" />
+                                    <div class="col-md-4">
+                                        <div class="text-center card mb-4 shadow-sm">
+                                            <Link to={`/${lng}/site-system`} className="text-corporate">
+                                                <div>
+                                                    <img src="http://techmatrix18/img/icons/sysite.png" alt="TechMatrix18 - Сайт-система image 13" title="Сайт-система" class="img-development" />
+                                                </div>
+                                                <h2 class="site-sitio">{t('service_5')}</h2>
+                                            </Link>
                                         </div>
-                                        <h2 class="site-sitio">Сайт-система</h2>
-                                    </a>
-                                </div>
+                                    </div>
 
-                                <div class="col-md-4 text-center card mb-4 shadow-sm effect-shadow-fade-in">
-                                    <a href="http://techmatrix18/ru/online-store" class="text-corporate">
-                                        <div>
-                                            <img src="http://techmatrix18/img/icons/store2.png" alt="TechMatrix18 - Интернет-магазин image 14" title="Интернет-магазин" class="img-development" />
+                                    <div class="col-md-4">
+                                        <div class="text-center card mb-4 shadow-sm effect-shadow-fade-in">
+                                            <Link to={`/${lng}/online-store`} className="text-corporate">
+                                                <div>
+                                                    <img src="http://techmatrix18/img/icons/store2.png" alt="TechMatrix18 - Интернет-магазин image 14" title="Интернет-магазин" class="img-development" />
+                                                </div>
+                                                <h2 class="site-sitio">{t('service_6')}</h2>
+                                            </Link>
                                         </div>
-                                        <h2 class="site-sitio">Интернет-магазин</h2>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="text-center text-design2">Как мы работаем?</h1> <br/>
+                                    <h1 class="text-center text-design2">{t('how_work')}</h1> <br/>
                                 </div>
                                 <div class="col-md-5">
                                     <img src="http://techmatrix18/img/planshet2.png" class="img-fluid kromka" alt="." title="команда разработки сайтов TechMatrix18" />
                                     <br/><br/>
                                 </div>
                                 <div class="col-md-7">
-                                    <h4>Разработка состоит из нескольких этапов:</h4><br/>
+                                    <h4>{t('title_f1')}:</h4><br/>
                                     <p class="text-left">
-                                    1. постановка задачи; <br/>
-                                    2. подготовка технического задания и заключение договора с клиентом; <br/>
-                                    3. разработка макета, согласование с заказчиком; <br/>
-                                    4. верстка шаблона, установка системы управления сайтом, настройка хостинга, демо сайта; <br/>
-                                    5. разработка необходимого функционала, тестирование; <br/>
-                                    6. наполнение контентом; <br/>
-                                    7. закрытие заказа после принятия клиентом;
+                                        <span dangerouslySetInnerHTML={{ __html: t('descr_f1') }} />
                                     </p>
                                 </div>
                                 <div class="col-md-12">
                                     <p class="text-left">
-                                        Используем разработку, основываясь на современных и передовых технологиях. Facebook, Amazon - все эти платформы написаны на языке программирования PHP с самыми прочными стандартами безопастности и стабильностью кода. <br/><br/>
-                                        Мы выбрали этот язык и его фреймворки Yii2, Laravel, когда они ещё не ворвались в ТОП самых используемых на планете. Это позволяет нам разрабатывать в TechMatrix18 уникальное предложение для Вас и быть гибким в реализации Ваших необычных пожеланий. <br/><br/>
+                                        <span dangerouslySetInnerHTML={{ __html: t('first_7') }} />
                                     </p>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12 text-left">
-                                    <h1 class="text-center text-design2">Наши цены</h1> <br/>
+                                    <h1 class="text-center text-design2">{t('our_prices')}</h1> <br/>
                                 </div>
                                 <div class="col-md-12 text-left">
                                     <p class="text-left">
-                                        - Мы не делаем шаблонных решений (если Вы этого не попросите) <br/>
-                                        - Мы не делаем сайты "под копирку" (если Вы этого не попросите) <br/>
-                                        - Мы не делаем "тут работы на пару часов" <br/>
-                                        - Мы не делаем так, что бы нравилось Вам. Мы делаем так, чтобы нравилось Ваших клиентам <br/>
-                                        - Мы добиваемся поставленных целей (не всегда удачно, но главное же что добиваемся) <br/><br/>
+                                        <span dangerouslySetInnerHTML={{ __html: t('descr_f2') }} /> <br/>
                                     </p>
                                     <p class="text-center">
-                                        </p><h4 class="text-center">Мы делаем дорого? Делаем!</h4>
+                                        </p><h4 class="text-center">{t('we_work_expensive')}</h4>
                                     <p></p>
                                     <p class="text-left">
-                                        Хотя всё это — оплата за наш труд, и если Вы считаете что труд должен оплачиваться - мы сработаемся. Ещё мы умеем заговаривать язык, поэтому если Вы всё ещё хотите узнать цены, <a href="http://techmatrix18/ru/contacts" class="a-green">перейдите по ссылке</a>.
+                                        <span dangerouslySetInnerHTML={{ __html: t('descr_f3') }} />&nbsp;
+                                        <Link to={`/${lng}/our-contacts`} className="a-green">{t('go_link')}</Link>.
                                     </p> <br/><br/>
                                 </div>
                             </div>
@@ -280,22 +288,14 @@ const First = () => {
                                     <div class="card-deck mb-3 text-center">
                                         <div class="card mb-4 shadow-sm">
                                             <div class="card-header">
-                                                <h4 class="my-0 font-weight-normal">Корпоративный сайт</h4>
+                                                <h4 class="my-0 font-weight-normal">{t('corporate_website')}</h4>
                                             </div>
                                             <div class="card-body">
-                                                <h1 class="card-title pricing-card-title">от 25000 грн<small class="text-muted"></small></h1>
-                                                <ul class="text-left list-unstyled mt-3 mb-4">
-                                                    <li>✔ Срок выполнения 10-20 дней</li>
-                                                    <li>✔ Определение и наполнение основных разделов</li>
-                                                    <li>✔ Дизайн в корпоративных цветах</li>
-                                                    <li>✔ 5 функциональных модулей</li>
-                                                    <li>✔ Адаптивность под все устройства</li>
-                                                    <li>✔ Базовая SEO-оптимизация</li>
-                                                    <li>✔ Laravel</li>
-                                                    <li>✔ Система управления сайтом</li>
-                                                    <li>✔ Обучение работы с сайтом</li>
+                                                <h1 class="card-title pricing-card-title">{t('corp_site_price')}<small class="text-muted"></small></h1>
+                                                <ul class="text-left list-unstyled mt-3 mb-4" style={{ textAlign:'left' }} >
+                                                    <span dangerouslySetInnerHTML={{ __html: t('corp_site_descr') }} />
                                                 </ul>
-                                                <a type="button" href="http://techmatrix18/ru/contacts" class="btn btn-lg btn-block btn-success">Заказать разработку</a>
+                                                <Link to={`/${lng}/our-contacts`} className="btn btn-lg btn-block btn-success2">{t('order_development')}</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -304,25 +304,14 @@ const First = () => {
                                     <div class="card-deck mb-3 text-center">
                                         <div class="card mb-4 shadow-sm">
                                             <div class="card-header">
-                                                <h4 class="my-0 font-weight-normal">Интернет-магазин</h4>
+                                                <h4 class="my-0 font-weight-normal">{t('online_store')}</h4>
                                             </div>
                                             <div class="card-body">
-                                                <h1 class="card-title pricing-card-title">от 50000 грн<small class="text-muted"></small></h1>
-                                                <ul class="text-left list-unstyled mt-3 mb-4">
-                                                    <li>✔ Срок выполнения 2-3 недели</li>
-                                                    <li>✔ Наполнение 100 позиций</li>
-                                                    <li>✔ Уникальный дизайн</li>
-                                                    <li>✔ Возможность онлайн-оплаты</li>
-                                                    <li>✔ Адаптивность под все устройства</li>
-                                                    <li>✔ Базовая SEO-оптимизация</li>
-                                                    <li>✔ 10000 знаков уникального текста</li>
-                                                    <li>✔ Laravel</li>
-                                                    <li>✔ Обучение работы с сайтом</li>
-                                                    <li>✔ Подключение внешних сервисов</li>
-                                                    <li>✔ Установка https</li>
-                                                    <li>✔ Доменное имя в подарок</li>
+                                                <h1 class="card-title pricing-card-title">{t('online_store_price')}<small class="text-muted"></small></h1>
+                                                <ul class="text-left list-unstyled mt-3 mb-4" style={{ textAlign:'left' }} >
+                                                    <span dangerouslySetInnerHTML={{ __html: t('online_store_descr') }} />
                                                 </ul>
-                                                <a type="button" href="http://techmatrix18/ru/contacts" class="btn btn-lg btn-block btn-success">Заказать разработку</a>
+                                                <Link to={`/${lng}/our-contacts`} className="btn btn-lg btn-block btn-success2">{t('order_development')}</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -331,27 +320,14 @@ const First = () => {
                                     <div class="card-deck mb-3 text-center">
                                         <div class="card mb-4 shadow-sm">
                                             <div class="card-header">
-                                                <h4 class="my-0 font-weight-normal">Сайт-система</h4>
+                                                <h4 class="my-0 font-weight-normal">{t('site_system')}</h4>
                                             </div>
                                             <div class="card-body">
-                                                <h1 class="card-title pricing-card-title">от 85000 грн<small class="text-muted"></small></h1>
-                                                <ul class="text-left list-unstyled mt-3 mb-4">
-                                                    <li>✔ Срок выполнения от 2 месяцев</li>
-                                                    <li>✔ Наполнение 500 позиций/списков</li>
-                                                    <li>✔ Разработка основных составляющих</li>
-                                                    <li>✔ Уникальный дизайн</li>
-                                                    <li>✔ Разработка логических частей</li>
-                                                    <li>✔ Адаптивность под все устройства</li>
-                                                    <li>✔ Базовая SEO-оптимизация</li>
-                                                    <li>✔ Laravel</li>
-                                                    <li>✔ Внутренняя отправка email</li>
-                                                    <li>✔ Подключение внешних сервисов</li>
-                                                    <li>✔ Система управления сайтом</li>
-                                                    <li>✔ Обучение работы с сайтом</li>
-                                                    <li>✔ Установка https</li>
-                                                    <li>✔ Доменное имя в подарок</li>
+                                                <h1 class="card-title pricing-card-title">{t('site_system_price')}<small class="text-muted"></small></h1>
+                                                <ul class="text-left list-unstyled mt-3 mb-4" style={{ textAlign:'left' }} >
+                                                    <span dangerouslySetInnerHTML={{ __html: t('site_system_descr') }} />
                                                 </ul>
-                                                <a href="http://techmatrix18/ru/contacts" class="btn btn-lg btn-block btn-success">Заказать разработку</a>
+                                                <Link to={`/${lng}/our-contacts`} className="btn btn-lg btn-block btn-success2">{t('order_development')}</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -360,8 +336,8 @@ const First = () => {
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="text-center text-design2">Отзывы</h1>
-                                    <p class="text-center">Наши клиенты говорят о нас</p>
+                                    <h1 class="text-center text-design2">{t('reviews')}</h1>
+                                    <p class="text-center">{t('reviews_title')}</p>
                                 </div>
                             </div>
                             <div class="carousel slide py-4" data-interval="false" data-ride="carousel" id="successStories">

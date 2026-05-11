@@ -94,7 +94,7 @@ const Tasks = () => {
     };
 
     return (
-        <div>
+        <div className="container-fluid">
             <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
             <p>Tasks from Flowable assigned to me. {role === 'ADMIN' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 

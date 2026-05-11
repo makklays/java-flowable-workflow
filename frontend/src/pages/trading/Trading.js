@@ -1056,7 +1056,7 @@ const Trading = () => {
     }, [pair, timeframe]);
 
     return (
-        <div>
+        <div className="container-fluid">
             {/*
             <pre style={{ backgroundColor: '#f4f4f4', padding: '10px', fontSize: '12px' }}>
                 {JSON.stringify(signals, null, 2)} Live {currentSymbol}: {livePrice} USDT

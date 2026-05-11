@@ -61,29 +61,31 @@ const TaskFormPage = () => {
     console.log("--------> " + SelectedForm);
 
     return (
-        <div className="row">
-            <div className="col-md-12">
-                <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
-                <p>Tasks from Flowable assigned to me. {role === 'admin' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col-md-12">
+                    <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
+                    <p>Tasks from Flowable assigned to me. {role === 'admin' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
 
-                <h4>Задача: {taskId}</h4>
+                    <h4>Задача: {taskId}</h4>
 
-                {/* Пример использования роли: показываем значок админа */}
-                {role === 'admin' && (
-                    <div className="alert alert-info py-2">
-                        <small>Вы просматриваете форму с правами администратора</small>
-                    </div>
-                )}
+                    {/* Пример использования роли: показываем значок админа */}
+                    {role === 'admin' && (
+                        <div className="alert alert-info py-2">
+                            <small>Вы просматриваете форму с правами администратора</small>
+                        </div>
+                    )}
 
-                {SelectedForm ? (
-                    // 3. Можно прокинуть роль дальше в саму форму, если нужно
-                    <SelectedForm task={task} taskId={taskId} userRole={role} />
-                ) : (
-                    <div className="alert alert-warning shadow-sm">
-                        <h5>Форма не найдена</h5>
-                        <p>Ключ: <strong>{task?.formKey || 'отсутствует'}</strong></p>
-                    </div>
-                )}
+                    {SelectedForm ? (
+                        // 3. Можно прокинуть роль дальше в саму форму, если нужно
+                        <SelectedForm task={task} taskId={taskId} userRole={role} />
+                    ) : (
+                        <div className="alert alert-warning shadow-sm">
+                            <h5>Форма не найдена</h5>
+                            <p>Ключ: <strong>{task?.formKey || 'отсутствует'}</strong></p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

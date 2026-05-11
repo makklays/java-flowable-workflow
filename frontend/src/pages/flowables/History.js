@@ -20,7 +20,7 @@ const History = () => {
     const dispatch = useDispatch(); // Получаем функцию отправки
 
     return (
-        <div>
+        <div className="container-fluid">
             <h1><FontAwesomeIcon icon={faHistory} className="me-2" /> Tasks History</h1>
             <p>My completed, cancelled and delegated tasks from Flowable</p>
 

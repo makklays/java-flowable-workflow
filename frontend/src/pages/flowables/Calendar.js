@@ -33,7 +33,7 @@ const Calendar = () => {
     };
 
     return (
-        <div>
+        <div className="container-fluid">
             <div className="row">
                 <div className="col-md-12">
                     <h1><FontAwesomeIcon icon={faCalendarDays} className="me-2" /> {t('calendar')}</h1>

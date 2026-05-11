@@ -2,20 +2,21 @@ import React, { useState, useEffect, useReducer } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { increment, decrement, incrementByAmount } from '../../../slices/counterSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faSearch, faTasks, faSync, faChartLine, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faHome, faSearch, faTasks, faSync, faChartLine, faTrashCan, faPlus, faCoins, faClock, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 // Переводы текстов
 import i18n from '../../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../context/AppContext';
 import authHeader from '../../../services/authHeader';
-import { useNavigate } from 'react-router-dom';
 import Jumbotron from '../../../components/Jumbotron';
 import Footer from '../../../components/Footer';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 // Короткая запись компонента - стрелочная функция
 const OnlineStore = () => {
     const { t, i18n } = useTranslation();
+    const { lng } = useParams();
 
     const { userId, role } = useApp(); // Достаем данные из вашего контекста
     const [tasks, setTasks] = useState([]);
@@ -28,11 +29,28 @@ const OnlineStore = () => {
             <Jumbotron />
 
             <div className="container">
-                <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> Online store</h1>
-                <p>Tasks from Flowable assigned to me. {role === 'ADMIN' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
-
                 <div className="row" style={{ marginBottom: '40px' }}>
                     <div className="col-md-12">
+                        <div className="container" style={{ marginTop:'20px' }} ></div>
+
+                        <nav aria-label="breadcrumb">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item"><Link to={`/${lng}/`} className="a-green"><FontAwesomeIcon icon={faHome} className="me-2" /></Link></li>
+                                <li className="breadcrumb-item" aria-current="page">{t('online_store')}</li>
+                            </ol>
+                        </nav>
+
+                        <div className="row">
+                            <div className="col-md-12">
+                                <br />
+                                <h1 className="text-center text-design2">
+                                    {t('online_store')}
+                                </h1>
+                                <br />
+                            </div>
+                        </div>
+
+
 
                     </div>
                 </div>

@@ -235,7 +235,7 @@ blockquote p {
 
 .parallax3 {
     /* The image used */
-    background-image: url("../assets/img/888.jpg");
+    background-image: url("../img/img/888.jpg");
 
     /* Set a specific height */
     height: 300px;

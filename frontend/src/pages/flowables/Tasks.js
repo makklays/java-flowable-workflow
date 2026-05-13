@@ -9,11 +9,12 @@ import i18n from '../../i18n';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import authHeader from '../../services/authHeader';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Короткая запись компонента - стрелочная функция
 const Tasks = () => {
     const { t, i18n } = useTranslation();
+    const { lng } = useParams(); // Получаем текущий язык из URL (например, 'es', 'ru')
 
     const { userId, role } = useApp(); // Достаем данные из вашего контекста
     const [tasks, setTasks] = useState([]);
@@ -90,7 +91,7 @@ const Tasks = () => {
             console.error("ID задачи не найден в объекте:", task);
             return;
         }
-        navigate(`/tasks/${id}/form`, { state: { task } });
+        navigate(`/${lng}/tasks/${id}/form`, { state: { task } });
     };
 
     return (

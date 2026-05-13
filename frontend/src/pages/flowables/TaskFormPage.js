@@ -66,13 +66,18 @@ const TaskFormPage = () => {
                 <div className="col-md-12">
                     <h1><FontAwesomeIcon icon={faTasks} className="me-2" /> My Flowable tasks</h1>
                     <p>Tasks from Flowable assigned to me. {role === 'admin' ? 'Все активные процессы в системе' : 'Задачи, назначенные на меня'}</p>
-
+                    {/*
                     <h4>Задача: {taskId}</h4>
+                    */}
 
                     {/* Пример использования роли: показываем значок админа */}
                     {role === 'admin' && (
-                        <div className="alert alert-info py-2">
-                            <small>Вы просматриваете форму с правами администратора</small>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="alert alert-info py-2">
+                                    <small>Вы просматриваете форму с правами администратора</small>
+                                </div>
+                            </div>
                         </div>
                     )}
 

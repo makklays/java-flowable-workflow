@@ -217,6 +217,15 @@ public class FlowableController {
         dto.setName(task.getName());
         dto.setFormKey(task.getFormKey()); // Это критически важное поле для фронтенда
         dto.setProcessInstanceId(task.getProcessInstanceId());
+        dto.setCreateTime(task.getCreateTime());
+        // Получаем имя процесса из его Definition
+        if (task.getProcessDefinitionId() != null) {
+            String processName = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionId(task.getProcessDefinitionId())
+                .singleResult()
+                .getName(); // Вернет "Loan Approval 10"
+            dto.setProcessName(processName);
+        }
 
         return dto;
     }

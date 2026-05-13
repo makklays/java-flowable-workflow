@@ -18,6 +18,7 @@ public class TradeDto {
     public String type; // BUY
     public BigDecimal profit;
     public BigDecimal profitPercent;
+    public BigDecimal stopLoss;
 
     public TradeDto() { }
 
@@ -49,5 +50,8 @@ public class TradeDto {
 
     public BigDecimal getProfitPercent() { return profitPercent; }
     public void setProfitPercent(BigDecimal profitPercent) { this.profitPercent = profitPercent; }
+
+    public BigDecimal getStopLoss() { return stopLoss; }
+    public void setStopLoss(BigDecimal stopLoss) { this.stopLoss = stopLoss; }
 }
 

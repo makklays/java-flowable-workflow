@@ -25,6 +25,7 @@ import "flag-icons/css/flag-icons.min.css";
 
 // Флаги для языков
 import Header from './Header';
+import HeaderTrading from './HeaderTrading';
 import MySiteHeader from './MySiteHeader';
 import { useParams, Outlet } from 'react-router-dom';
 
@@ -277,7 +278,7 @@ const MainLayout = () => {
     } else if (role == 'admin') {
         return (
             <div className="d-flex flex-column vh-100">
-                <Header />
+                <HeaderTrading />
                 <div className="d-flex flex-grow-1 overflow-hidden">
 
                     {/* Просто вставляем переменную */}

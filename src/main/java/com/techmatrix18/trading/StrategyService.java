@@ -37,6 +37,10 @@ public class StrategyService {
     private final RsiIndicator rsiIndicator = new RsiIndicator();
     private final AtrIndicator atr14 = new AtrIndicator(14);
     private final SmaIndicator sma200 = new SmaIndicator(200);
+    private final EmaIndicator ema50 = new EmaIndicator(50);
+    private final EmaIndicator ema200 = new EmaIndicator(200);
+    private final StochasticIndicator stochasticIndicator = new StochasticIndicator();
+
     private final MacdIndicator macd = new MacdIndicator(12, 26, 9);
 
     // Эти требуют параметров, их создадим позже или здесь с дефолтами
@@ -283,8 +287,12 @@ public class StrategyService {
         CandleSeries series = new HistoricalCandleSeries(aggregatedList);
 
         // 3. ПОДГОТОВКА ИНДИКАТОРОВ (Важно: считаем всю историю один раз)
+        // 1. Обновляем кэш индикаторов перед проверкой (если серия изменилась)
+        ema50.prepare(series);
+        ema200.prepare(series);
         macd.prepare(series);
         rsiIndicator.prepare(series);
+        stochasticIndicator.prepare(series);
         // fibonacciIndicator.prepare(series); // Если будете использовать
 
         BacktestDto report = new BacktestDto();
@@ -295,6 +303,8 @@ public class StrategyService {
         List<SignalDto> signals = new ArrayList<>();
         // Список сделок
         List<TradeDto> trades = new ArrayList<>();
+
+        BigDecimal stopLossPercent = new BigDecimal("3.0"); // Стоп-лосс 3%
 
         // ПЕРЕМЕННАЯ ДЛЯ ТЕКУЩЕЙ ОТКРЫТОЙ СДЕЛКИ
         TradeDto currentTrade = null;
@@ -308,26 +318,38 @@ public class StrategyService {
                 if (checkBuyCondition(series, i)) {
                     currentTrade = new TradeDto(currentCandle.getOpenTime(), closePrice, "BUY");
 
+                    // РАССЧИТЫВАЕМ ЦЕНУ СТОП-ЛОССА СРАЗУ ПРИ ВХОДЕ
+                    // Например: Entry Price * 0.97 (для стопа в 3%)
+                    BigDecimal slFactor = BigDecimal.ONE.subtract(stopLossPercent.divide(new BigDecimal("100")));
+                    currentTrade.setStopLoss(closePrice.multiply(slFactor));
+
                     signals.add(new SignalDto(currentCandle.getOpenTime(), currentCandle.getSymbol(),"BUY", closePrice, "Entry"));
                 }
             }
             // ЕСЛИ СДЕЛКА ОТКРЫТА — ИЩЕМ ВЫХОД
             else {
-                if (checkSellCondition(series, i)) {
-                    // Заполняем данные выхода
+                // Сравниваем цену закрытия текущей свечи с уровнем стоп-лосса
+                boolean isStopLossTriggered = currentCandle.getClose().compareTo(currentTrade.getStopLoss()) <= 0;
+                // Плюс проверка по индикаторам
+                boolean isIndicatorExit = checkSellCondition(series, i);
+
+                if (isIndicatorExit || isStopLossTriggered) {
                     currentTrade.exitTime = currentCandle.getOpenTime();
                     currentTrade.exitPrice = closePrice;
 
-                    // Считаем профит
+                    // Расчет профита/убытка
                     BigDecimal diff = currentTrade.exitPrice.subtract(currentTrade.entryPrice);
                     currentTrade.profit = diff;
                     currentTrade.profitPercent = diff.divide(currentTrade.entryPrice, 4, BigDecimal.ROUND_HALF_UP)
-                        .multiply(new BigDecimal(100));
+                            .multiply(new BigDecimal(100));
 
-                    trades.add(currentTrade); // Сохраняем завершенную сделку
-                    signals.add(new SignalDto(currentCandle.getOpenTime(), currentCandle.getSymbol(),"SELL", closePrice, "Exit"));
+                    trades.add(currentTrade);
 
-                    currentTrade = null; // Сбрасываем состояние
+                    // Пометка в сигнале, по какой причине вышли
+                    String exitReason = isStopLossTriggered ? "Stop Loss" : "Indicator Exit";
+                    signals.add(new SignalDto(currentCandle.getOpenTime(), currentCandle.getSymbol(), "SELL", closePrice, exitReason));
+
+                    currentTrade = null;
                 }
             }
         }
@@ -340,17 +362,73 @@ public class StrategyService {
 
     // Обновленный метод покупки (принимает Series и Index)
     private boolean checkBuyCondition(CandleSeries series, int i) {
+        if (i < 1) return false;
+
+        // 1. если просчет индикаторов из основного цикла (чтобы не зависало и не считало по 10 000 раз одно и тоже)
+        // 2. Получаем значения для конкретного индекса i
+        double val50 = ema50.calculate(series, i);
+        double val200 = ema200.calculate(series, i);
+        double currentRsi = rsiIndicator.calculate(series, i);
+        // Получаем данные Стохастика
+        double kCurr = stochasticIndicator.calculate(series, i);
+        double dCurr = stochasticIndicator.getDValue(i);
+        double kPrev = stochasticIndicator.calculate(series, i - 1);
+        double dPrev = stochasticIndicator.getDValue(i - 1);
+        double price = series.getClose(i);
+
+        // 3. Проверяем условие фильтра (Цена выше обеих EMA)
+        boolean isPriceAboveEma = price > val50 && price > val200;
+        boolean isRsiLow = currentRsi < 30;
+
+        // 4. Проверяем основной сигнал (MACD)
         Rule entryPoint = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP);
+
+        // Условие: Пересечение K и D снизу вверх в зоне < 20
+        boolean stochSignal = (kPrev <= dPrev && kCurr > dCurr) && (kPrev < 30);
+
         // Сюда можно добавить .and(new UnderIndicatorRule(rsiIndicator, 40))
-        return entryPoint.isSatisfied(i);
+        return isRsiLow && stochSignal;  // isPriceAboveEma && entryPoint.isSatisfied(i);
     }
 
     // Обновленный метод продажи (принимает Series и Index)
     private boolean checkSellCondition(CandleSeries series, int i) {
+        if (i < 1) return false;
+
+        // 1. Получаем значения индикаторов для текущего индекса i
+        double val50 = ema50.calculate(series, i);
+        double val200 = ema200.calculate(series, i);
+        double currentRsi = rsiIndicator.calculate(series, i);
+
+        // Данные Стохастика
+        double kCurr = stochasticIndicator.calculate(series, i);
+        double dCurr = stochasticIndicator.getDValue(i);
+        double kPrev = stochasticIndicator.calculate(series, i - 1);
+        double dPrev = stochasticIndicator.getDValue(i - 1);
+
+        double price = series.getClose(i);
+
+        // 2. Зеркальные фильтры
+        // Цена ниже обеих EMA (признак нисходящего тренда)
+        boolean isPriceBelowEma = price < val50 && price < val200;
+
+        // RSI в зоне перекупленности (выше 80, так как вход был ниже 20)
+        boolean isRsiAbove = currentRsi > 70;
+
+        // 3. Зеркальный сигнал Стохастика
+        // Пересечение K и D СВЕРХУ ВНИЗ в зоне > 80
+        boolean stochSellSignal = (kPrev >= dPrev && kCurr < dCurr) && (kPrev > 70);
+
+        // 4. Зеркальный сигнал MACD (если используете)
+        // Rule exitPoint = new MacdRule(macd, MacdRule.MacdCondition.CROSS_DOWN);
+
+        // Возвращаем true, если условия для выхода (продажи) выполнены
+        return isRsiAbove && stochSellSignal;
+    }
+    /*private boolean checkSellCondition(CandleSeries series, int i) {
         Rule sellSignal = new MacdRule(macd, MacdRule.MacdCondition.CROSS_DOWN)
             .or(new OverIndicatorRule(rsiIndicator, 70.0));
         return sellSignal.isSatisfied(i);
-    }
+    }*/
 
     // Агрегация Таймфрейма
     private List<Candle> aggregate(List<Candle> candles, String timeframe) {

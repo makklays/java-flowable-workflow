@@ -135,7 +135,9 @@ public class SignalService {
         // 4. Проверка условий
         if (rsiOversold.isSatisfied(lastIndex)) {
             String text = "📉 " + symbolName + ": RSI ниже 30. Зона перепроданности.";
-            telegramService.sendMessage(text);
+
+            // раскомментировать - это работает (!)
+            //telegramService.sendMessage(text);
 
             // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)
             Candle lastCandle = series.getCandle(lastIndex);

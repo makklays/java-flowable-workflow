@@ -2,9 +2,11 @@ package com.techmatrix18.controller.api;
 
 import com.techmatrix18.dto.FlowableTaskDto;
 import com.techmatrix18.security.CustomUserDetails;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.IdentityService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.form.api.FormInfo;
 import org.flowable.form.api.FormModel;
@@ -16,7 +18,11 @@ import org.flowable.engine.TaskService;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * FlowableController - REST API контроллер для взаимодействия с Flowable BPMN движком.
@@ -129,6 +135,34 @@ public class FlowableController {
     // 5. Все таски
     @GetMapping("/tasks/all")
     public ResponseEntity<?> getAllTasks() {
+        // Get list of all active tasks
+        List<Task> tasks = taskService.createTaskQuery().active().orderByTaskCreateTime().desc().list();
+
+        if (tasks.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        // Collect all unique definitions IDs
+        Set<String> processDefIds = tasks.stream()
+            .map(Task::getProcessDefinitionId)
+            .filter(id -> id != null)
+            .collect(Collectors.toSet());
+
+        // We request process names from the database with one query and create a Map [id -> name]
+        Map<String, String> processNamesMap = Collections.emptyMap();
+        if (!processDefIds.isEmpty()) {
+            processNamesMap = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionIds(processDefIds) // Корректный метод для Flowable
+                .list()
+                .stream()
+                .collect(Collectors.toMap(
+                    ProcessDefinition::getId,
+                    pd -> pd.getName() != null ? pd.getName() : pd.getKey(),
+                    (existing, replacement) -> existing // Защита от дубликатов
+                ));
+        }
+
+        Map<String, String> finalNamesMap = processNamesMap;
         return ResponseEntity.ok(
             taskService.createTaskQuery()
                 .active()
@@ -139,10 +173,32 @@ public class FlowableController {
                     "id", t.getId(),
                     "name", t.getName(),
                     "processInstanceId", t.getProcessInstanceId(),
+                    "processName", finalNamesMap.getOrDefault(t.getProcessDefinitionId(), "Unknown Process"), // Название процесса
                     "assignee", t.getAssignee() != null ? t.getAssignee() : "Unassigned",
                     "createTime", t.getCreateTime()
                 )).toList()
         );
+    }
+
+    // Рекурсивный обход схемы для поиска следующего User Task в Процессе (пропуская шлюзы и автоматические шаги)
+    // Если на форме нужно отобразить Название следующего User Task из Процесса
+    private void findNextUserTasksRecursive(List<SequenceFlow> outgoingFlows, List<String> resultNames) {
+        for (SequenceFlow flow : outgoingFlows) {
+            FlowElement targetElement = flow.getTargetFlowElement();
+
+            if (targetElement instanceof UserTask) {
+                // Если следующий элемент — User Task, берем его имя (или ключ, если имя пустое)
+                UserTask userTask = (UserTask) targetElement;
+                resultNames.add(userTask.getName() != null ? userTask.getName() : userTask.getId());
+
+            } else if (targetElement instanceof Gateway || targetElement instanceof ServiceTask) {
+                // Если это шлюз или авто-шаг, идем глубже по его исходящим связям
+                if (targetElement instanceof FlowNode) {
+                    findNextUserTasksRecursive(((FlowNode) targetElement).getOutgoingFlows(), resultNames);
+                }
+            }
+            // EndEvent (конец процесса) здесь игнорируется, так как это не User Task
+        }
     }
 
     // 6. Start process with a Business Key

@@ -30,7 +30,7 @@
         </userTask>
         <sequenceFlow id="flow4" sourceRef="reviewByManager" targetRef="riskAssessment"/>
 
-        <userTask id="riskAssessment" name="Risk Assessment (Risk)" flowable:candidateGroups="risk" />
+        <userTask id="riskAssessment" name="Risk Assessment (Risk)" flowable:formKey="risk-form" flowable:candidateGroups="risk" />
         <sequenceFlow id="flow5" sourceRef="riskAssessment" targetRef="end"/>
 
         <endEvent id="end"/>

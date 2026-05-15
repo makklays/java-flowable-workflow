@@ -130,6 +130,7 @@ const Tasks = () => {
                         <table className="table table-hover mb-0" style={{ fontSize: '14px' }} >
                             <thead>
                                 <tr className="text-muted" style={{ fontSize: '12px', textTransform: 'uppercase' }}>
+                                    <th>Название процесса</th>
                                     <th>Название задачи</th>
                                     <th>ID Процесса</th>
                                     <th>Дата создания</th>
@@ -140,6 +141,7 @@ const Tasks = () => {
                             <tbody>
                                 {tasks.length > 0 ? tasks.map(task => (
                                     <tr key={task.id}>
+                                        <td><span className="fw-bold">{task.processName || 'Без названия'}</span></td>
                                         <td><span className="fw-bold">{task.name || 'Без названия'}</span></td>
                                         <td className="text-muted small">{task.processInstanceId}</td>
                                         <td>{new Date(task.createTime).toLocaleString()}</td>

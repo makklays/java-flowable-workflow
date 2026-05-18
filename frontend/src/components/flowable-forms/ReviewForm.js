@@ -12,6 +12,8 @@ const ReviewForm = ({ task, taskId }) => {
     const [loading, setLoading] = useState(false);
     const { lng } = useParams(); // Получаем текущий язык из URL (например, 'es', 'ru')
 
+    const { user, userId } = useApp();
+
     const handleSubmit = async (isApproved) => {
         setLoading(true);
         try {
@@ -19,7 +21,7 @@ const ReviewForm = ({ task, taskId }) => {
             const variables = {
                 approved: isApproved,
                 reviewComment: comment,
-                reviewedBy: "Current User" // В идеале брать из контекста авторизации
+                reviewedBy: user || "Анонимный пользователь" // В идеале брать из контекста авторизации
             };
 
             // Замените URL на ваш эндпоинт в Spring Boot

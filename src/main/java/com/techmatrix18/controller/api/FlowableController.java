@@ -249,6 +249,7 @@ public class FlowableController {
     @PostMapping("/tasks/{taskId}/complete")
     public ResponseEntity<Void> completeTask(@PathVariable String taskId, @RequestBody Map<String, Object> variables) {
         // variables содержит { "approved": true, "reviewComment": "..." }
+        // Метод complete сам сохранит переменные в процесс и завершит задачу (переменные процесса, не переменные таски)
         taskService.complete(taskId, variables);
         return ResponseEntity.ok().build();
     }
@@ -261,11 +262,16 @@ public class FlowableController {
             .taskId(taskId)
             .singleResult();
 
-        System.out.println("Получаем задачу по ID --------->: " + task.toString());
+        // Безопасное логирование: проверяем на null перед вызовом методов
+        System.out.println("Получаем задачу по ID --------->: " + (task != null ? task.getId() : "null"));
 
+        // Сначала проверяем на null, только потом работаем с объектом
         if (task == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача не найдена");
         }
+
+        // Get all process's variables
+        Map<String, Object> processVariables = taskService.getVariables(taskId);
 
         // Маппим данные в DTO из Task для отправки на фронтенд
         FlowableTaskDto dto = new FlowableTaskDto();
@@ -274,13 +280,17 @@ public class FlowableController {
         dto.setFormKey(task.getFormKey()); // Это критически важное поле для фронтенда
         dto.setProcessInstanceId(task.getProcessInstanceId());
         dto.setCreateTime(task.getCreateTime());
+        dto.setProcessVariables(processVariables);
         // Получаем имя процесса из его Definition
         if (task.getProcessDefinitionId() != null) {
-            String processName = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionId(task.getProcessDefinitionId())
-                .singleResult()
-                .getName(); // Вернет "Loan Approval 10"
-            dto.setProcessName(processName);
+            var processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(task.getProcessDefinitionId())
+                    .singleResult();
+
+            // Защита на случай, если дефиниция процесса была удалена из базы
+            if (processDefinition != null) {
+                dto.setProcessName(processDefinition.getName()); // вернет "Название процесса"
+            }
         }
 
         return dto;

@@ -3,6 +3,7 @@ package com.techmatrix18.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Flowable Task Dto - DTO для передачи информации о задаче Flowable на фронтенд.
@@ -19,6 +20,7 @@ public class FlowableTaskDto {
     @JsonProperty("formKey")
     private String formKey;
     private String processInstanceId;
+    private Map<String, Object> processVariables;
     private Date createTime;
 
     // Геттеры и сеттеры
@@ -37,6 +39,9 @@ public class FlowableTaskDto {
 
     public String getProcessInstanceId() { return processInstanceId; }
     public void setProcessInstanceId(String processInstanceId) { this.processInstanceId = processInstanceId; }
+
+    public Map<String, Object> getProcessVariables() { return processVariables; }
+    public void setProcessVariables(Map<String, Object> processVariables) { this.processVariables = processVariables; }
 
     public Date getCreateTime() { return createTime; }
     public void setCreateTime(Date createTime) { this.createTime = createTime; }

@@ -54,6 +54,8 @@ const TaskFormPage = () => {
     const key = task?.formKey || task?.formDefinitionKey;
     const SelectedForm = FORM_COMPONENTS[key];
 
+    console.log("DEBUG: ", key);
+    console.log("DEBUG: variables:", task.processVariables);
     console.log("DEBUG: Весь объект task:", task);
     console.log("DEBUG: Ключ из задачи:", task?.formKey);
     console.log("DEBUG: Доступные ключи в FORM_COMPONENTS:", Object.keys(FORM_COMPONENTS));

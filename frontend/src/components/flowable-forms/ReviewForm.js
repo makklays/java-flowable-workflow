@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTasks, faTimes, faCheck, faBan } from '@fortawesome/free-solid-svg-icons';
 import { useApp } from '../../context/AppContext';
 
-const ReviewForm = ({ task, taskId }) => {
+const ReviewForm = ({ task, taskId, userRole }) => {
 
     console.log('Данные объекта task:', task);
 
@@ -26,7 +26,7 @@ const ReviewForm = ({ task, taskId }) => {
             };
 
             // Замените URL на ваш эндпоинт в Spring Boot
-            const response = await fetch(`/api/tasks/${taskId}/complete`, {
+            const response = await fetch(`http://localhost:8082/api/v1/workflow/tasks/${taskId}/complete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const ReviewForm = ({ task, taskId }) => {
 
             if (response.ok) {
                 alert("Задача успешно завершена");
-                navigate('/tasks'); // Возвращаемся к списку задач
+                navigate(`/${lng}/tasks`); // Возвращаемся к списку задач
             } else {
                 throw new Error("Ошибка при отправке формы");
             }
@@ -84,6 +84,11 @@ const ReviewForm = ({ task, taskId }) => {
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                             ></textarea>
+                        </div>
+
+                        <div className="mb-3">
+                            <small style={{ color:'grey' }}>Инициатор: {user}</small> <br/>
+                            <small style={{ color:'grey' }}>Ревьювер: {user}</small>
                         </div>
 
                         <div className="d-flex justify-content gap-2">

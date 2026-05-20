@@ -75,7 +75,7 @@ Rule priceUnderSma = new UnderIndicatorRule(sma50, 0.0);
 // Создаем правило пробоя 20-периодной SMA вверх
 Rule crossUpSma = new CrossedUpRule(new SmaIndicator(20));
 if (crossUpSma.isSatisfied(candles)) {
-    telegramService.sendMessage("🚀 Цена пробила SMA-20 снизу вверх — потенциальный вход!");
+    telegramService.sendMessageForAll("🚀 Цена пробила SMA-20 снизу вверх — потенциальный вход!");
 }
 
 3. Пересечение двух SMA («Золотой крест»)
@@ -91,7 +91,7 @@ Rule trendFilter = new OverIndicatorRule(new SmaIndicator(200), 0.0);
 Rule buyEntry = new MacdRule(macd, MacdRule.MacdCondition.CROSS_UP);
 // Итоговая стратегия: Покупаем по MACD только если глобальный тренд (SMA-200) направлен вверх
 if (trendFilter.and(buyEntry).isSatisfied(candles)) {
-    telegramService.sendMessage("🎯 Подтвержденный вход по тренду!");
+    telegramService.sendMessageForAll("🎯 Подтвержденный вход по тренду!");
 }
 
 */

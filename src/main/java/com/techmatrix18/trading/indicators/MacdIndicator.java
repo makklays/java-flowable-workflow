@@ -125,7 +125,7 @@ public void checkMacdTrend(String symbol, List<Candle> candles) {
 
     // ЛОГИКА: Тренд глобально бычий И гистограмма только что пробила ноль вверх
     if (macdLine > 0 && prevHistogram <= 0 && histogram > 0) {
-        telegramService.sendMessage("🚀 " + symbol + ": Подтверждение бычьего тренда по MACD!");
+        telegramService.sendMessageForAll("🚀 " + symbol + ": Подтверждение бычьего тренда по MACD!");
     }
 }
 

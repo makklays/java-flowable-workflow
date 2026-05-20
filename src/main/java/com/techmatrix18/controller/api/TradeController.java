@@ -8,14 +8,17 @@ import com.techmatrix18.mapper.TradeMapper;
 import com.techmatrix18.model.Symbol;
 import com.techmatrix18.model.Trade;
 import com.techmatrix18.service.TradeService;
+import com.techmatrix18.telegram.TelegramService;
 import com.techmatrix18.utils.TradingSessions;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
@@ -39,12 +42,14 @@ import java.util.logging.Logger;
 @Tag(name = "Trades", description = "Trade management API")
 @RequestMapping("/api/v1/trades")
 public class TradeController {
-    private TradeService tradeService;
+    private final TradeService tradeService;
+    private final TelegramService telegramService;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    public TradeController(TradeService tradeService) {
+    public TradeController(TradeService tradeService, TelegramService telegramService) {
         this.tradeService = tradeService;
+        this.telegramService = telegramService;
     }
 
     private static final Logger log = Logger.getLogger(RoleController.class.getName());
@@ -154,6 +159,102 @@ public class TradeController {
             tradeSession);
 
         return ResponseEntity.ok(sessionInfo);
+    }
+
+    /**
+     * Отправка тестового сообщения в Телеграм из front-end
+     */
+    @PostMapping("/send-test-message-to-tg")
+    public ResponseEntity<String> uploadChart(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("pair") String pair,
+            @RequestParam("timeframe") String timeframe,
+            @RequestParam("side") String side,
+            @RequestParam("lot") String lot,
+            @RequestParam("price") String price,
+            @RequestParam("tp") String tp,
+            @RequestParam("sl") String sl,
+            @RequestParam("signal") String signal) {
+
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Файл пустой");
+            }
+
+            // 1. Получаем бинарные данные картинки из фронтенда
+            byte[] imageBytes = file.getBytes();
+            String fileName = file.getOriginalFilename();
+
+            BigDecimal currentPrice = new BigDecimal(price);
+            // Задаем проценты (1% для SL, 2% для TP)
+            BigDecimal slPercent = new BigDecimal("0.01");
+            BigDecimal tpPercent = new BigDecimal("0.02");
+            String direction = "LONG";
+            BigDecimal slPrice;
+            BigDecimal tpPrice;
+
+            if ("LONG".equals(direction)) {
+                // Для LONG: TP выше текущей цены, SL — ниже
+                tpPrice = currentPrice.add(currentPrice.multiply(tpPercent));
+                slPrice = currentPrice.subtract(currentPrice.multiply(slPercent));
+            } else {
+                // Для SHORT: TP ниже текущей цены, SL — выше
+                tpPrice = currentPrice.subtract(currentPrice.multiply(tpPercent));
+                slPrice = currentPrice.add(currentPrice.multiply(slPercent));
+            }
+
+            // Округляем до 2 знаков после запятой (для криптовалюты)
+            tpPrice = tpPrice.setScale(2, RoundingMode.HALF_UP);
+            slPrice = slPrice.setScale(2, RoundingMode.HALF_UP);
+
+            // 1. Расчет риска на сделку в % от цены входа
+            // Формула: (|Цена_входа - SL| / Цена_входа) * 100
+            BigDecimal priceDiffSL = currentPrice.subtract(slPrice).abs();
+            BigDecimal riskPercent = priceDiffSL
+                    .divide(currentPrice, 4, RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            // 2. Расчет соотношения Risk:Reward (RR)
+            // Формула: |Цена_входа - TP| / |Цена_входа - SL|
+            BigDecimal priceDiffTP = currentPrice.subtract(tpPrice).abs();
+            BigDecimal rrRatio = priceDiffTP.divide(priceDiffSL, 1, RoundingMode.HALF_UP); // Обычно пишут 1 знак, например 1:3.0
+
+            // 2. Формируем подпись к фотографии
+            String text_message = String.format("📊 Сделка %s / %s\n" +
+                    "Сторона: %s \n\r" +
+                    "Объем: %s лот \n\r" +
+                    "Цена: %s USDT\n\r" +
+                    "TP: %s \n\r" +
+                    "SL: %s \n\r" +
+                    "Риск: %s%%\n\r" +
+                    "RiskReward: 1:%s\n\r" +
+                    "Сигнал: %s.",
+                pair,
+                timeframe,
+                side,
+                lot,
+                price,
+                tpPrice,
+                slPrice,
+                riskPercent,    // Подставится в %s%% (двойной процент экранирует символ %)
+                rrRatio,        // Подставится в 1:%s
+                signal);
+
+            // 3. ПЕРЕДАЕМ В ВАШ РАБОЧИЙ МЕТОД
+            // Адаптируйте вызов под ваш сервис. Обычно методы отправки фото в Telegram API
+            // принимают либо массив байт (byte[]), либо объект InputFile, либо файл напрямую.
+
+            // Пример:
+            // telegramBotService.sendPhotoToTelegram(imageBytes, fileName, caption);
+            telegramService.sendMessageForAll(text_message); // отправка сообщения всем в канал Телеграмма
+
+            return ResponseEntity.ok("Скриншот успешно обработан и отправлен в Telegram");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка на стороне сервера: " + e.getMessage());
+        }
     }
 }
 

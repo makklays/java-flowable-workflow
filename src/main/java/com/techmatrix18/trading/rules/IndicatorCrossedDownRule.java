@@ -54,7 +54,7 @@ Rule goldenCross = new IndicatorCrossedUpRule(ema9, ema21);
 Rule deathCross = new IndicatorCrossedDownRule(ema9, ema21);
 
 if (goldenCross.isSatisfied(candles)) {
-    telegramService.sendMessage("🚀 Golden Cross! Быстрая EMA 9 пробила медленную EMA 21 вверх.");
+    telegramService.sendMessageForAll("🚀 Golden Cross! Быстрая EMA 9 пробила медленную EMA 21 вверх.");
 }
 
 */

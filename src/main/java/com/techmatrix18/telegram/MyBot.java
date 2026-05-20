@@ -8,9 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * MyBot - это класс, который реализует Telegram бота, используя библиотеку TelegramBots.
@@ -29,6 +32,12 @@ public class MyBot extends TelegramLongPollingBot {
     @Value("${TELEGRAM_CHAT_ID}")
     private String chatId;
 
+    @Value("${TELEGRAM_CHAT_ID_FOR_ALL}")
+    private String chatIdForAll;
+
+    // Создаем форматтер с нужным шаблоном
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd.MM.yyyy HH:mm:ss", new Locale("ru"));
+
     @Override
     public String getBotUsername() {
         return "your_bot_name";
@@ -46,15 +55,20 @@ public class MyBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
 
             String text = update.getMessage().getText();
-            Long chatId = update.getMessage().getChatId();
+            Long chatId = update.getMessage().getChatId(); // user chat id
+            Long channelId = update.getMessage().getChat().getId(); // channel id (when a bot in a channel)
 
             SendMessage message = new SendMessage();
             message.setChatId(chatId.toString());
 
             if (text.equals("/start")) {
                 message.setText("Hello 👋");
+
+            } else if (text.equals("/date")) {
+                message.setText("Now: " + LocalDateTime.now().format(formatter));
+
             } else {
-                message.setText("You said: " + text);
+                message.setText("You said: " + text); // + channelId
             }
 
             try {

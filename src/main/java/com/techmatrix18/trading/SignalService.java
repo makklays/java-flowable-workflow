@@ -14,6 +14,7 @@ import com.techmatrix18.trading.series.CandleSeries;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 /**
@@ -99,7 +100,7 @@ public class SignalService {
 
             // Используем логику пересечения
             if (prevPrice <= goldLevel && currentPrice > goldLevel) {
-                telegramService.sendMessage("🚀 " + symbol + " пробил вверх Фибо 0.618!");
+                telegramService.sendMessageForAll("🚀 " + symbol + " пробил вверх Фибо 0.618!");
             }
         }
 
@@ -109,13 +110,14 @@ public class SignalService {
         double prevBasisLine = bollingerIndicator.getValue(prevIndex);
 
         if (prevPrice <= prevBasisLine && currentPrice > basisLine) {
-            telegramService.sendMessage("📈 " + symbol + " пробил среднюю линию Боллинджера вверх");
+            telegramService.sendMessageForAll("📈 " + symbol + " пробил среднюю линию Боллинджера вверх");
         } else if (prevPrice >= prevBasisLine && currentPrice < basisLine) {
-            telegramService.sendMessage("📉 " + symbol + " пробил среднюю линию Боллинджера вниз");
+            telegramService.sendMessageForAll("📉 " + symbol + " пробил среднюю линию Боллинджера вниз");
         }
     }
 
-    // Этот метод демонстрирует, как можно объединить разные правила для генерации комплексных сигналов
+    // Этот метод демонстрирует (с тестовыми данными), как можно объединить разные правила для генерации комплексных сигналов
+    // Отправка сигналов (текстовых сообщений) в канал Телеграм (без скриншота графика)
     public void processSignals(String symbolName, CandleSeries series) {
         int lastIndex = series.size() - 1;
         // Для CrossedUpRule нужны минимум 2 свечи (текущая и предыдущая)
@@ -134,14 +136,68 @@ public class SignalService {
 
         // 4. Проверка условий
         if (rsiOversold.isSatisfied(lastIndex)) {
-            String text = "📉 " + symbolName + ": RSI ниже 30. Зона перепроданности.";
-
-            // раскомментировать - это работает (!)
-            //telegramService.sendMessage(text);
-
             // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)
             Candle lastCandle = series.getCandle(lastIndex);
             BigDecimal currentPrice = lastCandle.getClose();
+
+            // Задаем проценты (1% для SL, 2% для TP)
+            BigDecimal slPercent = new BigDecimal("0.01");
+            BigDecimal tpPercent = new BigDecimal("0.02");
+            String direction = "LONG";
+            BigDecimal sl;
+            BigDecimal tp;
+
+            if ("LONG".equals(direction)) {
+                // Для LONG: TP выше текущей цены, SL — ниже
+                tp = currentPrice.add(currentPrice.multiply(tpPercent));
+                sl = currentPrice.subtract(currentPrice.multiply(slPercent));
+            } else {
+                // Для SHORT: TP ниже текущей цены, SL — выше
+                tp = currentPrice.subtract(currentPrice.multiply(tpPercent));
+                sl = currentPrice.add(currentPrice.multiply(slPercent));
+            }
+
+            // Округляем до 2 знаков после запятой (для криптовалюты)
+            tp = tp.setScale(2, RoundingMode.HALF_UP);
+            sl = sl.setScale(2, RoundingMode.HALF_UP);
+
+            // 1. Расчет риска на сделку в % от цены входа
+            // Формула: (|Цена_входа - SL| / Цена_входа) * 100
+            BigDecimal priceDiffSL = currentPrice.subtract(sl).abs();
+            BigDecimal riskPercent = priceDiffSL
+                .divide(currentPrice, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .setScale(2, RoundingMode.HALF_UP);
+
+            // 2. Расчет соотношения Risk:Reward (RR)
+            // Формула: |Цена_входа - TP| / |Цена_входа - SL|
+            BigDecimal priceDiffTP = currentPrice.subtract(tp).abs();
+            BigDecimal rrRatio = priceDiffTP.divide(priceDiffSL, 1, RoundingMode.HALF_UP); // Обычно пишут 1 знак, например 1:3.0
+
+            //String text = "📉 " + symbolName + ": RSI ниже 30. Зона перепроданности.";
+            String text = String.format("📊 Сделка %s / %s\n" +
+                    "Сторона: %s \n\r" +
+                    "Объем: %s лот \n\r" +
+                    "Цена: %s USDT\n\r" +
+                    "TP: %s (2%) \n\r" +
+                    "SL: %s (1%) \n\r" +
+                    "Риск: %s%%\n\r" +
+                    "RiskReward: 1:%s\n\r" +
+                    "Сигнал: %s.",
+                symbolName,
+                "M30",
+                "LONG",
+                "1",
+                currentPrice,
+                tp,
+                sl,
+                riskPercent,    // Подставится в %s%% (двойной процент экранирует символ %)
+                rrRatio,        // Подставится в 1:%s
+                "Цена подошла к уровню Фибо 0.618");
+
+            // раскомментировать - это работает (!)
+            telegramService.sendMessageForAll(text);
+
             // Send in WebSocket - WebSocket integration for real-time signal notifications via toasts
             webSocketService.broadcastSignal(new SignalDto(System.currentTimeMillis(), symbolName,"SIGNAL", currentPrice, text));
             System.out.println("----- web socket RSI: send to websocket signal: " + text);
@@ -149,7 +205,7 @@ public class SignalService {
 
         /*if (nearSupport.isSatisfied(lastIndex)) {
             String text = "🎯 " + symbol + ": Цена подошла к уровню Фибо 0.618.";
-            telegramService.sendMessage(text);
+            telegramService.sendMessageForAll(text);
 
             // Получаем саму свечу (объект Candle) и Берем цену закрытия (BigDecimal)
             Candle lastCandle = series.getCandle(lastIndex);

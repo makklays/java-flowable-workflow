@@ -68,7 +68,7 @@ if (globalUptrend.isSatisfied(candles)) {
 // Проверка: текущая гистограмма меньше предыдущей
 Rule momentumFading = new MacdRule(macd, MacdRule.MacdCondition.HIST_DECREASING);
 if (momentumFading.isSatisfied(candles)) {
-    telegramService.sendMessage("⚠️ Внимание: Бычий импульс затухает, возможен разрот!");
+    telegramService.sendMessageForAll("⚠️ Внимание: Бычий импульс затухает, возможен разрот!");
 }
 
 // 1. Покупаем, когда MACD пересек сигнальную линию вверх

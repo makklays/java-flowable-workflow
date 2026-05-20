@@ -107,7 +107,7 @@ public class SendMessagesDelegate implements JavaDelegate {
 
         // send messages
         // userService.sendWelcomeEmail(email);
-        // telegramService.sendMessage("Welcome " + displayname + " (" + email + ")");
+        // telegramService.sendMessageForAll("Welcome " + displayname + " (" + email + ")");
         slackService.sendSlackMessage(":rocket:" + formattedDateTime + " - 📧 Registered across BPMN process 'Job Application' a new employee in CRM: " + displayname + " - Department: " + department + ", " + position+ ", age: " + age);
     }
 }

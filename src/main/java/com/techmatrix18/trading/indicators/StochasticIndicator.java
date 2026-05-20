@@ -110,7 +110,7 @@ Rule exitOverbought = new CrossedDownRule(stoch, 80.0);
 Rule smartBuy = new OverIndicatorRule(new SmaIndicator(200), 0.0)
                 .and(new CrossedUpRule(stoch, 20.0));
 if (smartBuy.isSatisfied(candles)) {
-    telegramService.sendMessage("🚀 Стохастик подтвердил разворот по тренду!");
+    telegramService.sendMessageForAll("🚀 Стохастик подтвердил разворот по тренду!");
 }
 
 */

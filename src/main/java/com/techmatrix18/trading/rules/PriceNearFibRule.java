@@ -65,7 +65,7 @@ Rule rsiLow = new UnderIndicatorRule(rsi, 30.0);
 // Комбинируем: Покупаем только если оба условия верны
 Rule fibBuyStrategy = atDeepSupport.and(rsiLow);
 if (fibBuyStrategy.isSatisfied(candles)) {
-    telegramService.sendMessage("🎯 Идеальная точка входа: Касание Фибо 0.786 при низком RSI!");
+    telegramService.sendMessageForAll("🎯 Идеальная точка входа: Касание Фибо 0.786 при низком RSI!");
 }
 
 3. Использование для фиксации прибыли (Take Profit)
@@ -73,7 +73,7 @@ if (fibBuyStrategy.isSatisfied(candles)) {
 // Правило для фиксации прибыли у верхнего сопротивления
 Rule takeProfitAtFib = new PriceNearFibRule(fib, "level_236");
 if (takeProfitAtFib.isSatisfied(candles)) {
-    telegramService.sendMessage("💰 Пора фиксировать прибыль! Цена достигла уровня Фибо 0.236.");
+    telegramService.sendMessageForAll("💰 Пора фиксировать прибыль! Цена достигла уровня Фибо 0.236.");
 }
 
 4. Нюанс по точности (0.1%)

@@ -64,7 +64,7 @@ public class CreateTaskDelegate implements JavaDelegate {
 
         // Notifications to Telegram
         String text = "📉 ID:" + userId + ": инициализировал процесс " + processName + ".";
-        telegramService.sendMessage(text);
+        telegramService.sendMessageForAll(text);
 
         // 2. Нам не нужно искать "кто залогинен", мы доверяем данным процесса --> initiatorId
         log.info(formattedDateTime + " - 📧 Logging from CreateTaskDelegate: Creating task for user ID '" + userId + "'.");

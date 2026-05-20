@@ -81,7 +81,7 @@ public class StrategyService {
         Rule entrySignal = rsiOversold.and(bbCrossUp);
 
         if (entrySignal.isSatisfied(i)) {
-            telegramService.sendMessage("✅ ВХОД " + symbol + ": RSI < 30 + Пробой Боллинджера!");
+            telegramService.sendMessageForAll("✅ ВХОД " + symbol + ": RSI < 30 + Пробой Боллинджера!");
             // Здесь можно вызвать метод для создания реального ордера
         }
 
@@ -91,7 +91,7 @@ public class StrategyService {
         Rule exitSignal = rsiExit.or(fibTarget);
 
         if (exitSignal.isSatisfied(i)) {
-            telegramService.sendMessage("❌ ВЫХОД " + symbol + ": Цель достигнута или RSI развернулся!");
+            telegramService.sendMessageForAll("❌ ВЫХОД " + symbol + ": Цель достигнута или RSI развернулся!");
             // Здесь можно вызвать метод для закрытия позиции
         }
     }
@@ -131,7 +131,7 @@ public class StrategyService {
 
         // 5. ПРОВЕРКА
         if (entryStrategy.isSatisfied(i)) {
-            telegramService.sendMessage("🎯 СИГНАЛ НА ВХОД: Боллинджер пробит + RSI подтверждает!");
+            telegramService.sendMessageForAll("🎯 СИГНАЛ НА ВХОД: Боллинджер пробит + RSI подтверждает!");
         }
     }
 
@@ -158,7 +158,7 @@ public class StrategyService {
 
         // 4. ПРОВЕРКА
         if (fibMacdStrategy.isSatisfied(i)) {
-            telegramService.sendMessage("🎯 СИГНАЛ: Отскок от Фибо + MACD подтверждает рост!");
+            telegramService.sendMessageForAll("🎯 СИГНАЛ: Отскок от Фибо + MACD подтверждает рост!");
         }
     }
 
@@ -187,7 +187,7 @@ public class StrategyService {
         Rule fullStrategy = trendIsUp.and(fibSupport).and(entryPoint);
 
         if (fullStrategy.isSatisfied(i)) {
-            telegramService.sendMessage("💎 СИГНАЛ ВЫСОКОЙ ТОЧНОСТИ: Тренд подтвержден, вход от Фибо!");
+            telegramService.sendMessageForAll("💎 СИГНАЛ ВЫСОКОЙ ТОЧНОСТИ: Тренд подтвержден, вход от Фибо!");
         }
     }
 
@@ -210,7 +210,7 @@ public class StrategyService {
 
         // 4. ПРОВЕРКА
         if (overbought.and(momentumFading).isSatisfied(i)) {
-            telegramService.sendMessage("⚠️ ВНИМАНИЕ: Тренд выдыхается. Рекомендуется фиксация прибыли.");
+            telegramService.sendMessageForAll("⚠️ ВНИМАНИЕ: Тренд выдыхается. Рекомендуется фиксация прибыли.");
         }
     }
 
@@ -236,7 +236,7 @@ public class StrategyService {
         Rule entrySignal = atPOC.and(rsiLow);
 
         if (entrySignal.isSatisfied(i)) {
-            telegramService.sendMessage("📊 СИГНАЛ: Цена на уровне максимального объема (POC) + RSI перепродан. Ожидаем отскок!");
+            telegramService.sendMessageForAll("📊 СИГНАЛ: Цена на уровне максимального объема (POC) + RSI перепродан. Ожидаем отскок!");
         }
     }
 
@@ -265,7 +265,7 @@ public class StrategyService {
             .and(new PriceNearFibRule(series, fibonacciIndicator, "level_618", 0.001));
 
         if (buySignal.isSatisfied(i)) {
-            telegramService.sendMessage("🚀 [" + symbol + "] СИГНАЛ НА ВХОД: MACD Cross + Fib 0.618 + RSI low");
+            telegramService.sendMessageForAll("🚀 [" + symbol + "] СИГНАЛ НА ВХОД: MACD Cross + Fib 0.618 + RSI low");
         }
 
         // 5. СТРАТЕГИЯ ВЫХОДА (SELL / EXIT)
@@ -274,7 +274,7 @@ public class StrategyService {
             .or(new PriceNearFibRule(series, fibonacciIndicator, "level_236", 0.001));
 
         if (sellSignal.isSatisfied(i)) {
-            telegramService.sendMessage("⚠️ [" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
+            telegramService.sendMessageForAll("⚠️ [" + symbol + "] СИГНАЛ НА ВЫХОД: Тренд ослаб или достигнута цель");
         }
     }
 

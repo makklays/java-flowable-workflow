@@ -16,28 +16,41 @@ import { useSignals } from '../../context/SignalsContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-function calculateRSI(data, period = 14) {
-    const rsiData = [];
+// Функция расчета классического RSI (14)
+function calculateRSI(candles, period = 3) {
+    if (candles.length <= period) return [];
+
+    let rsiData = [];
     let gains = 0;
     let losses = 0;
 
-    for (let i = 1; i < data.length; i++) {
-        const diff = data[i].close - data[i - 1].close;
-        if (diff >= 0) gains += diff;
-        else losses -= diff;
+    // 1. Считаем первое среднее значение для стартового окна
+    for (let i = 1; i <= period; i++) {
+        const difference = candles[i].close - candles[i - 1].close;
+        if (difference > 0) gains += difference;
+        else losses -= difference;
+    }
 
-        if (i >= period) {
-            if (i > period) {
-                const prevDiff = data[i - 1].close - data[i - 2].close;
-                // Упрощенное скользящее среднее для RSI
-                // (Это базовая логика, для идеала лучше использовать EMA-сглаживание)
-            }
-            const rs = gains / (losses || 1);
-            rsiData.push({ time: data[i].time, value: 100 - (100 / (1 + rs)) });
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
 
-            // Сбрасываем для следующего шага (упрощенно)
-            gains = 0; losses = 0;
-        }
+    let firstRSI = avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
+    rsiData.push({ time: candles[period].time, value: firstRSI });
+
+    // 2. Считаем остальные точки методом сглаживания Wilder's SMMA
+    for (let i = period + 1; i < candles.length; i++) {
+        const difference = candles[i].close - candles[i - 1].close;
+
+        const gain = difference > 0 ? difference : 0;
+        const loss = difference < 0 ? -difference : 0;
+
+        avgGain = (avgGain * (period - 1) + gain) / period;
+        avgLoss = (avgLoss * (period - 1) + loss) / period;
+
+        const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+        const rsiValue = 100 - (100 / (1 + rs));
+
+        rsiData.push({ time: candles[i].time, value: rsiValue });
     }
     return rsiData;
 }
@@ -568,6 +581,150 @@ const Trading = () => {
                     // Устанавливаем базу
                     candleSeries.setData(formattedCandles);
 
+                    // ==========================================
+                    // 1. ИНИЦИАЛИЗАЦИЯ СЕРИИ RSI И ЕЕ ШКАЛЫ
+                    // ==========================================
+
+                    // Добавляем серию RSI. Привязываем ее к ЛЕВОЙ шкале цен, чтобы изолировать от цены свечей
+                    const rsiSeries = chart.addLineSeries({
+                        color: '#9b59b6', // Красивый фиолетовый цвет RSI
+                        lineWidth: 1.5,
+                        priceScaleId: 'left', // ВАЖНО: отделяем шкалу от правых свечей
+                        title: 'RSI (3)',
+                    });
+
+                    // Настраиваем ЛЕВУЮ шкалу так, чтобы она занимала только нижние 20% экрана
+                    chart.priceScale('left').applyOptions({
+                        autoScale: false, // Отключаем авто-масштаб, так как у RSI жесткие границы 0-100
+                        visible: true,
+                        scaleMargins: {
+                            top: 0.8,    // 80% пространства сверху оставляем пустым для свечей
+                            bottom: 0.05, // Оставляем небольшой отступ снизу
+                        },
+                    });
+
+                    // Настраиваем ПРАВУЮ шкалу со свечами, чтобы они не падали слишком низко и не перекрывали RSI
+                    chart.priceScale('right').applyOptions({
+                        autoScale: true,
+                        scaleMargins: {
+                            top: 0.05,
+                            bottom: 0.25, // Нижние 25% экрана оставляем пустыми под свечами
+                        },
+                    });
+
+                    // Создаем классические пунктирные уровни перекупленности (70) и перепроданности (30)
+                    [30, 70].forEach((level) => {
+                        rsiSeries.createPriceLine({
+                            price: level,
+                            color: 'rgba(155, 89, 182, 0.4)', // Полупрозрачный фиолетовый
+                            lineWidth: 1,
+                            lineStyle: 2, // Пунктир
+                            axisLabelVisible: true,
+                        });
+                    });
+
+                    // Ограничиваем шкалу RSI строгими рамками от 0 до 100
+                    rsiSeries.createPriceLine({ price: 0, color: 'transparent' });
+                    rsiSeries.createPriceLine({ price: 100, color: 'transparent' });
+
+
+                    // ==========================================
+                    // 2. РАСЧЕТ И ПЕРЕДАЧА ДАННЫХ (внутри fetch .then)
+                    // ==========================================
+
+                    // Сразу после того как заполнили свечи (seriesRef.current.setData(formattedCandles)):
+                    const realRSIData = calculateRSI(formattedCandles, 14);
+
+                    if (realRSIData.length > 0) {
+                        rsiSeries.setData(realRSIData);
+                    }
+
+                    // Создаем серию-заливку для зоны просадки
+                    /*const supportAreaSeries = chart.addAreaSeries({
+                        topColor: 'rgba(38, 166, 154, 0.25)',    // Цвет заливки зоны
+                        bottomColor: 'rgba(38, 166, 154, 0.25)', // Одинаковый цвет, чтобы не было градиента
+                        lineColor: 'rgba(38, 166, 154, 0.8)',     // Верхняя линия-граница зоны
+                        lineWidth: 1,
+                        priceLineVisible: false,
+                        lastValueVisible: false,
+                    });
+                    // Находим минимальный лой из последних 50 свечей
+                    const last50Lows = formattedCandles.slice(-50).map(c => c.low);
+                    const minLow = Math.min(...last50Lows);
+                    // Заполняем массив: для каждой свечи передаем ОДНО и ТО ЖЕ значение цены.
+                    // График закрасит всё пространство от этой цены до самого низа (до нуля).
+                    const supportAreaData = formattedCandles.map(c => ({
+                        time: c.time,
+                        value: minLow * 1.002, // Слегка приподнимаем линию, создавая "высоту" зоны
+                    }));
+                    supportAreaSeries.setData(supportAreaData);*/
+
+                    // =========================================================================
+                    // АВТОМАТИЧЕСКИЙ РАСЧЕТ И ОТРИСОВКА ЗОН ПРОСАДКИ И РОСТА
+                    // =========================================================================
+                    if (formattedCandles.length > 50) {
+                        // 1. Берем срез последних 50 свечей для анализа локального рынка
+                        const localSlice = formattedCandles.slice(-50);
+
+                        const localLows = localSlice.map(c => c.low);
+                        const localHighs = localSlice.map(c => c.high);
+
+                        // Локальные экстремумы
+                        const absoluteMin = Math.min(...localLows);
+                        const absoluteMax = Math.max(...localHighs);
+
+                        // Рассчитываем ширину зоны (например, 0.2% от цены, чтобы подходило под любой актив)
+                        const zoneWidth = absoluteMin * 0.002;
+
+                        // --- 2. ОТРИСОВКА ЗОНЫ ПРОСАДКИ (ПОДДЕРЖКА / ЗЕЛЕНАЯ ЗОНА) ---
+                        const supportBottom = absoluteMin;
+                        const supportTop = absoluteMin + zoneWidth;
+
+                        // Нижняя граница зоны просадки
+                        candleSeries.createPriceLine({
+                            price: supportBottom,
+                            color: 'rgba(38, 166, 154, 0.6)', // Полупрозрачный зеленый
+                            lineWidth: 1,
+                            lineStyle: 2, // Пунктир
+                            axisLabelVisible: true,
+                            title: 'Просадка (Мин)',
+                        });
+
+                        // Верхняя граница зоны просадки
+                        candleSeries.createPriceLine({
+                            price: supportTop,
+                            color: 'rgba(38, 166, 154, 0.4)',
+                            lineWidth: 1,
+                            lineStyle: 2,
+                            axisLabelVisible: false, // Отключаем дублирующую плашку на шкале
+                        });
+
+
+                        // --- 3. ОТРИСОВКА ЗОНЫ РОСТА (СОПРОТИВЛЕНИЕ / КРАСНАЯ ЗОНА) ---
+                        const resistanceTop = absoluteMax;
+                        const resistanceBottom = absoluteMax - zoneWidth;
+
+                        // Верхняя граница зоны роста
+                        candleSeries.createPriceLine({
+                            price: resistanceTop,
+                            color: 'rgba(239, 83, 80, 0.6)', // Полупрозрачный красный
+                            lineWidth: 1,
+                            lineStyle: 2,
+                            axisLabelVisible: true,
+                            title: 'Цель роста (Макс)',
+                        });
+
+                        // Нижняя граница зоны роста
+                        candleSeries.createPriceLine({
+                            price: resistanceBottom,
+                            color: 'rgba(239, 83, 80, 0.4)',
+                            lineWidth: 1,
+                            lineStyle: 2,
+                            axisLabelVisible: false,
+                        });
+                    }
+                    // ======================================
+
                     // Формируем маркеры, беря время ПРЯМО из отформатированных данных
                     const markers = [
                         {
@@ -1055,6 +1212,60 @@ const Trading = () => {
         };
     }, [pair, timeframe]);
 
+    const sendChartsToTelegram = async () => {
+        // URL вашего Java контроллера (адаптируйте под ваш роутинг)
+        const BACKEND_URL = 'http://localhost:8082/api/v1/trades/send-test-message-to-tg';
+
+        const activeCharts = [
+            //{ chart: chartRefD1.current, name: 'D1' },
+            //{ chart: chartRefH1.current, name: 'H1' },
+            { chart: chartRef.current, name: timeframe,  }
+        ];
+
+        for (const item of activeCharts) {
+            if (!item.chart) continue;
+            try {
+                // Нативный метод Lightweight Charts для получения холста
+                const canvas = item.chart.takeScreenshot();
+                if (canvas) {
+                    // Переводим canvas в бинарный Blob
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) return;
+
+                        // Создаем форму для отправки файла на бэкенд
+                        const formData = new FormData();
+
+                        // 'file' — это имя переменной, которую будет ждать Java-контроллер (@RequestParam)
+                        formData.append('file', blob, `${pair}_${item.name}.jpg`);
+                        formData.append('pair', pair.toUpperCase());
+                        formData.append('timeframe', item.name);
+                        formData.append('side', "LONG");
+                        formData.append('lot', "2");
+                        formData.append('price', "80.00");
+                        formData.append('tp', "86.00");
+                        formData.append('sl', "78.00");
+                        formData.append('signal', "Стохастик показывает точку для входа, возможен пробой уровня.");
+
+                        // Отправляем файл на ваш сервер приложений
+                        const response = await fetch(BACKEND_URL, {
+                            method: 'POST',
+                            body: formData,
+                            // Заголовки Content-Type указывать НЕ НАДО, браузер сделает это сам для FormData
+                        });
+
+                        if (response.ok) {
+                            console.log(`Скриншот ${item.name} успешно передан на бэкенд.`);
+                        } else {
+                            console.error(`Ошибка при передаче ${item.name}:`, await response.text());
+                        }
+                    }, 'image/jpeg', 0.9);
+                }
+            } catch (error) {
+                console.error(`Не удалось обработать скриншот ${item.name}:`, error);
+            }
+        }
+    };
+
     return (
         <div className="container-fluid">
             {/*
@@ -1170,7 +1381,7 @@ const Trading = () => {
 
                 <div className="col-md-10" >
                     <div className="row">
-                        <div className="col-md-4">
+                        <div id="D1" className="col-md-4">
                             <div className="card shadow-sm" >
                                 <div className="card-header bg-dark text-white d-flex justify-content-between">
                                     <h6 className="mb-0">{pair.toUpperCase()} Live Chart / D1</h6>
@@ -1182,7 +1393,7 @@ const Trading = () => {
                             </div>
                         </div>
 
-                        <div className="col-md-4">
+                        <div id="H1" className="col-md-4">
                             <div className="card shadow-sm" >
                                 <div className="card-header bg-dark text-white d-flex justify-content-between">
                                     <h6 className="mb-0">{pair.toUpperCase()} Live Chart / H1</h6>
@@ -1194,7 +1405,7 @@ const Trading = () => {
                             </div>
                         </div>
 
-                        <div className="col-md-4">
+                        <div id="M15" className="col-md-4">
                             <div className="card shadow-sm" >
                                 <div className="card-header bg-dark text-white d-flex justify-content-between">
                                     <h6 className="mb-0">{pair.toUpperCase()} Live Chart / {timeframe}</h6>
@@ -1205,6 +1416,15 @@ const Trading = () => {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="row mt-3">
+                            <div className="col-12 text-end">
+                                <button className="btn btn-primary" onClick={sendChartsToTelegram}>
+                                    📷 Отправить скриншот в Telegram (test)
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

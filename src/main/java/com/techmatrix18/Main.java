@@ -38,7 +38,7 @@ public class Main {
         // Рабочая отправка сообщения в Telegram при запуске
         //TelegramService telegramService = context.getBean(TelegramService.class);
         //System.out.println("Проверка отправки в Telegram...");
-        //telegramService.sendMessage("🤖 Бот успешно запущен и готов к торговле!");
+        //telegramService.sendMessageForAll("🤖 Бот успешно запущен и готов к торговле!");
 
         // Проверка отправки сигнала в Telegram при запуске
         //MyBot bot = context.getBean(MyBot.class);

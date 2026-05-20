@@ -115,7 +115,7 @@ Rule priceAbovePOC = new OverIndicatorRule((c) -> volumeProfileIndicator.findPOC
 // Создаем правило: цена находится в зоне POC (±0.2% от уровня)
 Rule atPOCZone = new PriceNearPOCRule(volumeProfileIndicator, 50);
 if (atPOCZone.isSatisfied(candles)) {
-    telegramService.sendMessage("📊 Цена подошла к уровню максимального объема (POC). Ожидаем реакцию рынка!");
+    telegramService.sendMessageForAll("📊 Цена подошла к уровню максимального объема (POC). Ожидаем реакцию рынка!");
 }
 
 3. Комбинирование с осцилляторами (Подтвержденный отскок)
@@ -123,7 +123,7 @@ if (atPOCZone.isSatisfied(candles)) {
 Rule buyAtValueArea = new PriceNearPOCRule(volumeProfileIndicator, 50)
                       .and(new UnderIndicatorRule(rsiIndicator, 30.0));
 if (buyAtValueArea.isSatisfied(candles)) {
-    telegramService.sendMessage("🎯 СИГНАЛ: Отскок от объема подтвержден RSI!");
+    telegramService.sendMessageForAll("🎯 СИГНАЛ: Отскок от объема подтвержден RSI!");
 }
 
 4. Подготовка данных для фронтенда

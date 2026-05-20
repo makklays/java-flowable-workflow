@@ -18,10 +18,7 @@ import org.flowable.engine.TaskService;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.core.Authentication;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -142,41 +139,95 @@ public class FlowableController {
             return ResponseEntity.ok(Collections.emptyList());
         }
 
-        // Collect all unique definitions IDs
-        Set<String> processDefIds = tasks.stream()
-            .map(Task::getProcessDefinitionId)
-            .filter(id -> id != null)
-            .collect(Collectors.toSet());
+        // 2. Собираем уникальные ID дефинишенов и инстансов процессов
+        Set<String> processDefIds = new HashSet<>();
+        Set<String> processInstanceIds = new HashSet<>();
+        for (Task task : tasks) {
+            if (task.getProcessDefinitionId() != null) processDefIds.add(task.getProcessDefinitionId());
+            if (task.getProcessInstanceId() != null) processInstanceIds.add(task.getProcessInstanceId());
+        }
 
-        // We request process names from the database with one query and create a Map [id -> name]
+        // 3. Пакетно получаем названия процессов [id -> name]
         Map<String, String> processNamesMap = Collections.emptyMap();
         if (!processDefIds.isEmpty()) {
             processNamesMap = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionIds(processDefIds) // Корректный метод для Flowable
+                .processDefinitionIds(processDefIds)
                 .list()
                 .stream()
                 .collect(Collectors.toMap(
                     ProcessDefinition::getId,
                     pd -> pd.getName() != null ? pd.getName() : pd.getKey(),
-                    (existing, replacement) -> existing // Защита от дубликатов
+                    (existing, replacement) -> existing
                 ));
         }
 
-        Map<String, String> finalNamesMap = processNamesMap;
-        return ResponseEntity.ok(
-            taskService.createTaskQuery()
-                .active()
-                .orderByTaskCreateTime().desc()
+        // 4. Получаем ID инициаторов для каждого инстанса процесса [processInstanceId -> startUserId]
+        Map<String, String> instanceToUserIdMap = Collections.emptyMap();
+        if (!processInstanceIds.isEmpty()) {
+            instanceToUserIdMap = runtimeService.createProcessInstanceQuery()
+                .processInstanceIds(processInstanceIds)
                 .list()
                 .stream()
-                .map(t -> Map.of(
-                    "id", t.getId(),
-                    "name", t.getName(),
-                    "processInstanceId", t.getProcessInstanceId(),
-                    "processName", finalNamesMap.getOrDefault(t.getProcessDefinitionId(), "Unknown Process"), // Название процесса
-                    "assignee", t.getAssignee() != null ? t.getAssignee() : "Unassigned",
-                    "createTime", t.getCreateTime()
-                )).toList()
+                .filter(pi -> pi.getStartUserId() != null)
+                .collect(Collectors.toMap(
+                    ProcessInstance::getId,
+                    ProcessInstance::getStartUserId,
+                    (existing, replacement) -> existing
+                ));
+        }
+
+        // 5. Пакетно получаем объекты Пользователей из Flowable Identity [userId -> User]
+        Set<String> userIds = new HashSet<>(instanceToUserIdMap.values());
+        Map<String, org.flowable.idm.api.User> usersMap = Collections.emptyMap();
+        if (!userIds.isEmpty()) {
+            usersMap = identityService.createUserQuery()
+                .userIds(List.copyOf(userIds)) // Пакетный запрос пользователей по сету ID
+                .list()
+                .stream()
+                .collect(Collectors.toMap(
+                    org.flowable.idm.api.User::getId,
+                    user -> user,
+                    (existing, replacement) -> existing
+                ));
+        }
+
+        // 6. Формируем финальный ответ со всей информацией
+        Map<String, String> finalNamesMap = processNamesMap;
+        Map<String, String> finalInstanceToUserIdMap = instanceToUserIdMap;
+        Map<String, org.flowable.idm.api.User> finalUsersMap = usersMap;
+
+        return ResponseEntity.ok(
+            tasks.stream().map(t -> {
+                Map<String, Object> taskMap = new HashMap<>();
+                taskMap.put("id", t.getId());
+                taskMap.put("name", t.getName() != null ? t.getName() : "Unnamed Task");
+                taskMap.put("processInstanceId", t.getProcessInstanceId());
+                taskMap.put("processName", finalNamesMap.getOrDefault(t.getProcessDefinitionId(), "Unknown Process"));
+                taskMap.put("assignee", t.getAssignee() != null ? t.getAssignee() : "Unassigned");
+                taskMap.put("createTime", t.getCreateTime() != null ? t.getCreateTime() : null);
+
+                // Получаем данные инициатора
+                String initiatorId = finalInstanceToUserIdMap.get(t.getProcessInstanceId());
+                if (initiatorId != null) {
+                    org.flowable.idm.api.User userObj = finalUsersMap.get(initiatorId);
+                    if (userObj != null) {
+                        // Передаем в JSON вложенный объект со всеми нужными фронтенду полями
+                        taskMap.put("initiator", Map.of(
+                            "id", userObj.getId(),
+                            "firstName", userObj.getFirstName() != null ? userObj.getFirstName() : "",
+                            "lastName", userObj.getLastName() != null ? userObj.getLastName() : "",
+                            "displayName", (userObj.getFirstName() + " " + userObj.getLastName()).trim()
+                        ));
+                    } else {
+                        // Если ID есть, но пользователя удалили из системы
+                        taskMap.put("initiator", Map.of("id", initiatorId, "displayName", "Deleted User ID: " + initiatorId));
+                    }
+                } else {
+                    taskMap.put("initiator", Map.of("id", "system", "displayName", "System"));
+                }
+
+                return taskMap;
+            }).toList()
         );
     }
 

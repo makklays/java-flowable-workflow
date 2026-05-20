@@ -133,6 +133,10 @@ const Tasks = () => {
                                     <th>Название процесса</th>
                                     <th>Название задачи</th>
                                     <th>ID Процесса</th>
+
+                                    <th>Инициатор</th>
+                                    <th>Исполнитель</th>
+
                                     <th>Дата создания</th>
                                     {role === 'ADMIN' && <th>Исполнитель</th>}
                                     <th className="text-end">Действие</th>
@@ -144,6 +148,10 @@ const Tasks = () => {
                                         <td><span className="fw-bold">{task.processName || 'Без названия'}</span></td>
                                         <td><span className="fw-bold">{task.name || 'Без названия'}</span></td>
                                         <td className="text-muted small">{task.processInstanceId}</td>
+
+                                        <td>{task.initiator.displayName}</td>
+                                        <td>{task.assignee}</td>
+
                                         <td>{new Date(task.createTime).toLocaleString()}</td>
                                         {role === 'ADMIN' && (
                                             <td className="text-info">{task.assignee || 'Не назначена'}</td>

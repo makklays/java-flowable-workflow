@@ -40,6 +40,8 @@ npm install @uiw/react-heat-map --legacy-peer-deps
 npm install react-player --legacy-peer-deps
 // установить график как спидометр
 npm install react-gauge-chart --legacy-peer-deps
+// Установить слайдер (зацикленую карусель) со стрелочками в лево и в право
+npm install swiper --legacy-peer-deps
 -----------------------------------------------------
 
 npm start

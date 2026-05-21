@@ -231,6 +231,29 @@ public class FlowableController {
         );
     }
 
+    // Simple Example with Map :) (can delete !)
+    private ResponseEntity<?> exampleTest() {
+        Map<String, Object> myMap = new HashMap<>();
+        myMap.put("id", "1");
+        myMap.put("title", "Title");
+
+        // Объекты, созданные через Map.of и List.of, нельзя изменить (нельзя сделать .put() или .add() позже в коде)
+        myMap.put("players", List.of("Alex", "Luke", "Jake"));
+
+        // выбросит ошибку NullPointerException, если хотя бы одно из значений (например, название или список игроков) окажется null
+        myMap.put("acts", Map.of(
+            "id", "1",
+            "name", "SomeName",
+            "days", "2 days"
+        ));
+
+        if (!myMap.isEmpty()) {
+            return ResponseEntity.ok(myMap);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
+        }
+    }
+
     // Рекурсивный обход схемы для поиска следующего User Task в Процессе (пропуская шлюзы и автоматические шаги)
     // Если на форме нужно отобразить Название следующего User Task из Процесса
     private void findNextUserTasksRecursive(List<SequenceFlow> outgoingFlows, List<String> resultNames) {

@@ -191,6 +191,55 @@ i18n
                     site_system_price: "от 85000 грн",
                     online_store_price: "от 50000 грн",
 
+                    about_1: `<b>TechMatrix18</b> - команда людей, которая профессионально занимается компьютерным
+                        программированием и разработкой сайтов c 2007 года. Основываясь на нашем опыте и знаниях, мы можем
+                        гарантировать выполнение работы качественно и в сроки. Успешно разработали и запрограммировали не один
+                        корпоративный сайт, интернет-магазин для среднего бизнеса, а также сложные веб-порталы для банков.`,
+                    about_2: `<b>Наша миссия</b> — помогать развитию успешного бизнеса в IT сфере. Мы хотели бы стать для
+                        Вас надежным партнером по предоставлению услуг разработки, развития бизнеса в интернете и сопровождению
+                        сайта. Мы достигаем своей цели, предлагая услуги, которые приводят к развитию и процветанию общества.`,
+                    about_3: `<b>Разработка сайта</b> для нас не является конечной целью. Это лишь инструмент, который
+                        должен помогать развитию бизнеса и увеличению прибыли заказчика.`,
+                    about_4: `Каждый специалист имеет более 10 лет опыта разработки или работы в своей сфере.`,
+                    about_5: `TechMatrix18 любит новые знания, помогающие нам работать, а ещё любит разрабатывать и делать
+                        большие нестандартные проекты в IT сфере. Мы как Чип и Дейл, спешим прийти к Вам на помощь в реализации
+                        Ваших целей. А кто как не мы, лучше всех разбираемся в современных технологиях сайто строения?
+                        А кто как не мы, знаем, как легко выполнить заказ клиента так, чтобы он остался доволен результатом
+                        работы? Только мы! Разработка сайта с нами - легко и весело!`,
+                    about_6: `Наша разработка сайта уникальна тем, что мы не используем бесплатные коробочные решения, которые
+                        урезаны в функционале, дизайне и зачастую, не дают покупателю нужного результата, а об отсутствии
+                        модификации, он узнает со временем. Наша разработка является гибкой под Вас, начиная с ваших пожелай
+                        по функционалу, наполнению, дизайну и заканчивая тем, что сайт успешно размещен в интернете, в оговоренные
+                        сроки, а также имеет желаемый вами дизайн, функциональность и практичность. Нашим сайтом легко пользоваться,
+                        он понятен, имеет всё необходимое и желаемое, прост в управлении, защищен, практичен.`,
+                    about_7: `<b>Наша география</b> — это весь мир. Мы разговариваем на нескольких языках и разрабатываем сайты,
+                        интернет магазины и сложные системы для бизнеса на современных технологиях.`,
+                    about_8: `Возвраст наших клиентов от 28 до 53 лет. Это собственник бизнеса, бизнесмен, бизнес леди,
+                        маркетолог и бренд менеджер, владелец производства, предприниматель из сегмента B2B и B2C, публичная личность.`,
+                    about_9: `Сайты заказывают для развития собственного бизнеса, для популяризации компании через интернет,
+                        сайт-система для автоматизация процесов на производстве или заводе с привлечением IT, сайт-система
+                        или сервис для ведения клинтов и их данных, сайт-система для логистики на предприятии, веб-сервис и
+                        API для мобильных приложений, запуск и вывод нового бренда, для увеличение продаж, поиск новых клиентов,
+                        социальный развлекательный или новостной портал, популяризация бренда или захват нового сегмента рынка,
+                        сайт-система для ведения данных в лаборатории, для увеличение прибыли из интернета.`,
+                    about_10: `Наши сайты: <b>в интернете</b>, <b>на предприятии</b>, <b>на заводе</b>, <b>в банке</b>,
+                        <b>в холдинге</b>, <b>в лаборатории</b>, <b>в компании</b>, <b>в корпорации</b>.`,
+                    about_11: `Преимущество сайтов в том, что сайты доступны для ваших клиентов как в рабочие дни, так и в
+                        любое другое время, представляя ваши услуги на корпоративном сайте или продавая ваши товары 24/7 в
+                        интернете тогда, когда офисы закрыты.`,
+
+                    about_title_1: `Дизайнер`,
+                    text_1: `Удовлетворит ваши графические пожелания в цветах. Совместит современный дизайн с вашими желаниями. Рисует дизайн сайта для разработки.`,
+                    about_title_2: `Frontend - разработчик`,
+                    text_2: `Сверстает и разместит, согласно правил размещения html верстки с использованием графического дизайна для последующей разработки сайта.`,
+                    about_title_3: `Backend - разработчик`,
+                    text_3: `Запрограммирует, разработает сайт и его сложную логику, натянет верстку, провалидирует данные и защитит сайт, сильная разработка - его конёк против хакерских атак.`,
+                    about_title_4: `Контент менеджер`,
+                    text_4: `Заполнит сайт желанной информацией, продуктами, товарами, текстами или изображениями.`,
+                    about_title_5: `Менеджер проекта`,
+                    text_5: `Организует работу специалистов, взаимодействует с заказчиком. Знает, что делают разработчики и на каком этапе сейчас идет разработка сайта.`,
+
+                    bread_about: `О нас`,
 
                 }
             },
@@ -375,6 +424,59 @@ i18n
                     site_system_price: "from 1855 $",
                     online_store_price: "from 3150 $",
 
+                    about_1: `<b>TechMatrix18</b> - a team of people who have been professionally engaged in computer
+                        programming and website development since 2007. Based on our experience and knowledge, we can
+                        guarantee the quality and timely completion of work. We have successfully developed and programmed
+                        more than one corporate website, an online store for medium-sized businesses, as well as complex
+                        web portals for banks.`,
+                    about_2: `<b>Our mission</b> — to help develop a successful business in the IT sector. We would like
+                        to become a reliable partner for you in providing services for development, business development
+                        on the Internet and website maintenance. We achieve our goal by offering services that lead to
+                        the development and advancement of society.`,
+                    about_3: `<b>Website development</b> is not the ultimate goal for us. It is just a tool that should
+                        help develop the business and increase the customer's profit.`,
+                    about_4: `Each specialist has more than 10 years of experience in development or work in their field.`,
+                    about_5: `TechMatrix18 loves new knowledge that helps us work, and we also love developing and implementing large,
+                        custom projects in the IT field. We're like Chip and Dale, eager to help you achieve your goals. Who
+                        better than us than we are, more versed in modern website building technologies?
+                        And who better than us knows how to easily fulfill a client's order so they're satisfied with the results?
+                        Only us! Website development with us is easy and fun!`,
+                    about_6: `Our website development is unique in that we don't use free, out-of-the-box solutions, which
+                        are limited in functionality and design and often fail to deliver the desired result. The lack of
+                        modifications will become apparent over time. Our development is flexible, tailored to your needs,
+                        from your wishes for functionality, content, and design to ensuring the website is successfully
+                        launched online within the agreed-upon timeframe, and has the design, functionality, and usability
+                        you desire. Our website is easy to use, it's intuitive, has everything you need and want, is easy
+                        to manage, secure, and practical.`,
+
+                    about_7: `<b>Our geography</b> — is the entire world. We speak several languages and develop websites,
+                        online stores, and complex business systems using modern technologies.`,
+                    about_8: `Our clients range in age from 28 to 53. They include business owners, entrepreneurs, businesswoman,
+                        marketers and brand managers, manufacturing owners, B2B and B2C entrepreneurs, and public figures.`,
+                    about_9: `Websites are ordered for business development, for online promotion of a company,
+                        a website system for automating processes in a production or factory using IT, a website system or
+                        service for managing clients and their data, a website system for enterprise logistics, a web service and
+                        API for mobile applications, for launching and launching a new brand, for increasing sales, finding new clients,
+                        a social entertainment or news portal, for brand promotion or capturing a new market segment,
+                        a website system for data management in a laboratory, for increasing online profits.`,
+                    about_10: `Our websites: <b>on the Internet</b>, <b>at the enterprise</b>, <b>at the factory</b>, <b>at the bank</b>,
+                        <b>in the holding</b>, <b>in the laboratory</b>, <b>in the company</b>, <b>in the corporation</b>.`,
+                    about_11: `The advantage of websites is that they are available to your customers both during business days
+                        and at any other time, presenting your services on a corporate website or selling your products 24/7
+                        online when your offices are closed.`,
+
+                    about_title_1: `Designer`,
+                    text_1: `We'll meet your graphic color requirements. We'll combine modern design with your wishes. We'll also create website designs for development.`,
+                    about_title_2: `Frontend developer`,
+                    text_2: `Layout and placement, in accordance with the rules for placement of HTML layout using graphic design for subsequent website development.`,
+                    about_title_3: `Backend developer`,
+                    text_3: `He will program and develop the website and its complex logic, create the layout, validate the data, and protect the website. Strong development is his strong point against hacker attacks.`,
+                    about_title_4: `Content manager`,
+                    text_4: `Fill the site with desired information, products, goods, texts or images.`,
+                    about_title_5: `Project Manager`,
+                    text_5: `Manages the work of specialists and interacts with the client. Knows what the developers are doing and what stage the website is currently at.`,
+
+                    bread_about: `About Us`,
 
                 }
             },
@@ -562,6 +664,58 @@ i18n
                     site_system_price: "de 1700 €",
                     online_store_price: "de 2850 €",
 
+                    about_1: `<b>TechMatrix18</b> — somos un equipo de profesionales dedicados a la programación informática
+                        y al desarrollo web desde 2007. Gracias a nuestra experiencia y conocimientos, garantizamos la calidad
+                        y la entrega puntual de nuestros proyectos. Hemos desarrollado y programado con éxito varios sitios
+                        web corporativos, tiendas online para medianas empresas y portales web complejos para bancos.`,
+                    about_2: `<b>Nuestra misión</b> — para ayudarle a desarrollar un negocio exitoso en el sector de las TI.
+                        Nos gustaría convertirnos en su socio de confianza, ofreciéndole servicios de desarrollo, gestión
+                        empresarial en internet y mantenimiento de sitios web. Logramos nuestro objetivo brindando servicios
+                        que impulsan el desarrollo y el progreso de la sociedad.`,
+                    about_3: `<b>Desarrollo de sitios web</b> - no es nuestro objetivo final. Es simplemente una herramienta
+                        que debería ayudar a desarrollar el negocio y aumentar las ganancias del cliente.`,
+                    about_4: `Cada especialista cuenta con más de 10 años de experiencia en desarrollo o trabajo en su campo.`,
+                    about_5: `En TechMatrix18 nos apasiona adquirir nuevos conocimientos que nos ayuden a trabajar, y también nos encanta desarrollar e implementar proyectos personalizados de gran envergadura en el sector de las TI. Somos como Chip y Dale, deseosos de ayudarte a alcanzar tus objetivos. ¿Quién mejor que nosotros para dominar las tecnologías modernas de creación de sitios web?
+                        ¿Y quién mejor que nosotros para cumplir fácilmente con los pedidos de nuestros clientes y garantizar su satisfacción?
+                        ¡Solo nosotros! ¡Desarrollar tu sitio web con nosotros es fácil y divertido!`,
+                    about_6: `Nuestro desarrollo web es único porque no utilizamos soluciones gratuitas preconfiguradas, las cuales
+                        tienen funcionalidades y diseños limitados y a menudo no ofrecen el resultado deseado. La falta de
+                        modificaciones se hará evidente con el tiempo. Nuestro desarrollo es flexible y se adapta a sus necesidades,
+                        desde sus preferencias en cuanto a funcionalidad, contenido y diseño, hasta garantizar que el sitio
+                        web se lance con éxito en el plazo acordado y cuente con el diseño, la funcionalidad y la usabilidad
+                        que usted desea. Nuestro sitio web es fácil de usar, intuitivo, tiene todo lo que necesita y desea,
+                        es fácil de administrar, seguro y práctico.`,
+
+                    about_7: `<b>Nuestra geografía</b> — es el mundo entero. Hablamos varios idiomas y desarrollamos sitios web,
+                        tiendas online y sistemas empresariales complejos utilizando tecnologías modernas.`,
+                    about_8: `Nuestros clientes tienen edades comprendidas entre los 28 y los 53 años. Entre ellos se incluyen
+                        propietarios de negocios, emprendedores, empresarias, profesionales del marketing y gestores de marca,
+                        propietarios de fábricas, emprendedores B2B y B2C, y figuras públicas.`,
+                    about_9: `Los sitios web se contratan para el desarrollo de negocios, la promoción en línea de una empresa,
+                        un sistema web para automatizar procesos en una planta de producción o fábrica mediante TI, un sistema o
+                        servicio web para la gestión de clientes y sus datos, un sistema web para la logística empresarial, un servicio web y
+                        API para aplicaciones móviles, para el lanzamiento de una nueva marca, para aumentar las ventas, para encontrar nuevos clientes,
+                        un portal de noticias o entretenimiento social, para la promoción de la marca o para captar un nuevo segmento de mercado,
+                        un sistema web para la gestión de datos en un laboratorio, para aumentar las ganancias en línea.`,
+                    about_10: `Nuestros sitios web: <b>en Internet</b>, <b>en la empresa</b>, <b>en la fábrica</b>, <b>en el banco</b>,
+                        <b>en la posesión</b>, <b>en el laboratorio</b>, <b>en la empresa</b>, <b>en la corporación</b>.`,
+                    about_11: `La ventaja de los sitios web es que están disponibles para sus clientes tanto durante los días
+                        laborables como en cualquier otro momento, presentando sus servicios en un sitio web corporativo o vendiendo
+                        sus productos en línea las 24 horas del día, los 7 días de la semana, cuando sus oficinas están cerradas.`,
+
+                    about_title_1: `Diseñador`,
+                    text_1: `Satisfaremos sus requisitos de color gráfico. Combinaremos el diseño moderno con sus preferencias. También crearemos diseños web para su desarrollo.`,
+                    about_title_2: `Desarrollador frontend`,
+                    text_2: `Diseño y disposición, de acuerdo con las reglas para la colocación del diseño HTML utilizando diseño gráfico para el posterior desarrollo del sitio web.`,
+                    about_title_3: `Desarrollador backend`,
+                    text_3: `Él programará y desarrollará el sitio web y su lógica compleja, creará el diseño, validará los datos y protegerá el sitio. Su sólida capacidad de desarrollo es su punto fuerte frente a los ataques de hackers.`,
+                    about_title_4: `Gestor de contenidos`,
+                    text_4: `Rellene el sitio con la información, productos, artículos, textos o imágenes que desee.`,
+                    about_title_5: `Gerente de proyecto`,
+                    text_5: `Gestiona el trabajo de los especialistas e interactúa con el cliente. Sabe qué están haciendo los desarrolladores y en qué fase se encuentra el sitio web.`,
+
+                    bread_about: `Sobre nosotros`,
+
                 }
             },
             ua: {
@@ -748,6 +902,56 @@ i18n
                     site_system_price: "от 85000 грн",
                     online_store_price: "от 50000 грн",
 
+                    about_1: `<b>TechMatrix18</b> - команда людей, яка професійно займається комп'ютерним
+                        програмуванням і розробкою сайтів c 2007 року. Основываясь на нашем опыте и знаниях, мы можем
+                        гарантувати виконання роботи якісно і в терміни. Успішно розробили і запрограмували не один
+                        корпоративний сайт, інтернет-магазин для середнього бізнесу, а також складні веб-портали для банків.`,
+                    about_2: `<b>Наша місія</b> — допомогти розвитку успішного бізнесу в IT-сфері. Ми хотіли б стати для
+                        Вас надійним партнером по наданню послуг з розробки, розвитку бізнесу в інтернеті та супроводу
+                        сайту. Ми досягаємо своєї цілі, пропонуючи послуги, які приводять до розвитку і розвитку суспільства.`,
+                    about_3: `<b>Розробка сайту</b> для нас не є кінцевою метою. Це лише інструмент, який
+                        повинен допомогти розвитку бізнесу і збільшити прибуток замовника.`,
+                    about_4: `Кожен спеціаліст має більше 10 років досвіду розробки або роботи у своїй сфері.`,
+                    about_5: `TechMatrix18 любить нові знання, що допомагають нам працювати, а ще любить розробляти та робити
+                        великі нестандартні проекти у IT сфері. Ми як Чіп та Дейл, поспішаємо прийти до Вас на допомогу в реалізації
+                        Ваших цілей. А хто як не ми, найкраще знаємося на сучасних технологіях сайто будови?
+                        А хто як не ми, знаємо, як легко виконати замовлення клієнта так, щоб він залишився задоволеним результатом
+                        роботи? Тільки ми! Розробка сайту з нами - легко та весело!`,
+                    about_6: `Наша розробка сайту унікальна тим, що ми не використовуємо безкоштовні коробкові рішення, які
+                        урізані у функціоналі, дизайні та часто, не дають покупцеві потрібного результату, а про відсутність
+                        модифікації, він дізнається з часом. Наша розробка є гнучкою під Вас, починаючи з ваших побажань
+                        по функціоналу, наповненню, дизайну та закінчуючи тим, що сайт успішно розміщений в інтернеті, в обумовлені
+                        терміни, а також має бажаний вами дизайн, функціональність та практичність. Нашим сайтом легко користуватися,
+                        він зрозумілий, має все необхідне та бажане, простий в управлінні, захищений, практичний.`,
+
+                    about_7: `<b>Наша географія</b> - це весь світ. Ми розмовляємо кількома мовами та розробляємо сайти,
+                        інтернет магазини та складні системи для бізнесу на сучасних технологіях.`,
+                    about_8: `Вік наших клієнтів віком від 28 до 53 років. Це власник бізнесу, бізнесмен, бізнес леді,
+                        маркетолог та бренд менеджер, власник виробництва, підприємець із сегменту B2B та B2C, публічна особистість.`,
+                    about_9: `Сайти замовляють для розвитку власного бізнесу, для популяризації компанії через інтернет,
+                        сайт-система для автоматизації процесів на виробництві або заводі із залученням IT, сайт-система
+                        або сервіс для ведення клінтів та їх даних, сайт-система для логістики на підприємстві, веб-сервіс та
+                        API для мобільних додатків, запуск та виведення нового бренду, для збільшення продажів, пошук нових клієнтів,
+                        соціальний розважальний або новинний портал, популяризація бренду або захоплення нового сегменту ринку,
+                        сайт-система для ведення даних у лабораторії, збільшення прибутку з інтернету.`,
+                    about_10: `Наші сайти: <b>в інтернеті</b>, <b>на підприємстві</b>, <b>на заводі</b>, <b>у банку</b>,
+                        <b>у холдингу</b>, <b>у лабораторії</b>, <b>у компанії</b>, <b>у корпорації</b>.`,
+                    about_11: `Перевага сайтів в тому, що сайти доступні для ваших клієнтів як у робочі дні, так і
+                        будь-який інший час, представляючи ваші послуги на корпоративному сайті або продаючи ваші товари 24/7 в
+                        Інтернеті тоді, коли офіси закриті.`,
+
+                    about_title_1: `Дизайнер`,
+                    text_1: `Задовольнить ваші графічні побажання у кольорах. Поєднає сучасний дизайн з вашими бажаннями. Малює дизайн веб-сайту для розробки.`,
+                    about_title_2: `Frontend – розробник`,
+                    text_2: `Зверстає і розмістить, згідно з правилами розміщення html верстки з використанням графічного дизайну для подальшої розробки сайту.`,
+                    about_title_3: `Backend - розробник`,
+                    text_3: `Запрограмує, розробить сайт та його складну логіку, натягне верстку, провалідує дані та захистить сайт, сильна розробка – його коник проти хакерських атак.`,
+                    about_title_4: `Контент менеджер`,
+                    text_4: `Заповнить сайт бажаною інформацією, продуктами, товарами, текстами чи зображеннями.`,
+                    about_title_5: `Менеджер проекту`,
+                    text_5: `Організовує роботу спеціалістів, взаємодіє із замовником. Знає, що роблять розробники і на якому етапі зараз розробка сайту.`,
+
+                    bread_about: `Про нас`,
 
                 }
             },
@@ -919,6 +1123,45 @@ i18n
                     corp_site_price: "900美元起",
                     site_system_price: "起價 3,150 美元",
                     online_store_price: "1855美元起",
+
+                    about_1: `<b>TechMatrix18</b> 我們是一支自2007年起便從事電腦程式設計和網站開發的專業團隊。憑藉豐富的經驗和專業知識，
+                        我們能夠保證專案的品質和按時交付。我們已成功開發並編寫了多個企業網站、中型企業的線上商城以及銀行的複雜入口網站。`,
+                    about_2: `<b>我們的使命</b> ——助您在IT領域發展壯大。我們希望成為您值得信賴的合作夥伴，為您提供網路開發、
+                        業務拓展和網站維護等服務。我們致力於提供能夠促進社會發展和進步的服務，從而實現我們的目標。`,
+                    about_3: `<b>網站開發</b> 這並非我們的最終目標。它只是一種工具，旨在幫助企業發展並提高客戶利潤。`,
+                    about_4: `每位專家在開發或相關領域均擁有超過 10 年的經驗。`,
+                    about_5: `TechMatrix18 熱愛學習新知識，這有助於我們的工作，我們也熱衷於開發和完成 IT 領域的大型非標準專案。我們就像奇奇和蒂蒂一樣，
+                        迫不及待地想要幫助您實現目標。還有誰比我們更了解現代網站建立技術呢？
+                        還有誰比我們更懂得如何輕鬆滿足客戶的需求，並確保客戶對最終成果感到滿意呢？只有我們！與我們合作，網站開發輕鬆又有趣！`,
+                    about_6: `我們的網站開發獨樹一幟，我們不使用免費的現成解決方案，因為這些方案
+                        功能和設計都有限，而且往往無法達到預期效果。缺乏 隨著時間的推移，這些缺陷會逐漸顯現。我們的開發方案靈活且量身定制，
+                        滿足您的各種需求，從您對功能、內容和設計的期望，到確保網站在約定的時間內成功上線，並擁有您夢寐以求的設計、功能和易用性。
+                        我們的網站易於使用，直覺易懂，擁有您所需的一切，易於管理，安全可靠，實用便捷。`,
+
+                    about_7: `<b>我們的地理</b> ——就是整個世界。我們精通多種語言，並運用現代技術開發網站、網上商店和複雜的商業系統。`,
+                    about_8: `我們的客戶年齡在 28 歲到 53 歲之間。他們包括企業主、企業家、女商人、行銷人員和品牌經理、製造企業主、B2B 和 B2C 企業家以及公眾人物。`,
+                    about_9: `網站可用於業務拓展、公司線上推廣、
+                        用於利用資訊科技實現生產或工廠流程自動化的網站系統、用於管理客戶及其資料的網站系統或服務、用於企業物流的網站系統、用於行動應用程式的 Web 服務和
+                        用於推出和推廣新品牌、提高銷售、尋找新客戶、
+                        用於社交娛樂或新聞入口網站、用於品牌推廣或開拓新市場、
+                        用於實驗室資料管理的網站系統、用於提高線上利潤。`,
+                    about_10: `我們的網站： <b>在網路上</b>, <b>企業</b>, <b>在工廠</b>, <b>在銀行</b>,
+                        <b>在控股公司</b>, <b>在實驗室裡</b>, <b>公司</b>, <b>在公司</b>.`,
+                    about_11: `網站的優勢在於，無論在工作日還是其他任何時間，您的客戶都可以訪問它們，您可以在公司網站上展示您的服務，
+                        或者在辦公室關閉時全天候在線銷售您的產品。`,
+
+                    about_title_1: `設計師`,
+                    text_1: `我們將滿足您對圖形色彩的要求。我們會將現代設計與您的願望結合。我們也會為網站開發創建設計方案。`,
+                    about_title_2: `前端開發者`,
+                    text_2: `根據 HTML 佈局的放置規則，使用圖形設計進行佈局和放置，以便後續網站開發。`,
+                    about_title_3: `後端開發人員`,
+                    text_3: `他將負責網站的程式設計和開發，包括複雜的邏輯設計、佈局創建、資料驗證以及網站安全防護。強大的開發能力是他抵禦駭客攻擊的強項。`,
+                    about_title_4: `內容管理器`,
+                    text_4: `在網站上填寫所需的資訊、產品、商品、文字或圖片。`,
+                    about_title_5: `專案經理`,
+                    text_5: `負責管理專業人員的工作並與客戶溝通。了解開發人員的工作內容以及網站目前的開發進度。`,
+
+                    bread_about: `關於我們`,
 
                 }
             },

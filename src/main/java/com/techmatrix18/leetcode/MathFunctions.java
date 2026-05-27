@@ -8,7 +8,7 @@ import java.util.Collections;
  * MathFunctions class — Класс для математических функций и алгоритмов
  *
  * @author Alexander Kuziv
- * @since 26.05.2025
+ * @since 26.05.2026
  * @company TechMatrix18
  * @version 0.0.1
  */

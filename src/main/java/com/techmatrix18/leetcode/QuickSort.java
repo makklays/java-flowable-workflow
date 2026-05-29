@@ -42,6 +42,8 @@ public class QuickSort {
             // Если текущий элемент меньше или равен опорному // If the current element is less than or equal to the pivot
             if (nums[j] <= pivot) {
                 i++;
+                // i - указывает на число больше опорного
+                // j - на число меньше или равное опорному, поэтому мы их меняем местами
                 swap(nums, i, j); // Перемещаем его в левую часть // Move it to the left side
             }
         }
@@ -52,6 +54,8 @@ public class QuickSort {
         return i + 1; // Возвращаем индекс опорного элемента // Return the index of the pivot element
     }
 
+    // Swap two elements in the array
+    // Поменять местами два элемента в массиве
     private void swap(int[] nums, int i, int j) {
         int temp = nums[i];
         nums[i] = nums[j];

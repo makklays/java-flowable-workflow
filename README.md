@@ -1,6 +1,6 @@
 # JAVA + Flowable 
 
-This is a <b>Flowable + Java</b> demo project with sample code to demonstrate my knowledge and skills.  
+This is a **Flowable + Java** demo project with sample code to demonstrate my knowledge and skills.  
 
 Simple structure of Bank 🏦 (UML schema)
 
@@ -38,7 +38,7 @@ Below you can see a few screenshots from the project.
 login (by login and password)
 <img src="./src/main/resources/mystatic/images/screen4.png" />
 
-Page with BPNM, CMMN processes of Bank  
+Page with **BPNM, CMMN processes** of Bank  
 <img src="./src/main/resources/mystatic/images/screen7.jpeg" />
 
 Page with Departments of Bank 
@@ -57,7 +57,7 @@ BPMN process
 <img src="./src/main/resources/mystatic/images/screen9.png" />
 
 ### REST API 
-accessible via JWT
+accessible via **JWT**
 
 /api/auth/login (send login and password)
 <img src="./src/main/resources/mystatic/images/screen1.png" />
@@ -65,11 +65,11 @@ accessible via JWT
 /api/v1/clients 
 <img src="./src/main/resources/mystatic/images/screen2.png" />
 
-/api/v1/clients (jwt token expired)
+/api/v1/clients (**jwt** token expired)
 <img src="./src/main/resources/mystatic/images/screen3.png" /> 
 
 ### Prometheus + Grafana
-All metrics are collected via Prometheus and displayed in Grafana dashboards
+All metrics are collected via **Prometheus** and displayed in **Grafana** dashboards
 
 <img src="./src/main/resources/mystatic/images/screen11.png" />
 

@@ -24,7 +24,7 @@ After that, I started working with **Flowable** and creating different **BPMN pr
 'Job application', 'Leave application', etc.). I came up with the forms myself and figured out how they could be 
 added to the CRM. 
 
-I have connected and added monitoring of metrics from a Spring Boot project in Grafana and Prometheus.
+I have connected and added monitoring of metrics from a Spring Boot project in **Grafana** and **Prometheus**.
 
 I want to extend the project with multiple **BPMN, CMMN,** and **DML processes**, as well as their combinations, to demonstrate my expertise in working with them.
 In the future, I’d like to expand the project with new entities, possibly up to an **ERP system**.

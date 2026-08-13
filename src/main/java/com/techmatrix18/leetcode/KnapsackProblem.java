@@ -5,8 +5,8 @@ package com.techmatrix18.leetcode;
  * Брать предмет: v[i-1] + dp[i-1][w - w[i-1]]
  *
  * @author Alexander Kuziv
- * @since 13.08.2026
  * @company TechMatrix18
+ * @since 13.08.2026
  * @version 0.0.1
  */
 
